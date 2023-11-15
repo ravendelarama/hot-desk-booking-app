@@ -1,0 +1,119 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String  @db.ObjectId
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.String
+  access_token      String? @db.String
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.String
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken String   @unique
+  userId       String   @db.ObjectId
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  firstName     String    @db.String
+  lastName      String    @db.String
+  email         String?   @unique
+  emailVerified DateTime?
+  password      String?   @db.String
+  image         String?
+  role          Role      @default(user)
+  createdAt     DateTime  @default(now()) @db.Timestamp
+  updatedAt     DateTime  @updatedAt @db.Timestamp
+  accounts      Account[]
+  sessions      Session[]
+  Booking       Booking[]
+}
+
+model VerificationToken {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Floor {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  floor     String   @unique
+  image     String?
+  createdAt DateTime @db.Timestamp
+  updatedAt DateTime @db.Timestamp
+  Desk      Desk[]
+}
+
+model Desk {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  floorId     String     @db.ObjectId
+  name        String     @unique
+  coordinates Int[]
+  status      DeskStatus @default(available)
+  createdAt   DateTime   @default(now()) @db.Timestamp
+  updatedAt   DateTime   @updatedAt @db.Timestamp
+
+  Floor   Floor     @relation(fields: [floorId], references: [id], onDelete: Cascade)
+  Booking Booking[]
+}
+
+model Booking {
+  id        String        @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String        @db.ObjectId
+  deskId    String        @db.ObjectId
+  status    BookingStatus @default(pending)
+  startedAt DateTime      @db.Timestamp
+  endedAt   DateTime      @db.Timestamp
+  bookedAt  DateTime      @db.Timestamp
+  updatedAt DateTime      @updatedAt @db.Timestamp
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  desk Desk @relation(fields: [deskId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  user
+  manager
+  admin
+}
+
+enum DeskStatus {
+  available
+  occupied
+  disabled
+}
+
+enum BookingStatus {
+  pending
+  rejected
+  confirmed
+  started
+  ended
+}
