@@ -14,7 +14,6 @@ import { Input } from "@/components/ui/input";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import axios from "axios";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 

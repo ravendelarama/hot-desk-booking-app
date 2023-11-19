@@ -74,7 +74,7 @@ function SignInForm() {
           />
           <div className="flex justify-between items-center">
             <p className="text-sm">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link href="/signin" className="inline font-semibold">
                 Sign in
               </Link>
