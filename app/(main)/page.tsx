@@ -7,7 +7,7 @@ export default async function Home() {
 
   return (
     <div className="p-6">
-      <h1>Hello {session?.user.firstName}!</h1>
+      <h1 className="text-xl">Hello {session?.user.firstName}!</h1>
     </div>
   );
 }
