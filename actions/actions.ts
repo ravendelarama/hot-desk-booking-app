@@ -1,6 +1,6 @@
 "use server"
 
-import { getSession } from "@/app/api/auth/[...nextauth]/route"
+import { getSession } from "@/lib/next-auth"
 import z from "zod";
 import prisma from "@/lib/db";
 import { DeskStatus } from "@prisma/client";
