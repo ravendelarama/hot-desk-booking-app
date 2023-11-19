@@ -1,4 +1,4 @@
-import { getSession } from "@/app/api/auth/[...nextauth]/route";
+import { getSession } from "@/lib/next-auth";
 import {
   Card,
   CardContent,
