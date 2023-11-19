@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { getSession } from "../api/auth/[...nextauth]/route";
+import { getSession } from "@/lib/next-auth";
 import { signIn } from "next-auth/react";
 
 export default async function Home() {
