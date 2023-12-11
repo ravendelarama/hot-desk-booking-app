@@ -7,6 +7,7 @@ import { DeskStatus } from "@prisma/client";
 import { Session } from "next-auth";
 
 const FormSchema = z.object({
+    floor: z.string(),
     dob: z.date({
       required_error: "Invalid date.",
     }),
@@ -46,21 +47,50 @@ async function addBooking() {
     // })
 }
 
-async function getAvailableDesks(value: z.infer<typeof FormSchema>) {
-    const parsed = FormSchema.safeParse(value);
+async function getDesks(value: z.infer<typeof FormSchema>) {
+    // const parsed = FormSchema.safeParse(value);
 
-    if (parsed.success) {
+    // if (!parsed.success) {
         
-    }
+    //     return {
+    //         message: "Validation Failed"
+    //     }
+    // }
 
-    return {
-        message: "Validation Failed"
-    }
+    const desks = await prisma.floor.findMany({
+        where: {
+            floor: value.floor
+        },
+        select: {
+            id: true,
+            floor: true,
+            image: true,
+            Desk: {
+                select: {
+                    id: true,
+                    name: true,
+                    coordinates: true,
+                    status: true,
+                    Booking: {
+                        select: {
+                            bookedAt: true
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    return desks;
+}
+
+async function getFloors() {
+    return await prisma.floor.findMany();
 }
 
 
 export {
-    getAvailableDesks,
+    getDesks,
     getBookings
 }
 

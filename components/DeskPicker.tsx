@@ -22,21 +22,27 @@ import {
 } from "@/components/ui/popover";
 import { UseFormReturn } from "react-hook-form";
 import { useFormStatus } from "react-dom";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const FormSchema = z.object({
+  floor: z.string(),
   dob: z.date({
     required_error: "Invalid date.",
   }),
 });
 
 interface Prop {
-  label?: string;
-  description?: string;
-  form: UseFormReturn<{ dob: Date }, any, undefined>;
+  form: UseFormReturn<{ floor: string; dob: Date }, any, undefined>;
   onSubmit(data: z.infer<typeof FormSchema>): Promise<void>;
 }
 
-export function DateTimePicker({ label, description, form, onSubmit }: Prop) {
+export function DeskPicker({ form, onSubmit }: Prop) {
   const { pending } = useFormStatus();
   const currentDate = new Date();
   const prevDate = {
@@ -55,10 +61,33 @@ export function DateTimePicker({ label, description, form, onSubmit }: Prop) {
       >
         <FormField
           control={form.control}
+          name="floor"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Floor</FormLabel>
+              <FormControl>
+                <Select>
+                  <SelectTrigger className="sm:w-[180px] w-full pl-3 text-left font-normal">
+                    <SelectValue placeholder="Select a floor" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="light">Light</SelectItem>
+                    <SelectItem value="dark">Dark</SelectItem>
+                    <SelectItem value="system">System</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormDescription>See the floor's desks.</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
           name="dob"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>{label}</FormLabel>
+              <FormLabel>Booking date</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -97,7 +126,7 @@ export function DateTimePicker({ label, description, form, onSubmit }: Prop) {
                   />
                 </PopoverContent>
               </Popover>
-              <FormDescription>{description}</FormDescription>
+              <FormDescription>See available desks for you.</FormDescription>
               <FormMessage />
             </FormItem>
           )}

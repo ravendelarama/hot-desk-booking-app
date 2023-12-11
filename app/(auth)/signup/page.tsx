@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import SignUpForm from "../_components/SignUpForm";
+import Form from "../_components/SignUpForm";
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
@@ -31,7 +31,7 @@ function SignUp() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <SignUpForm />
+          <Form />
         </CardContent>
         <CardFooter className="flex flex-col items-center space-y-4">
           <Separator />

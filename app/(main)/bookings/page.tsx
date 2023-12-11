@@ -23,19 +23,18 @@ async function Bookings() {
         <div className="w-full flex py-5 px-10 gap-5 border border-slate-800 rounded-lg">
           <div className="flex flex-col gap-1">
             <h1>
-              {/* {bookings[0]?.desk?.status === "available" &&
-                bookings[0].desk.name}{" "}
-              {bookings[0].status} */}
+              {bookings[0]?.desk?.status === "available" &&
+                bookings[0]?.desk?.name}{" "}
+              {bookings[0]?.status}
             </h1>
-            <h2>
-              {/* starts: {bookings[0].startedAt.getUTCHours()}:
+            {/* <h2>
+              starts: {bookings[0].startedAt.getUTCHours()}:
               {bookings[0].startedAt.getMinutes()} ends:{" "}
               {bookings[0].endedAt.getUTCHours()}:
-              {bookings[0].endedAt.getMinutes()} */}
-              {/* </h2>
-            <p>{formatRelative(Date.now(), bookings[0].bookedAt)}</p> */}
-            </h2>
-            {JSON.stringify(bookings)}
+              {bookings[0].endedAt.getMinutes()}
+              <p>{formatRelative(Date.now(), bookings[0].bookedAt)}</p>
+            </h2> */}
+            {/* {JSON.stringify(bookings)} */}
           </div>
         </div>
       </div>

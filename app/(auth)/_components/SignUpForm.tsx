@@ -35,7 +35,7 @@ function SignUpForm() {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const res = signIn("credential-register", {
         redirect: false,

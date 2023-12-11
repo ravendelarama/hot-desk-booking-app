@@ -7,6 +7,8 @@ import { NextAuthOptions } from "next-auth";
 import bcrypt from "bcrypt";
 import { Role, User } from "@prisma/client";
 import z from "zod";
+// import jwt from "jsonwebtoken";
+// import { verifyEmail } from "./email";
 
 
 const credentialSchema = z.object({
@@ -66,7 +68,26 @@ export const AuthOptions: NextAuthOptions = {
                         }
                     });
 
-                    if (!data) throw new Error("Invalid Credentials");
+                    if (!data) {
+                        throw new Error("Invalid Credentials");
+                    }
+                
+                    // if (data.emailVerified === null) {
+                    //     const token = await jwt.sign(data.id, process.env.EMAIL_SECRET + data.email!, {
+                    //         expiresIn: "1d"
+                    //     });
+
+
+                    //     const result = await verifyEmail({
+                    //         id: data.id,
+                    //         email: data.email,
+                    //         firstName: data.firstName,
+                    //         lastName: data.lastName,
+                    //         token
+                    //     });
+
+                    //     throw new Error("Please verify your email.");
+                    // }
 
                     const hash = await bcrypt.compare(user.password, data.password as string);
 
