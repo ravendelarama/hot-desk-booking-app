@@ -8,14 +8,14 @@ import { GoHome } from "react-icons/go";
 
 const Routes = [
   {
-    name: "Employees",
-    path: "/employees",
-    icon: (options: string) => <FaUsers className={options} />,
-  },
-  {
     name: "Home",
     path: "/home",
     icon: (options: string) => <GoHome className={options} />,
+  },
+  {
+    name: "Employees",
+    path: "/employees",
+    icon: (options: string) => <FaUsers className={options} />,
   },
   {
     name: "Bookings",

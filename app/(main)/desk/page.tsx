@@ -9,9 +9,10 @@ import { getDesks } from "@/actions/actions";
 
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/components/ui/use-toast";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import DeskMap from "./_components/DeskMap";
-import { Desk } from "@prisma/client";
+import useDesks from "@/hooks/useDesks";
+import useFloors from "@/hooks/useFloors";
 
 const FormSchema = z.object({
   floor: z.string(),
@@ -25,27 +26,37 @@ function Desk() {
     resolver: zodResolver(FormSchema),
   });
 
-  const [floor, setFloor] = useState<String>();
-  const [desks, setDesks] =
-    useState<Pick<Desk, "id" | "name" | "coordinates" | "status">[]>();
-  const [selectedDesk, setSelectedDesk] =
-    useState<Pick<Desk, "id" | "name" | "coordinates" | "status">>();
+  const { desks, setDesks } = useDesks();
+  const [date, setDate] = useState<Date | null>(null);
 
-  async function onSubmit(data: z.infer<typeof FormSchema>) {
+  const { activeFloor, setActiveFloor, activeImage } = useFloors();
+
+  async function onSubmitDeskPicker(data: z.infer<typeof FormSchema>) {
     const result = await getDesks(data);
-    setFloor(result[0].floor);
-    setDesks(result[0].Desk);
+    setActiveFloor(result?.floor!, result?.image!);
+    setDesks(result?.Desk!, result?.floor!);
+    setDate(data.dob);
 
-    toast({
-      description: <p>{JSON.stringify(result)}</p>,
-    });
+    // toast({
+    //   title: `Floor: ${activeFloor}`,
+    //   description: (
+    //     <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+    //       <code className="text-white">{JSON.stringify(desks, null, 2)}</code>
+    //     </pre>
+    //   ),
+    // });
   }
 
   return (
     <div className="p-3 sm:pt-10 sm:pl-10 flex flex-col space-y-5">
       <h1 className="text-3xl font-bold font-sans">Desk map</h1>
-      <DeskPicker form={form} onSubmit={onSubmit} />
-      <DeskMap floor={floor} desks={desks} />
+      <DeskPicker form={form} onSubmit={onSubmitDeskPicker} />
+      <DeskMap
+        desks={desks}
+        floor={activeFloor}
+        image={activeImage}
+        date={date}
+      />
     </div>
   );
 }

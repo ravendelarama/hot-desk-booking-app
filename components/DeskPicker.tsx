@@ -15,13 +15,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { UseFormReturn } from "react-hook-form";
-import { useFormStatus } from "react-dom";
+
 import {
   Select,
   SelectContent,
@@ -29,9 +29,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { UseFormReturn } from "react-hook-form";
+import { useFormStatus } from "react-dom";
+import useFloors from "@/hooks/useFloors";
+import { Suspense } from "react";
 
 const FormSchema = z.object({
-  floor: z.string(),
+  floor: z.string({
+    required_error: "Please select a floor.",
+  }),
   dob: z.date({
     required_error: "Invalid date.",
   }),
@@ -43,7 +49,9 @@ interface Prop {
 }
 
 export function DeskPicker({ form, onSubmit }: Prop) {
+  const { floors } = useFloors();
   const { pending } = useFormStatus();
+
   const currentDate = new Date();
   const prevDate = {
     year: currentDate.getFullYear(),
@@ -57,7 +65,7 @@ export function DeskPicker({ form, onSubmit }: Prop) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="relative flex flex-col justify-start w-full sm:flex-row sm:items-center gap-3"
+        className="relative flex flex-col justify-start w-full sm:flex-row sm:items-center gap-5"
       >
         <FormField
           control={form.control}
@@ -65,29 +73,35 @@ export function DeskPicker({ form, onSubmit }: Prop) {
           render={({ field }) => (
             <FormItem className="flex flex-col">
               <FormLabel>Floor</FormLabel>
-              <FormControl>
-                <Select>
+              <Select onValueChange={field.onChange}>
+                <FormControl>
                   <SelectTrigger className="sm:w-[180px] w-full pl-3 text-left font-normal">
                     <SelectValue placeholder="Select a floor" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="light">Light</SelectItem>
-                    <SelectItem value="dark">Dark</SelectItem>
-                    <SelectItem value="system">System</SelectItem>
-                  </SelectContent>
-                </Select>
-              </FormControl>
-              <FormDescription>See the floor's desks.</FormDescription>
+                </FormControl>
+                <SelectContent>
+                  {floors &&
+                    floors.map((item) => (
+                      <SelectItem key={item.id} value={item.floor}>
+                        {item.floor}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+              <FormDescription>
+                Choose a floor for your reservation.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="dob"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Booking date</FormLabel>
+              <FormLabel>Reservation date</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
