@@ -5,12 +5,10 @@ import z from "zod";
 import prisma from "@/lib/db";
 import { DeskStatus, Desk, User } from "@prisma/client";
 import { Session } from "next-auth";
+import { revalidatePath } from "next/cache";
 
 const FormSchema = z.object({
-    floor: z.string(),
-    dob: z.date({
-      required_error: "Invalid date.",
-    }),
+    floor: z.string()
 });
 
 type Book = Pick<Desk, "id" | "name" | "coordinates" | "status">;
@@ -31,6 +29,25 @@ async function getBookings() {
     return data;
 }
 
+async function getUserBookingCount() {
+    const session = await getSession();
+
+    return await prisma.booking.count({
+        where: {
+            userId: session?.user.id!
+        }
+    })
+}
+
+
+async function getAllBookings() {
+    return await prisma.booking.findMany()
+}
+
+async function getAllBookingCount() {
+    return await prisma.booking.count()
+}
+
 
 async function addBooking(book: Book, date: Date) {
     const session = await getSession();
@@ -40,6 +57,7 @@ async function addBooking(book: Book, date: Date) {
             message: "UNAUTHORIZED"
         }
     }
+    console.log(date.getDate())
 
     let current = new Date(new Date().toISOString());
 
@@ -52,13 +70,18 @@ async function addBooking(book: Book, date: Date) {
             Booking: {
                 create: {
                     deskId: book?.id!,
-                    startedAt: current,
+                    startedAt: date,
                     endedAt: current,
-                    bookedAt: date
+                    bookedAt: current
                 }
             }
+        },
+        include: {
+            Booking: true
         }
     })
+
+    revalidatePath("/bookings")
 }
 
 async function getDesks(value: z.infer<typeof FormSchema>) {
@@ -131,12 +154,19 @@ async function getOtherUsers() {
     return data;
 }
 
+async function getAllUserCount() {
+    return prisma.user.count()
+}
+
 export {
     getDesks,
     getBookings,
     getFloors,
     addBooking,
-    getOtherUsers
+    getOtherUsers,
+    getAllBookingCount,
+    getUserBookingCount,
+    getAllUserCount
 }
 
 

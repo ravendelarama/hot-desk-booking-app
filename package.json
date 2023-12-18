@@ -22,7 +22,9 @@
     "@radix-ui/react-separator": "^1.0.3",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-toast": "^1.1.5",
+    "@tanstack/react-table": "^8.11.0",
     "@types/bcrypt": "^5.0.2",
+    "@wojtekmaj/react-timerange-picker": "^5.5.0",
     "bcrypt": "^5.1.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
@@ -39,6 +41,7 @@
     "react-hook-form": "^7.48.2",
     "react-icons": "^4.12.0",
     "react-img-mapper": "^1.5.1",
+    "react-time-picker": "^6.6.0",
     "tailwind-merge": "^2.0.0",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.22.4"

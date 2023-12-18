@@ -88,7 +88,7 @@ model Booking {
   id        String        @id @default(auto()) @map("_id") @db.ObjectId
   userId    String        @db.ObjectId
   deskId    String        @db.ObjectId
-  status    BookingStatus @default(pending)
+  status    BookingStatus @default(confirmed)
   startedAt DateTime      @db.Timestamp
   endedAt   DateTime      @db.Timestamp
   bookedAt  DateTime      @db.Timestamp

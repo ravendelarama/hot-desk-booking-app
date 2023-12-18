@@ -11,16 +11,20 @@ import { formatRelative } from "date-fns";
 import moment from "moment";
 
 import { Separator } from "@/components/ui/separator";
-import { getBookings } from "@/actions/actions";
+import { getBookings, getUserBookingCount } from "@/actions/actions";
 import Image from "next/image";
 
 async function Bookings() {
   const bookings = await getBookings();
+  const totalUserBookings = await getUserBookingCount();
 
   // ui to be modified
   return (
     <div className="p-3 sm:pt-10 sm:pl-10 flex flex-col space-y-5">
       <h1 className="text-3xl font-bold font-sans">Bookings</h1>
+      <h2 className="text-slate-500 text-sm">
+        You have {totalUserBookings} total amount of reservation as of now.
+      </h2>
       <div className="grid grid-cols-1 grid-flow-row gap-4">
         {bookings.map((item) => (
           <div
@@ -33,25 +37,9 @@ async function Bookings() {
                 {item.status}
               </h1>
               <h2>
-                starts:{" "}
-                {moment().calendar(item.startedAt, {
-                  sameDay: "[Today]",
-                  nextDay: "[Tomorrow]",
-                  nextWeek: "dddd",
-                  lastDay: "[Yesterday]",
-                  lastWeek: "[Last] dddd",
-                  sameElse: "DD/MM/YYYY",
-                })}{" "}
-                ends:{" "}
-                {moment().calendar(item.endedAt, {
-                  sameDay: "[Today]",
-                  nextDay: "[Tomorrow]",
-                  nextWeek: "dddd",
-                  lastDay: "[Yesterday]",
-                  lastWeek: "[Last] dddd",
-                  sameElse: "DD/MM/YYYY",
-                })}
-                <p>{moment().calendar(item.bookedAt)}</p>
+                starts: {moment().calendar(item.startedAt)} ends:{" "}
+                {moment().calendar(item.endedAt)}
+                <p>{moment(item.bookedAt).fromNow()}</p>
               </h2>
             </div>
           </div>

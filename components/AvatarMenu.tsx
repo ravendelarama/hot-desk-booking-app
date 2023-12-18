@@ -22,8 +22,10 @@ function AvatarMenu() {
       <DropdownMenu>
         <DropdownMenuTrigger className="outline-none">
           <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" />
-            <AvatarFallback>RB</AvatarFallback>
+            <AvatarImage src={session?.user.image} />
+            <AvatarFallback>
+              {(session?.user.firstName + session?.user.lastname).toUpperCase()}
+            </AvatarFallback>
           </Avatar>
         </DropdownMenuTrigger>
         <DropdownMenuContent>

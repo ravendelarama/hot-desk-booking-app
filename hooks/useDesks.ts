@@ -15,8 +15,7 @@ function useDesks() {
     useEffect(() => {
         const initialDesks = async () => {
             const res = await getDesks({
-                floor: "F1D10",
-                dob: new Date()
+                floor: "F1D10"
             });
             setData([...res?.Desk!]);
         };

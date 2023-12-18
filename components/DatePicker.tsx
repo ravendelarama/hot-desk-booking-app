@@ -16,6 +16,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import {
   Popover,
   PopoverContent,
@@ -35,22 +38,20 @@ import useFloors from "@/hooks/useFloors";
 import { Suspense } from "react";
 
 const FormSchema = z.object({
-  floor: z.string({
-    required_error: "Please select a floor.",
-  }),
   dob: z.date({
     required_error: "Invalid date.",
   }),
 });
 
 interface Prop {
-  form: UseFormReturn<{ floor: string; dob: Date }, any, undefined>;
   onSubmit(data: z.infer<typeof FormSchema>): Promise<void>;
+  floor: string | null;
 }
 
-export function DeskPicker({ form, onSubmit }: Prop) {
-  const { floors } = useFloors();
-  const { pending } = useFormStatus();
+export function DatePicker({ onSubmit, floor }: Prop) {
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+  });
 
   const currentDate = new Date();
   const prevDate = {
@@ -61,41 +62,14 @@ export function DeskPicker({ form, onSubmit }: Prop) {
     minutes: currentDate.getMinutes(),
   };
 
+  function onChange() {}
+
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="relative flex flex-col justify-start w-full sm:flex-row sm:items-center gap-5"
       >
-        <FormField
-          control={form.control}
-          name="floor"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Floor</FormLabel>
-              <Select onValueChange={field.onChange}>
-                <FormControl>
-                  <SelectTrigger className="sm:w-[180px] w-full pl-3 text-left font-normal">
-                    <SelectValue placeholder="Select a floor" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {floors &&
-                    floors.map((item) => (
-                      <SelectItem key={item.id} value={item.floor}>
-                        {item.floor}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
-              <FormDescription>
-                Choose a floor for your reservation.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
         <FormField
           control={form.control}
           name="dob"
@@ -145,14 +119,10 @@ export function DeskPicker({ form, onSubmit }: Prop) {
             </FormItem>
           )}
         />
+
         <div className="h-full">
-          <Button
-            size="sm"
-            className="w-full"
-            type="submit"
-            aria-disabled={pending}
-          >
-            Show
+          <Button size="sm" className="w-full" type="submit" disabled={!floor}>
+            Set
           </Button>
         </div>
       </form>
