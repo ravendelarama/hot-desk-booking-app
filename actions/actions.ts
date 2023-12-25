@@ -3,15 +3,18 @@
 import { getSession } from "@/lib/next-auth"
 import z from "zod";
 import prisma from "@/lib/db";
-import { DeskStatus, Desk, User } from "@prisma/client";
+import { DeskStatus, Desk, User, EventType, BookingStatus, Role } from "@prisma/client";
 import { Session } from "next-auth";
 import { revalidatePath } from "next/cache";
+import { eventLogFormats } from "@/lib/db";
 
 const FormSchema = z.object({
     floor: z.string()
 });
 
 type Book = Pick<Desk, "id" | "name" | "coordinates" | "status">;
+
+
 
 async function getBookings() {
     const session = await getSession();
@@ -73,6 +76,12 @@ async function addBooking(book: Book, date: Date) {
                     startedAt: date,
                     endedAt: current,
                     bookedAt: current
+                }
+            },
+            Log: {
+                create: {
+                    activity: EventType.booked,
+                    message: eventLogFormats.booked(`${session?.user?.firstName} ${session?.user?.lastName}`, book?.name!)
                 }
             }
         },
@@ -158,6 +167,164 @@ async function getAllUserCount() {
     return prisma.user.count()
 }
 
+async function loginUser(userId: string, firstName: string, lastName: string) {
+
+    await prisma.user.update({
+        where: {
+            id: userId
+        },
+        data: {
+            Log: {
+                create: {
+                    activity: EventType.signed_in,
+                    message: eventLogFormats.signed_in(`${firstName} ${lastName}`)
+                }
+            }
+        }
+    });
+}
+
+async function logoutUser() {
+    const session = await getSession();
+
+    if (session?.user) {
+        await prisma.user.update({
+            where: {
+                id: session?.user?.id!
+            },
+            data: {
+                Log: {
+                    create: {
+                        activity: EventType.signed_out,
+                        message: eventLogFormats.signed_out(`${session?.user?.firstName} ${session?.user?.lastName}`)
+                    }
+                }
+            }
+        });
+    }
+}
+
+async function cancelBooking(bookId: string) {
+    const session = await getSession();
+
+    await prisma.booking.update({
+        where: {
+            userId: session?.user?.id,
+            id: bookId
+        },
+        data: {
+            status: BookingStatus.canceled
+        }
+    });
+
+    revalidatePath("/bookings");
+}
+
+async function checkIn(bookId: string) {
+    const session = await getSession();
+
+    await prisma.booking.update({
+        where: {
+            id: bookId
+        },
+        data: {
+            status: BookingStatus.checked_in,
+            user: {
+                update: {
+                    Log: {
+                        create: {
+                            activity: EventType.checked_in,
+                            message: eventLogFormats.checked_in(
+                                `${session?.user?.firstName} ${session?.user?.lastName}`,
+                                bookId
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    });
+    
+    revalidatePath("/bookings");
+}
+
+async function checkOut(bookId: string) {
+    const session = await getSession();
+
+    await prisma.booking.update({
+        where: {
+            id: bookId
+        },
+        data: {
+            status: BookingStatus.checked_out,
+            user: {
+                update: {
+                    Log: {
+                        create: {
+                            activity: EventType.checked_in,
+                            message: eventLogFormats.checked_out(
+                                `${session?.user?.firstName} ${session?.user?.lastName}`,
+                                bookId
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    });
+    
+    revalidatePath("/bookings");
+}
+
+async function promoteUser(userId: string, role: Role) {
+    const session = await getSession();
+
+    if (session?.user.role === Role.admin) {
+        await prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                role,
+                Log: {
+                    create: {
+                        activity: EventType.promoted,
+                        message: eventLogFormats.promoted(`${session?.user?.firstName} ${session?.user.lastName}`, role)
+                    }
+                }
+            }
+        });
+        session.user.role = role;
+
+        revalidatePath("/employees");
+    }
+
+    return {
+        message: "Permission Denied."
+    }
+}
+
+async function deleteUserById(userId: string, role: Role) {
+    const session = await getSession();
+
+    if (session?.user?.role === Role.admin && role != Role.admin) {
+        await prisma.user.delete({
+            where: {
+                id: userId,
+                role
+            }
+        });
+    }
+
+    revalidatePath("/employees");
+}
+
+async function getActivityLogs() {
+    return await prisma.log.findMany();
+}
+
+// reset password
+
 export {
     getDesks,
     getBookings,
@@ -166,7 +333,15 @@ export {
     getOtherUsers,
     getAllBookingCount,
     getUserBookingCount,
-    getAllUserCount
+    getAllUserCount,
+    loginUser,
+    logoutUser,
+    cancelBooking,
+    checkIn,
+    checkOut,
+    promoteUser,
+    deleteUserById,
+    getActivityLogs
 }
 
 

@@ -13,6 +13,7 @@ import { Button } from "./ui/button";
 import { useSession, signOut } from "next-auth/react";
 import { DropdownMenuGroup } from "@radix-ui/react-dropdown-menu";
 import { ModeToggle } from "./ModeToggler";
+import { logoutUser } from "@/actions/actions";
 
 function AvatarMenu() {
   const { data: session } = useSession();
@@ -46,7 +47,10 @@ function AvatarMenu() {
             <Button
               variant={null}
               className="p-0 h-4"
-              onClick={() => signOut()}
+              onClick={async () => {
+                await logoutUser();
+                signOut();
+              }}
             >
               Sign out
             </Button>

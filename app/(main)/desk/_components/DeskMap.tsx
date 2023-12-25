@@ -1,16 +1,7 @@
 "use client";
 
+// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import Image from "next/image";
-import BookDesk from "./BookDesk";
 import {
   Dialog,
   DialogContent,
@@ -23,16 +14,19 @@ import {
 import ImageMapper, { MapAreas } from "react-img-mapper";
 import { cn } from "@/lib/utils";
 import { Suspense, useState, useRef, useLayoutEffect } from "react";
-import { getDesks } from "@/actions/actions";
 import { Desk, DeskStatus } from "@prisma/client";
 import { Separator } from "@/components/ui/separator";
 import useDesks from "@/hooks/useDesks";
 import useBook from "@/hooks/useBook";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import Loading from "./Loading";
 import moment from "moment";
 
 import { toast } from "@/components/ui/use-toast";
+// import {
+//   HoverCard,
+//   HoverCardContent,
+//   HoverCardTrigger,
+// } from "@/components/ui/hover-card";
 
 type Prop = {
   floor: String | null;
@@ -47,6 +41,7 @@ function DeskMap({ floor, desks, image, date }: Prop) {
 
   const [width, setWidth] = useState<number>(0);
   const ref = useRef(null);
+  // const hoverRef = useRef(null);
 
   const list = [] as MapAreas[];
 
@@ -59,9 +54,12 @@ function DeskMap({ floor, desks, image, date }: Prop) {
     list[index] = {
       id: item.id,
       coords: item.coordinates,
-      shape: "rect",
-      fillColor:
-        item.status === DeskStatus.available ? "#e62012aa" : "#00ff194c",
+      shape: "circle",
+      preFillColor:
+        item.status === DeskStatus.available ? "#00ff194c" : "#e62012aa",
+      lineWidth: 3,
+      strokeColor: "#000000",
+      fillColor: item.status === DeskStatus.available ? "#179920" : "#991f37",
     };
   });
 
@@ -76,9 +74,7 @@ function DeskMap({ floor, desks, image, date }: Prop) {
       ),
     });
   }
-
-  // non-responsive image mapper
-  // manual allocation of desks
+  // show status if reserved
   // dialog to be modified
   return (
     <>
@@ -87,6 +83,7 @@ function DeskMap({ floor, desks, image, date }: Prop) {
       </div>
 
       <h1>{selectedDesk && selectedDesk.name}</h1>
+
       <div className="border rounded-md overflow-auto">
         {image ? (
           <ImageMapper
@@ -95,8 +92,10 @@ function DeskMap({ floor, desks, image, date }: Prop) {
             natural={true}
             src={image!}
             onClick={(e) => {
-              const idx = desks.findIndex((item) => e.id === item.id);
-              setSelectedDesk(desks[idx]);
+              if (e.fillColor != "#991f37") {
+                const idx = desks.findIndex((item) => e.id === item.id);
+                setSelectedDesk(desks[idx]);
+              }
             }}
             map={{
               name: "desk-map",
@@ -107,6 +106,17 @@ function DeskMap({ floor, desks, image, date }: Prop) {
           <Loading />
         )}
       </div>
+      {/* <HoverCard>
+        <HoverCardTrigger asChild>
+          <Button ref={hoverRef}>Click</Button>
+        </HoverCardTrigger>
+        <HoverCardContent>
+          <Avatar>
+            <AvatarImage src="https://github.com/vercel.png" />
+            <AvatarFallback>VC</AvatarFallback>
+          </Avatar>
+        </HoverCardContent>
+      </HoverCard> */}
       <Dialog>
         <DialogTrigger asChild>
           <Button
@@ -129,7 +139,7 @@ function DeskMap({ floor, desks, image, date }: Prop) {
                 <p>Desk Name: {selectedDesk?.name}</p>
                 <p>Status: {selectedDesk?.status}</p>
                 <p>Starts {moment(date).fromNow()}</p>
-                <p>Until: forever </p>
+                <p>Until: {moment(date).toNow()} </p>
               </div>
               <Separator />
               <p className="py-4">

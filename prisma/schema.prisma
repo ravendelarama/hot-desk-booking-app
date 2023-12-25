@@ -38,19 +38,22 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  firstName     String    @db.String
-  lastName      String    @db.String
-  email         String?   @unique
-  emailVerified DateTime?
-  password      String?   @db.String
-  image         String?
-  role          Role      @default(user)
-  createdAt     DateTime  @default(now()) @db.Timestamp
-  updatedAt     DateTime  @updatedAt @db.Timestamp
-  accounts      Account[]
-  sessions      Session[]
-  Booking       Booking[]
+  id                  String                @id @default(auto()) @map("_id") @db.ObjectId
+  firstName           String                @db.String
+  lastName            String                @db.String
+  email               String?               @unique
+  emailVerified       DateTime?
+  password            String?               @db.String
+  image               String?
+  role                Role                  @default(user)
+  createdAt           DateTime              @default(now()) @db.Timestamp
+  updatedAt           DateTime              @updatedAt @db.Timestamp
+  isBanned            Boolean               @default(false)
+  accounts            Account[]
+  sessions            Session[]
+  Booking             Booking[]
+  Log                 Log[]
+  VerificationRequest VerificationRequest[]
 }
 
 model VerificationToken {
@@ -60,6 +63,14 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model VerificationRequest {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @db.ObjectId
+  code   String @unique
+
+  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Floor {
@@ -79,6 +90,7 @@ model Desk {
   status      DeskStatus @default(available)
   createdAt   DateTime   @default(now()) @db.Timestamp
   updatedAt   DateTime   @updatedAt @db.Timestamp
+  // disable desk at certain dates (to be implemented)
 
   Floor   Floor     @relation(fields: [floorId], references: [id], onDelete: Cascade)
   Booking Booking[]
@@ -88,7 +100,7 @@ model Booking {
   id        String        @id @default(auto()) @map("_id") @db.ObjectId
   userId    String        @db.ObjectId
   deskId    String        @db.ObjectId
-  status    BookingStatus @default(confirmed)
+  status    BookingStatus @default(waiting)
   startedAt DateTime      @db.Timestamp
   endedAt   DateTime      @db.Timestamp
   bookedAt  DateTime      @db.Timestamp
@@ -98,22 +110,47 @@ model Booking {
   desk Desk @relation(fields: [deskId], references: [id], onDelete: Cascade)
 }
 
+model Log {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String    @db.ObjectId
+  activity  EventType
+  message   String
+  occuredAt DateTime  @default(now())
+
+  User User @relation(fields: [userId], references: [id])
+}
+
 enum Role {
-  user
-  manager
-  admin
+  admin // can manage reservations, assign managers, desks, floors, etc.
+  manager // can manage reservations and desks
+  user // limited
 }
 
 enum DeskStatus {
   available
-  occupied
-  disabled
+  unavailable
 }
 
 enum BookingStatus {
-  pending
-  rejected
-  confirmed
-  started
-  ended
+  canceled // booking canceled
+  waiting // waiting for reservation date or the user to check in
+  checked_in // checked in
+  checked_out // checked out
+  no_show // abandoned
+}
+
+// Booking Date Status
+// waiting (default), ongoing
+
+enum EventType {
+  registered // Authentication
+  verified // Email Verification Request
+  signed_in // Authentication
+  signed_out // Authentication
+  booked // Desk Reservation
+  cancelled // Desk Reservation
+  checked_in // Desk Reservation
+  promoted // User Promotion
+  delete_user // User Deletion
+  reset_password // User Mutation
 }

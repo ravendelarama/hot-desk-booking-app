@@ -17,12 +17,27 @@ import { useForm } from "react-hook-form";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 
-const formSchema = z.object({
-  firstName: z.string().min(2),
-  lastName: z.string().min(2),
-  email: z.string().email(),
-  password: z.string().min(8),
-});
+const formSchema = z
+  .object({
+    firstName: z.string().min(2),
+    lastName: z.string().min(2),
+    email: z.string().email(),
+    password: z
+      .string()
+      .min(10)
+      .regex(
+        /^(?!.*\s)(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[~`!@#$%^&*()--+={}\[\]|\\:;"'<>,.?/_₹]).{10,16}$/,
+        {
+          message:
+            "Password must be eight characters including one uppercase letter, one special character and alphanumeric characters.",
+        }
+      ),
+    confirmPassword: z.string().min(10),
+  })
+  .refine(({ confirmPassword, password }) => confirmPassword === password, {
+    message: "Password did not match",
+    path: ["confirmPassword"],
+  });
 
 function SignUpForm() {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -102,6 +117,20 @@ function SignUpForm() {
                 <FormControl>
                   <Input type="password" {...field} />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="confirmPassword"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Confirm Password</FormLabel>
+                <FormControl>
+                  <Input type="password" {...field} />
+                </FormControl>
+                <FormDescription>Please confirm your password.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}

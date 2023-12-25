@@ -24,6 +24,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import moment from "moment";
 
 import {
   Select,
@@ -101,14 +102,8 @@ export function DatePicker({ onSubmit, floor }: Prop) {
                     selected={field.value}
                     onSelect={field.onChange}
                     disabled={(date) =>
-                      date <
-                      new Date(
-                        prevDate.year,
-                        prevDate.month,
-                        prevDate.day,
-                        prevDate.hours,
-                        prevDate.minutes
-                      )
+                      moment(date) < moment().subtract(1, "day") ||
+                      moment(date) > moment().add(14, "days")
                     }
                     initialFocus
                   />

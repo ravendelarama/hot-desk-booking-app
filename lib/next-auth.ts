@@ -1,12 +1,13 @@
 import { getServerSession } from "next-auth/next";
-import prisma from "@/lib/db";
+import prisma, {eventLogFormats} from "@/lib/db";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { NextAuthOptions } from "next-auth";
 import bcrypt from "bcrypt";
-import { Role, User } from "@prisma/client";
+import { EventType, Role, User } from "@prisma/client";
 import z from "zod";
+import { loginUser } from "@/actions/actions";
 // import jwt from "jsonwebtoken";
 // import { verifyEmail } from "./email";
 
@@ -91,7 +92,8 @@ export const AuthOptions: NextAuthOptions = {
 
                     const hash = await bcrypt.compare(user.password, data.password as string);
 
-                    if (!hash) throw new Error("Invalid Credentials");
+                if (!hash) throw new Error("Invalid Credentials");
+                    
 
                     return {
                         id: data.id,
@@ -144,7 +146,13 @@ export const AuthOptions: NextAuthOptions = {
                             firstName: user.firstName,
                             lastName: user.lastName,
                             email: user.email,
-                            password: newPass
+                            password: newPass,
+                            Log: {
+                                create: {
+                                    activity: EventType.registered,
+                                    message: eventLogFormats.registered(`${user.firstName} ${user.lastName}`)
+                                }
+                            }
                         }
                     });
 
@@ -171,13 +179,11 @@ export const AuthOptions: NextAuthOptions = {
         strategy: "jwt"
     },
     callbacks: {
-        async signIn({ account, profile }) {
-            // if (account?.provider === "google") {
-            //     return profile!.email!.endsWith("@student.laverdad.edu.ph");
-            // }
-            return true;
+        async signIn({ user, account, profile }) {
+            return profile!.email!.endsWith("@student.laverdad.edu.ph");
         },
         async jwt({ token, user }) {
+            
             if (user) {
                 let u = user as User;
                 token.id = u.id;
@@ -186,7 +192,6 @@ export const AuthOptions: NextAuthOptions = {
                 token.email = u.email;
                 token.role = u.role;
             }
-
             return token;
         },
         async session({ session, token }) {
@@ -202,12 +207,14 @@ export const AuthOptions: NextAuthOptions = {
                 }
             }
 
+            ;
             return data;
         }
     },
     pages: {
         signIn: '/signin',
-        newUser: '/signup'
+        newUser: '/signup',
+        error: '/auth/error',
     }
 }
 

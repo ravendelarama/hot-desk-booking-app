@@ -14,6 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
+import { loginUser } from "@/actions/actions";
 
 function SignUp() {
   const router = useRouter();
@@ -38,7 +39,9 @@ function SignUp() {
           <div className="w-full flex flex-col justify-center items-center space-y-4">
             <Button
               variant="outline"
-              onClick={() => signIn("google")}
+              onClick={() => {
+                signIn("google");
+              }}
               className="w-full"
             >
               Sign up with Google

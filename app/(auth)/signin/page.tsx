@@ -15,6 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { loginUser } from "@/actions/actions";
 
 function SignIn() {
   const { status } = useSession();
@@ -37,7 +38,12 @@ function SignIn() {
         <CardFooter className="flex flex-col items-center space-y-4">
           <Separator />
           <div className="flex flex-col justify-center items center space-y-4">
-            <Button variant="outline" onClick={() => signIn("google")}>
+            <Button
+              variant="outline"
+              onClick={async () => {
+                signIn("google");
+              }}
+            >
               Sign in with Google
             </Button>
             <p className="text-xs text-slate-500">

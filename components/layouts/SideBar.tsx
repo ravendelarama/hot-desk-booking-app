@@ -3,36 +3,65 @@ import { Button } from "../ui/button";
 import Link from "next/link";
 import { MdOutlineDesk } from "react-icons/md";
 import { BiBookBookmark } from "react-icons/bi";
-import { FaUsers } from "react-icons/fa";
+import { FaUsers, FaUserCheck } from "react-icons/fa";
 import { GoHome } from "react-icons/go";
+import { useSession } from "next-auth/react";
+import { Role } from "@prisma/client";
+import { RxActivityLog } from "react-icons/rx";
+import { FiUserCheck } from "react-icons/fi";
+import { PiUsersThree } from "react-icons/pi";
 
 const Routes = [
   {
+    permission: "user",
     name: "Home",
+    alternative: "Home",
     path: "/home",
     icon: (options: string) => <GoHome className={options} />,
   },
   {
+    permission: "admin",
     name: "Employees",
+    alternative: "Colleagues",
     path: "/employees",
-    icon: (options: string) => <FaUsers className={options} />,
+    icon: (options: string) => <PiUsersThree className={options} />,
   },
   {
+    permission: "admin",
     name: "Bookings",
+    alternative: "My Bookings",
     path: "/bookings",
     icon: (options: string) => <BiBookBookmark className={options} />,
   },
   {
+    permission: "admin",
     name: "Desk",
+    alternative: "Reserve",
     path: "/desk",
     icon: (options: string) => <MdOutlineDesk className={options} />,
+  },
+  {
+    permission: "admin",
+    name: "Verifications",
+    alternative: "Verifications",
+    path: "/verification-requests",
+    icon: (options: string) => <FiUserCheck className={options} />,
+  },
+  {
+    permission: "admin",
+    name: "Activity Logs",
+    alternative: "Activity Logs",
+    path: "/activity-logs",
+    icon: (options: string) => <RxActivityLog className={options} />,
   },
 ];
 
 function SideBar() {
+  const { data: session } = useSession();
+
   return (
     <div className="z-20 w-72 p-5 h-screen bg-white fixed top-0 left-0 hidden border-r border-r-slate-300 dark:border-r-slate-800 dark:bg-slate-950 sm:block">
-      <div className="h-20 flex space-x-3">
+      <div className="h-20 flex space-x-3 gap-5">
         <h1>HotDeskBooking</h1>
       </div>
       <div>
@@ -44,9 +73,11 @@ function SideBar() {
               className="w-full flex justify-start px-4 py-2 gap-3 transition-colors duration ease-in hover:bg-slate-100 hover:dark:bg-slate-900"
               asChild
             >
-              <Link href={item.path}>
+              <Link href={item.path} className="text-lg">
                 {item.icon("w-6 h-6")}
-                {item.name}
+                {session?.user.role === Role.admin
+                  ? item.name
+                  : item.alternative}
               </Link>
             </Button>
           );

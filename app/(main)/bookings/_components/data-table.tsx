@@ -12,6 +12,15 @@ import {
   VisibilityState,
   getFilteredRowModel,
 } from "@tanstack/react-table";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import {
   Table,
@@ -21,18 +30,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -69,12 +66,12 @@ export function DataTable<TData, TValue>({
       <div className="flex justify-between items-center">
         <div className="flex items-center py-4">
           <Input
-            placeholder="Filter First Names..."
+            placeholder="Filter Status..."
             value={
-              (table.getColumn("firstName")?.getFilterValue() as string) ?? ""
+              (table.getColumn("status")?.getFilterValue() as string) ?? ""
             }
             onChange={(event) =>
-              table.getColumn("firstName")?.setFilterValue(event.target.value)
+              table.getColumn("status")?.setFilterValue(event.target.value)
             }
             className="max-w-sm"
           />
