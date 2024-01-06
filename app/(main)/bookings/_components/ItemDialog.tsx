@@ -24,7 +24,7 @@ import { Calendar } from "@/components/ui/calendar";
 function ItemDialog({ item }: any) {
   return (
     <Dialog>
-      <DialogTrigger asChild>
+      <DialogTrigger className="cursor-pointer" asChild>
         <div className="w-full flex flex-col py-5 px-10 gap-5 border border-slate-800 rounded-lg">
           <div className="flex justify-between gap-1">
             <h1>{item.desk?.name}</h1>

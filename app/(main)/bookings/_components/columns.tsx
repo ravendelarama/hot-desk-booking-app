@@ -29,6 +29,8 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { Badge } from "@/components/ui/badge";
+import { MdManageAccounts } from "react-icons/md";
+import { FaUserCheck, FaUserEdit } from "react-icons/fa";
 
 type Bookings = {
   id: string;
@@ -47,28 +49,67 @@ export const columns: ColumnDef<Bookings>[] = [
       const data = props.getValue();
       return (
         <HoverCard>
-          <HoverCardTrigger>
-            {/* @ts-ignore */}
-            {data?.firstName} {data?.lastName}
+          <HoverCardTrigger asChild>
+            <Button variant={null}>
+              {/* @ts-ignore */}
+              {data?.firstName} {data?.lastName}
+            </Button>
           </HoverCardTrigger>
-          {/* @ts-ignore */}
-          <HoverCardContent>
-            <Avatar>
-              <AvatarImage
-                // @ts-ignore
-                src={() => {
-                  // @ts-ignore
-                  if (data?.image) {
-                    return {
-                      // @ts-ignore
-                      uri: data?.image!,
-                    };
-                  }
-                  return "https://github.com/shadcn.png";
-                }}
-              />
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
+          <HoverCardContent className="md:w-600">
+            <div className="flex gap-3 justify-between h-full">
+              <Avatar>
+                <AvatarImage src="https://github.com/shadcn.png" />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col gap-3">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <h1 className="text-left">
+                        {/* @ts-ignore */}
+                        {data?.firstName} {data?.lastName}
+                      </h1>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Name</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="flex justify-start w-full">
+                      {/* @ts-ignore */}
+                      {data?.role == "admin" ? (
+                        <MdManageAccounts className="text-indigo-500 h-5 w-5" />
+                      ) : // @ts-ignore
+                      data?.role == "manager" ? (
+                        <FaUserEdit className="text-blue-300 h-4 w-4" />
+                      ) : (
+                        <FaUserCheck className="h-4 w-4" />
+                      )}
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {/* @ts-ignore */}
+                      <p>{data?.role}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="flex justify-start w-full">
+                      <p className="text-xs font-bold break-all text-left">
+                        {/* @ts-ignore */}
+                        {data?.email}
+                      </p>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>email</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            </div>
           </HoverCardContent>
         </HoverCard>
       );

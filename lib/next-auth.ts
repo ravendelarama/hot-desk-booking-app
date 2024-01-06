@@ -71,6 +71,10 @@ export const AuthOptions: NextAuthOptions = {
 
                     if (!data) {
                         throw new Error("Invalid Credentials");
+                }
+                
+                    if (data.isBanned) {
+                        throw new Error("Permission Denied");
                     }
                 
                     // if (data.emailVerified === null) {

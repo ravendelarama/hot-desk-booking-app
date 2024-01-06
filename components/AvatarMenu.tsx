@@ -25,7 +25,7 @@ function AvatarMenu() {
           <Avatar>
             <AvatarImage src={session?.user.image} />
             <AvatarFallback>
-              {(session?.user.firstName + session?.user.lastname).toUpperCase()}
+              {session?.user.firstName + session?.user.lastname}
             </AvatarFallback>
           </Avatar>
         </DropdownMenuTrigger>
@@ -40,13 +40,15 @@ function AvatarMenu() {
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem className="p-0"></DropdownMenuItem>
-            <DropdownMenuItem>Settings</DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">
+              Settings
+            </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>
+          <DropdownMenuItem className="flex justify-start" asChild>
             <Button
               variant={null}
-              className="p-0 h-4"
+              className="w-full cursor-pointer"
               onClick={async () => {
                 await logoutUser();
                 signOut();

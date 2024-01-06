@@ -119,7 +119,7 @@ function Header() {
               <Button
                 key={item.name}
                 variant={null}
-                className="w-full flex justify-start p-2"
+                className="w-full flex justify-start p-2 cursor-pointer"
                 asChild
               >
                 <Link

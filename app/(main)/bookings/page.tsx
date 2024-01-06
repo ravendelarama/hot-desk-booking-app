@@ -28,7 +28,8 @@ async function Bookings() {
       <h2 className="text-slate-500 text-sm">
         You have {totalUserBookings} total amount of reservation as of now.
       </h2>
-      {session?.user?.role === Role.user ? (
+      {session?.user?.role === Role.user ||
+      session?.user.role === Role.manager ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {bookings.map((item) => (
             <ItemDialog key={item.id} item={item} />
