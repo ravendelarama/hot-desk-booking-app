@@ -185,7 +185,8 @@ export const AuthOptions: NextAuthOptions = {
     },
     callbacks: {
         async signIn({ user, account, profile }) {
-            return profile!.email!.endsWith("@student.laverdad.edu.ph");
+            // return profile!.email!.endsWith("@student.laverdad.edu.ph");
+            return true;
         },
         async jwt({ token, user }) {
             
