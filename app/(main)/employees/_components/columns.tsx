@@ -96,7 +96,6 @@ export const columns: ColumnDef<Employee>[] = [
     header: "edit",
     cell: (props) => {
       const data = props.getValue();
-      const { toast } = useToast();
       return (
         <Dialog>
           <DialogTrigger asChild>
@@ -109,7 +108,7 @@ export const columns: ColumnDef<Employee>[] = [
               <DialogTitle>Edit</DialogTitle>
               <DialogDescription></DialogDescription>
             </DialogHeader>
-            <UpdateRow data={data} notify={(obj: any) => toast(obj)} />
+            <UpdateRow data={data} />
           </DialogContent>
         </Dialog>
       );
@@ -120,7 +119,6 @@ export const columns: ColumnDef<Employee>[] = [
     header: "delete",
     cell: (props) => {
       const data = props.getValue();
-      const { toast } = useToast();
       return (
         <Dialog>
           <DialogTrigger asChild>
@@ -148,10 +146,6 @@ export const columns: ColumnDef<Employee>[] = [
                   variant={"destructive"}
                   onClick={async () => {
                     const response = await deleteUserById(data as string);
-                    toast({
-                      title: "Delete User",
-                      description: response.message,
-                    });
                   }}
                 >
                   {/* @ts-ignore */}

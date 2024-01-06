@@ -36,7 +36,7 @@ const formSchema = z.object({
   isBanned: z.boolean().default(false),
 });
 
-function UpdateRow({ data, notify }: { data: any; notify: any }) {
+function UpdateRow({ data }: { data: any }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
