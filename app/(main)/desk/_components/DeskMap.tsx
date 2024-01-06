@@ -6,6 +6,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -22,6 +23,7 @@ import Loading from "./Loading";
 import moment from "moment";
 
 import { toast } from "@/components/ui/use-toast";
+import { DialogClose } from "@radix-ui/react-dialog";
 // import {
 //   HoverCard,
 //   HoverCardContent,
@@ -69,9 +71,7 @@ function DeskMap({ floor, desks, image, date }: Prop) {
     toast({
       title: "Booking",
       description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          Your reservation has been created.
-        </pre>
+        <p className="text-sm">Your reservation has been created.</p>
       ),
     });
   }
@@ -155,9 +155,18 @@ function DeskMap({ floor, desks, image, date }: Prop) {
               </p>
             </DialogDescription>
           </DialogHeader>
-          <Button onClick={book} variant="outline" className="text-sm">
-            Continue
-          </Button>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant={"secondary"} className="text-sm">
+                Cancel
+              </Button>
+            </DialogClose>
+            <DialogClose asChild>
+              <Button onClick={book} variant="success" className="text-sm">
+                Continue
+              </Button>
+            </DialogClose>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>

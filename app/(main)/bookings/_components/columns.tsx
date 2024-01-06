@@ -20,12 +20,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 import { Desk, User } from "@prisma/client";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { Badge } from "@/components/ui/badge";
 
 type Bookings = {
   id: string;
@@ -49,7 +52,24 @@ export const columns: ColumnDef<Bookings>[] = [
             {data?.firstName} {data?.lastName}
           </HoverCardTrigger>
           {/* @ts-ignore */}
-          <HoverCardContent>Hello</HoverCardContent>
+          <HoverCardContent>
+            <Avatar>
+              <AvatarImage
+                // @ts-ignore
+                src={() => {
+                  // @ts-ignore
+                  if (data?.image) {
+                    return {
+                      // @ts-ignore
+                      uri: data?.image!,
+                    };
+                  }
+                  return "https://github.com/shadcn.png";
+                }}
+              />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+          </HoverCardContent>
         </HoverCard>
       );
     },
@@ -66,6 +86,29 @@ export const columns: ColumnDef<Bookings>[] = [
   {
     accessorKey: "status",
     header: "Status",
+    cell: (props) => {
+      const data = props.getValue();
+
+      return (
+        <Badge
+          className="w-fit"
+          variant={
+            data === "no_show"
+              ? "default"
+              : data === "canceled"
+              ? "destructive"
+              : data === "checked_out"
+              ? "secondary"
+              : data === "checked_in"
+              ? "success"
+              : "warning"
+          }
+        >
+          {/* @ts-ignore */}
+          {data}
+        </Badge>
+      );
+    },
   },
   {
     accessorKey: "occuredAt",

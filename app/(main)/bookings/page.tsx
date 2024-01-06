@@ -1,22 +1,14 @@
 import { getSession } from "@/lib/next-auth";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+
 // import { formatRelative } from "date-fns";
-import moment from "moment";
 import { columns } from "./_components/columns";
 import { DataTable } from "./_components/data-table";
-
+import { Role } from "@prisma/client";
 // import { Separator } from "@/components/ui/separator";
 import { getBookings, getUserBookingCount } from "@/actions/actions";
+import ItemDialog from "./_components/ItemDialog";
+import { Calendar } from "@/components/ui/calendar";
 // import Image from "next/image";
-import { Badge } from "@/components/ui/badge";
-import { Role } from "@prisma/client";
 // import { Calendar } from "@/components/ui/calendar";
 
 async function Bookings() {
@@ -39,41 +31,7 @@ async function Bookings() {
       {session?.user?.role === Role.user ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {bookings.map((item) => (
-            <div
-              key={item.id}
-              className="w-full flex flex-col py-5 px-10 gap-5 border border-slate-800 rounded-lg"
-            >
-              <div className="flex justify-between gap-1">
-                <h1>{item.desk?.name}</h1>
-                <h2>
-                  <p className="text-gray-500 text-sm">
-                    {moment(item.bookedAt).fromNow()}
-                  </p>
-                </h2>
-              </div>
-              <div className="flex flex-col justify-start item-center gap-4">
-                <p className="text-gray-500 text-sm font-bold">
-                  {item.status != "canceled" &&
-                    `Your desk will be available ${moment(
-                      item.occuredAt
-                    ).toNow()}.`}
-                </p>
-                <Badge
-                  className="w-fit"
-                  variant={
-                    item.status === "checked_in"
-                      ? "default"
-                      : item.status === "canceled"
-                      ? "destructive"
-                      : item.status === "checked_out"
-                      ? "secondary"
-                      : "outline"
-                  }
-                >
-                  {item.status}
-                </Badge>
-              </div>
-            </div>
+            <ItemDialog key={item.id} item={item} />
           ))}
         </div>
       ) : (

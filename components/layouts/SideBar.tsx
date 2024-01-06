@@ -1,58 +1,81 @@
 import SideBarSheet from "../SideBarSheet";
 import { Button } from "../ui/button";
 import Link from "next/link";
-import { MdOutlineDesk } from "react-icons/md";
+import { MdOutlineDesk, MdOutlineMapsHomeWork } from "react-icons/md";
 import { BiBookBookmark } from "react-icons/bi";
 import { FaUsers, FaUserCheck } from "react-icons/fa";
+import { GiDesk } from "react-icons/gi";
 import { GoHome } from "react-icons/go";
 import { useSession } from "next-auth/react";
 import { Role } from "@prisma/client";
 import { RxActivityLog } from "react-icons/rx";
 import { FiUserCheck } from "react-icons/fi";
 import { PiUsersThree } from "react-icons/pi";
+import { FaQ } from "react-icons/fa6";
 
 const Routes = [
   {
-    permission: "user",
     name: "Home",
+    role: "user",
     alternative: "Home",
     path: "/home",
     icon: (options: string) => <GoHome className={options} />,
   },
   {
-    permission: "admin",
-    name: "Employees",
+    name: "Colleagues",
+    role: "admin",
     alternative: "Colleagues",
     path: "/employees",
     icon: (options: string) => <PiUsersThree className={options} />,
   },
   {
-    permission: "admin",
     name: "Bookings",
-    alternative: "My Bookings",
+    role: "user",
+    alternative: "Bookings",
     path: "/bookings",
     icon: (options: string) => <BiBookBookmark className={options} />,
   },
   {
-    permission: "admin",
-    name: "Desk",
+    name: "Reserve",
+    role: "user",
     alternative: "Reserve",
     path: "/desk",
     icon: (options: string) => <MdOutlineDesk className={options} />,
   },
   {
-    permission: "admin",
     name: "Verifications",
+    role: "admin",
     alternative: "Verifications",
     path: "/verification-requests",
     icon: (options: string) => <FiUserCheck className={options} />,
   },
   {
-    permission: "admin",
     name: "Activity Logs",
+    role: "admin",
     alternative: "Activity Logs",
     path: "/activity-logs",
     icon: (options: string) => <RxActivityLog className={options} />,
+  },
+  {
+    name: "FAQs",
+    role: "user",
+    alternative: "FAQs",
+    path: "/faq",
+    icon: (options: string) => <FaQ className={options} />,
+  },
+  {
+    name: "Floors",
+    role: "manager",
+    alternative: "Floors",
+    path: "/floors",
+    icon: (options: string) => <MdOutlineMapsHomeWork className={options} />,
+  },
+  {
+    name: "Desks",
+    role: "manager",
+    alternative: "Desks",
+    path: "/desks",
+    icon: (options: string) => <GiDesk className={options} />,
   },
 ];
 
@@ -66,6 +89,25 @@ function SideBar() {
       </div>
       <div>
         {Routes.map((item) => {
+          if (
+            !(
+              session?.user.role == Role.manager ||
+              session?.user.role == Role.admin
+            ) &&
+            (item.name == "Floors" || item.name == "Desks")
+          ) {
+            return null;
+          }
+
+          if (
+            !(session?.user.role == Role.admin) &&
+            (item.name == "Colleagues" ||
+              item.name == "Verifications" ||
+              item.name == "Activity Logs")
+          ) {
+            return null;
+          }
+
           return (
             <Button
               key={item.name}
@@ -74,10 +116,7 @@ function SideBar() {
               asChild
             >
               <Link href={item.path} className="text-lg">
-                {item.icon("w-6 h-6")}
-                {session?.user.role === Role.admin
-                  ? item.name
-                  : item.alternative}
+                {item.icon("w-6 h-6")} {item.name}
               </Link>
             </Button>
           );

@@ -3,18 +3,102 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { User } from "@prisma/client";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { MdManageAccounts } from "react-icons/md";
+import { FaUserCheck, FaUserEdit } from "react-icons/fa";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type Bookings = {
   id: string;
-  userId: string;
+  user: User;
   activity: string;
   occuredAt: Date;
 };
 
 export const columns: ColumnDef<Bookings>[] = [
   {
-    accessorKey: "userId",
-    header: "UserId",
+    accessorKey: "user",
+    header: "user",
+    cell: (props) => {
+      const data = props.getValue();
+      return (
+        <HoverCard>
+          <HoverCardTrigger asChild>
+            <Button variant={null}>
+              {/* @ts-ignore */}
+              {data?.firstName} {data?.lastName}
+            </Button>
+          </HoverCardTrigger>
+          <HoverCardContent className="md:w-600">
+            <div className="flex gap-3 justify-between h-full">
+              <Avatar>
+                <AvatarImage src="https://github.com/shadcn.png" />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col gap-3">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <h1 className="text-left">
+                        {/* @ts-ignore */}
+                        {data?.firstName} {data?.lastName}
+                      </h1>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Name</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="flex justify-start w-full">
+                      {/* @ts-ignore */}
+                      {data?.role == "admin" ? (
+                        <MdManageAccounts className="text-indigo-500 h-5 w-5" />
+                      ) : // @ts-ignore
+                      data?.role == "manager" ? (
+                        <FaUserEdit className="text-blue-300 h-4 w-4" />
+                      ) : (
+                        <FaUserCheck className="h-4 w-4" />
+                      )}
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {/* @ts-ignore */}
+                      <p>{data?.role}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="flex justify-start w-full">
+                      <p className="text-xs font-bold break-all text-left">
+                        {/* @ts-ignore */}
+                        {data?.email}
+                      </p>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>email</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            </div>
+          </HoverCardContent>
+        </HoverCard>
+      );
+    },
   },
   {
     accessorKey: "activity",
@@ -30,7 +114,7 @@ export const columns: ColumnDef<Bookings>[] = [
       return (
         <Button
           variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "desc")}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Occuring Date
           <ArrowUpDown className="ml-2 h-4 w-4" />

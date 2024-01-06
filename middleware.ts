@@ -6,6 +6,10 @@ export const config = {
         '/bookings',
         '/desk',
         '/home',
-        '/employees'
+        '/employees',
+        '/faq',
+        '/activity-logs',
+        '/desks',
+        '/floors',
     ]
 }

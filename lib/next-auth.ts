@@ -94,6 +94,7 @@ export const AuthOptions: NextAuthOptions = {
 
                     if (!hash) throw new Error("Invalid Credentials");
                     
+                    const res = await loginUser(data?.id!, data?.firstName, data?.lastName);
 
                     return {
                         id: data.id,

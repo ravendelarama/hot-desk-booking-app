@@ -9,14 +9,18 @@ import { useState } from "react";
 import { MdEdit, MdDelete } from "react-icons/md";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { deleteUserById } from "@/actions/actions";
 import { useToast } from "@/components/ui/use-toast";
+import { DataTable } from "../../bookings/_components/data-table";
+import UpdateRow from "./UpdateRow";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -26,13 +30,14 @@ export type Employee = {
   lastName: string;
   email: string | null;
   role: Role;
+  isBanned: boolean;
   edit: object;
   delete: string;
 };
 
 export const columns: ColumnDef<Employee>[] = [
   {
-    accessorKey: "user",
+    accessorKey: "image",
     header: "image",
     cell: (props) => {
       return (
@@ -75,39 +80,36 @@ export const columns: ColumnDef<Employee>[] = [
   },
 
   {
+    accessorKey: "email",
+    header: "Email",
+  },
+  {
     accessorKey: "role",
     header: "Role",
   },
   {
-    accessorKey: "email",
-    header: "Email",
+    accessorKey: "isBanned",
+    header: "isBanned",
   },
   {
     accessorKey: "edit",
     header: "edit",
     cell: (props) => {
-      const [value, setValue] = useState<Employee | null>(null);
+      const data = props.getValue();
+      const { toast } = useToast();
       return (
         <Dialog>
           <DialogTrigger asChild>
-            <Button
-              variant={"secondary"}
-              size={"icon"}
-              onClick={() => {
-                const data = props.getValue();
-                // @ts-ignore
-                setValue(data);
-              }}
-            >
+            <Button variant={"secondary"} size={"icon"}>
               <MdEdit className="h-4 w-4" />
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Edit</DialogTitle>
-              {/** @ts-ignore */}
-              <DialogDescription>{value?.role}</DialogDescription>
+              <DialogDescription></DialogDescription>
             </DialogHeader>
+            <UpdateRow data={data} notify={(obj: any) => toast(obj)} />
           </DialogContent>
         </Dialog>
       );
@@ -117,20 +119,12 @@ export const columns: ColumnDef<Employee>[] = [
     accessorKey: "delete",
     header: "delete",
     cell: (props) => {
-      const [value, setValue] = useState<string | null>(null);
+      const data = props.getValue();
       const { toast } = useToast();
       return (
         <Dialog>
           <DialogTrigger asChild>
-            <Button
-              variant={"destructive"}
-              size={"icon"}
-              onClick={() => {
-                const data = props.getValue();
-                // @ts-ignore
-                setValue(data);
-              }}
-            >
+            <Button variant={"destructive"} size={"icon"}>
               <MdDelete className="h-4 w-4" />
             </Button>
           </DialogTrigger>
@@ -143,25 +137,28 @@ export const columns: ColumnDef<Employee>[] = [
               <DialogDescription>
                 This action cannot be undone. Once you delete a certain user,
                 the data will be completely removed from the database.
-                {value}
               </DialogDescription>
             </DialogHeader>
-            <div className="flex justify-end items-center gap-5">
-              <Button variant={"secondary"}>Cancel</Button>
-              <Button
-                variant={"destructive"}
-                onClick={async () => {
-                  const response = await deleteUserById(value!);
-                  toast({
-                    title: "Delete User",
-                    description: response.message,
-                  });
-                }}
-              >
-                {/* @ts-ignore */}
-                Continue
-              </Button>
-            </div>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant={"secondary"}>Cancel</Button>
+              </DialogClose>
+              <DialogClose asChild>
+                <Button
+                  variant={"destructive"}
+                  onClick={async () => {
+                    const response = await deleteUserById(data as string);
+                    toast({
+                      title: "Delete User",
+                      description: response.message,
+                    });
+                  }}
+                >
+                  {/* @ts-ignore */}
+                  Continue
+                </Button>
+              </DialogClose>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       );

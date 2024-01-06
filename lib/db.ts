@@ -16,10 +16,11 @@ export const eventLogFormats = {
     signed_in: (user: string) => `${user} has signed in.`,
     signed_out: (user: string) => `${user} has signed out.`,
     booked: (user: string, deskId: string) => `${user} made a reservation on desk ${deskId}.`,
-    cancelled: (userId: string, bookId: string) => `${userId} canceled reservation ${bookId}.`,
+    canceled: (userId: string, bookId: string) => `${userId} canceled reservation ${bookId}.`,
     checked_in: (user: string, bookId: string) => `${user} has checked in.`,
     checked_out: (user: string, bookId: string) => `${user} has checked out.`,
     promoted: (user: string, role: Role) => `${user} has been promoted to ${role}`,
     delete_user: (userId: string) => `${userId} has been deleted.`,
-    reset_password: (userId: string) => `password reset by ${userId}.`
+    reset_password: (userId: string) => `password reset by ${userId}.`,
+    update_user: () => "User updated successfully."
 }

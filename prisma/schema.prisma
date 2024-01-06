@@ -146,9 +146,10 @@ enum EventType {
   signed_in // Authentication
   signed_out // Authentication
   booked // Desk Reservation
-  cancelled // Desk Reservation
+  canceled // Desk Reservation
   checked_in // Desk Reservation
   promoted // User Promotion
   delete_user // User Deletion
   reset_password // User Mutation
+  update_user // User Mutation
 }

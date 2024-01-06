@@ -32,7 +32,7 @@ async function getBookings() {
         }
     });
 
-    const bookings = data.map((item) => {
+    const bookings = data.reverse().map((item) => {
         return {
             id: item.id,
             user: item.user,
@@ -58,7 +58,7 @@ async function getUserBookingCount() {
 
 
 async function getAllBookings() {
-    return (await prisma.booking.findMany()).sort()
+    return await prisma.booking.findMany()
 }
 
 async function getAllBookingCount() {
@@ -178,7 +178,8 @@ async function getOtherUsers() {
             lastName: true,
             email: true,
             role: true,
-            image: true
+            image: true,
+            isBanned: true
         }
     });
 
@@ -188,6 +189,7 @@ async function getOtherUsers() {
             firstName: item.firstName,
             lastName: item.lastName,
             email: item.email,
+            isBanned: item.isBanned,
             role: item.role,
             edit: item,
             delete: item.email
@@ -203,7 +205,7 @@ async function getAllUserCount() {
 
 async function loginUser(userId: string, firstName: string, lastName: string) {
 
-    await prisma.user.update({
+    const data = await prisma.user.update({
         where: {
             id: userId
         },
@@ -216,6 +218,8 @@ async function loginUser(userId: string, firstName: string, lastName: string) {
             }
         }
     });
+
+    revalidatePath("/activity-logs");
 }
 
 async function logoutUser() {
@@ -236,6 +240,8 @@ async function logoutUser() {
             }
         });
     }
+
+    revalidatePath("/activity-logs");
 }
 
 async function deleteUserById(email: string) {
@@ -266,7 +272,17 @@ async function cancelBooking(bookId: string) {
             id: bookId
         },
         data: {
-            status: BookingStatus.canceled
+            status: BookingStatus.canceled,
+            user: {
+                update: {
+                    Log: {
+                        create: {
+                            activity: EventType.canceled,
+                            message: eventLogFormats.canceled(`${session?.user.firstName} ${session?.user?.lastName}`, bookId)
+                        }
+                    }
+                }
+            }
         }
     });
 
@@ -328,38 +344,55 @@ async function checkOut(bookId: string) {
     
     revalidatePath("/bookings");
 }
-
-async function promoteUser(userId: string, role: Role) {
+ 
+async function mutateUser(userId: string, credentials: any) {
     const session = await getSession();
 
-    if (session?.user.role === Role.admin) {
-        await prisma.user.update({
-            where: {
-                id: userId
-            },
-            data: {
-                role,
-                Log: {
-                    create: {
-                        activity: EventType.promoted,
-                        message: eventLogFormats.promoted(`${session?.user?.firstName} ${session?.user.lastName}`, role)
-                    }
-                }
+    const EventLogs = [
+        {
+            activity: EventType.promoted,
+            message: eventLogFormats.promoted(`${session?.user?.firstName} ${session?.user.lastName}`, credentials.role)
+        },
+        {
+            activity: EventType.update_user,
+            message: eventLogFormats.update_user()
+        }
+    ];
+
+    const data = await prisma.user.update({
+        where: {
+            id: userId
+        },
+        data: {
+            ...credentials,
+            Log: {
+                create: EventLogs 
             }
-        });
-        session.user.role = role;
-
-        revalidatePath("/employees");
-    }
-
-    return {
-        message: "Permission Denied."
-    }
+        }
+    });
+    
+    revalidatePath("/employees");
 }
 
 
 async function getActivityLogs() {
-    return await prisma.log.findMany();
+    const data = await prisma.log.findMany({
+        include: {
+            User: true
+        }
+    });
+
+    const logs = data.reverse().map((item) => {
+        return {
+            id: item.id,
+            user: item.User,
+            activity: item.activity,
+            message: item.message,
+            occuredAt: item.occuredAt
+        }
+    });
+    
+    return logs;
 }
 
 // reset password
@@ -378,7 +411,7 @@ export {
     cancelBooking,
     checkIn,
     checkOut,
-    promoteUser,
+    mutateUser,
     deleteUserById,
     getActivityLogs
 }
