@@ -8,6 +8,7 @@ type Bookings = {
   id: string;
   userId: string;
   activity: string;
+  occuredAt: Date;
 };
 
 export const columns: ColumnDef<Bookings>[] = [
@@ -29,7 +30,7 @@ export const columns: ColumnDef<Bookings>[] = [
       return (
         <Button
           variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "desc")}
         >
           Occuring Date
           <ArrowUpDown className="ml-2 h-4 w-4" />

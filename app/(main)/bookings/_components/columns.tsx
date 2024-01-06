@@ -2,39 +2,74 @@
 
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { useState } from "react";
+import { MdEdit } from "react-icons/md";
 
 import { ColumnDef } from "@tanstack/react-table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Desk, User } from "@prisma/client";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
 type Bookings = {
   id: string;
-  userId: string;
-  deskId: string;
+  user: User;
+  desk: Desk;
   status: string;
-  startedAt: Date;
-  endedAt: Date;
+  occuredAt: Date;
   bookedAt: Date;
 };
 
 export const columns: ColumnDef<Bookings>[] = [
   {
-    accessorKey: "userId",
-    header: "UserId",
+    accessorKey: "user",
+    header: "user",
+    cell: (props) => {
+      const data = props.getValue();
+      return (
+        <HoverCard>
+          <HoverCardTrigger>
+            {/* @ts-ignore */}
+            {data?.firstName} {data?.lastName}
+          </HoverCardTrigger>
+          {/* @ts-ignore */}
+          <HoverCardContent>Hello</HoverCardContent>
+        </HoverCard>
+      );
+    },
   },
   {
-    accessorKey: "deskId",
-    header: "DeskId",
+    accessorKey: "desk",
+    header: "desk",
+    cell: (props) => {
+      const data = props.getValue();
+      // @ts-ignore
+      return data.name;
+    },
   },
   {
     accessorKey: "status",
     header: "Status",
   },
   {
-    accessorKey: "startedAt",
-    header: "Started Date",
-  },
-  {
-    accessorKey: "endedAt",
-    header: "Ended Date",
+    accessorKey: "occuredAt",
+    header: "Occuring Date",
   },
   {
     accessorKey: "bookedAt",

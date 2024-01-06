@@ -68,9 +68,7 @@ model VerificationToken {
 model VerificationRequest {
   id     String @id @default(auto()) @map("_id") @db.ObjectId
   userId String @db.ObjectId
-  code   String @unique
-
-  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Floor {
@@ -117,7 +115,7 @@ model Log {
   message   String
   occuredAt DateTime  @default(now())
 
-  User User @relation(fields: [userId], references: [id])
+  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum Role {

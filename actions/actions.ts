@@ -7,6 +7,8 @@ import { DeskStatus, Desk, User, EventType, BookingStatus, Role } from "@prisma/
 import { Session } from "next-auth";
 import { revalidatePath } from "next/cache";
 import { eventLogFormats } from "@/lib/db";
+import moment from "moment";
+
 
 const FormSchema = z.object({
     floor: z.string()
@@ -25,11 +27,23 @@ async function getBookings() {
             userId: session?.user.id!
         },
         include: {
+            user: true,
             desk: true
         }
     });
 
-    return data;
+    const bookings = data.map((item) => {
+        return {
+            id: item.id,
+            user: item.user,
+            desk: item.desk,
+            status: item.status,
+            occuredAt: item.startedAt,
+            bookedAt: item.bookedAt
+        }
+    });
+
+    return bookings;
 }
 
 async function getUserBookingCount() {
@@ -44,7 +58,7 @@ async function getUserBookingCount() {
 
 
 async function getAllBookings() {
-    return await prisma.booking.findMany()
+    return (await prisma.booking.findMany()).sort()
 }
 
 async function getAllBookingCount() {
@@ -62,7 +76,7 @@ async function addBooking(book: Book, date: Date) {
     }
     console.log(date.getDate())
 
-    let current = new Date(new Date().toISOString());
+    let current = new Date((new Date()).toISOString());
 
 
     const newBooking = await prisma.user.update({
@@ -74,7 +88,7 @@ async function addBooking(book: Book, date: Date) {
                 create: {
                     deskId: book?.id!,
                     startedAt: date,
-                    endedAt: current,
+                    endedAt: date,
                     bookedAt: current
                 }
             },
@@ -134,6 +148,14 @@ async function getFloors() {
     return await prisma.floor.findMany();
 }
 
+async function addFloors(userId: string, image: string) {
+    const session = await getSession();
+
+    if (session?.user?.id === userId && session?.user?.role === Role.admin) {
+        
+    }
+}
+
 
 async function getOtherUsers() {
     const session = await getSession();
@@ -160,7 +182,19 @@ async function getOtherUsers() {
         }
     });
 
-    return data;
+    const users = data.map((item) => {
+        return {
+            image: item.image,
+            firstName: item.firstName,
+            lastName: item.lastName,
+            email: item.email,
+            role: item.role,
+            edit: item,
+            delete: item.email
+        }
+    });
+
+    return users;
 }
 
 async function getAllUserCount() {
@@ -201,6 +235,25 @@ async function logoutUser() {
                 }
             }
         });
+    }
+}
+
+async function deleteUserById(email: string) {
+    const session = await getSession();
+
+    console.log(email)
+
+    if (session?.user && session.user.role === Role.admin) {
+        await prisma.user.delete({
+            where: {
+                email
+            }
+        });
+    }
+
+    revalidatePath("/employees");
+    return {
+        message: "User has been deleted successfully."
     }
 }
 
@@ -304,20 +357,6 @@ async function promoteUser(userId: string, role: Role) {
     }
 }
 
-async function deleteUserById(userId: string, role: Role) {
-    const session = await getSession();
-
-    if (session?.user?.role === Role.admin && role != Role.admin) {
-        await prisma.user.delete({
-            where: {
-                id: userId,
-                role
-            }
-        });
-    }
-
-    revalidatePath("/employees");
-}
 
 async function getActivityLogs() {
     return await prisma.log.findMany();

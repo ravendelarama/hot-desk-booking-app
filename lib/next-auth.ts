@@ -92,7 +92,7 @@ export const AuthOptions: NextAuthOptions = {
 
                     const hash = await bcrypt.compare(user.password, data.password as string);
 
-                if (!hash) throw new Error("Invalid Credentials");
+                    if (!hash) throw new Error("Invalid Credentials");
                     
 
                     return {
@@ -213,7 +213,6 @@ export const AuthOptions: NextAuthOptions = {
     },
     pages: {
         signIn: '/signin',
-        newUser: '/signup',
         error: '/auth/error',
     }
 }

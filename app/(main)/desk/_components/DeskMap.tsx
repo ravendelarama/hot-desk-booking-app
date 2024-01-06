@@ -38,6 +38,7 @@ type Prop = {
 function DeskMap({ floor, desks, image, date }: Prop) {
   const { selectedDesk, setSelectedDesk } = useDesks();
   const { setBook, setDate, handleBooking } = useBook();
+  const [prevDesk, setPrevDesk] = useState<any>(null);
 
   const [width, setWidth] = useState<number>(0);
   const ref = useRef(null);
@@ -93,8 +94,14 @@ function DeskMap({ floor, desks, image, date }: Prop) {
             src={image!}
             onClick={(e) => {
               if (e.fillColor != "#991f37") {
-                const idx = desks.findIndex((item) => e.id === item.id);
+                const idx = desks.findIndex((item, i) => {
+                  // finds the clicked desk
+                  if (e.id === item.id) {
+                    return true;
+                  }
+                });
                 setSelectedDesk(desks[idx]);
+                e.fillColor = "#2EB5C7";
               }
             }}
             map={{
@@ -138,7 +145,7 @@ function DeskMap({ floor, desks, image, date }: Prop) {
               <div className="flex flex-col gap-2 py-4">
                 <p>Desk Name: {selectedDesk?.name}</p>
                 <p>Status: {selectedDesk?.status}</p>
-                <p>Starts {moment(date).fromNow()}</p>
+                <p>Starts {moment(date).toNow()}</p>
                 <p>Until: {moment(date).toNow()} </p>
               </div>
               <Separator />

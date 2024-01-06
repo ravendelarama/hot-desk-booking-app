@@ -37,14 +37,27 @@ async function Bookings() {
         You have {totalUserBookings} total amount of reservation as of now.
       </h2>
       {session?.user?.role === Role.user ? (
-        <div className="grid grid-cols-1 grid-flow-row gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {bookings.map((item) => (
             <div
               key={item.id}
-              className="w-full flex py-5 px-10 gap-5 border border-slate-800 rounded-lg"
+              className="w-full flex flex-col py-5 px-10 gap-5 border border-slate-800 rounded-lg"
             >
-              <div className="flex flex-col gap-1">
+              <div className="flex justify-between gap-1">
                 <h1>{item.desk?.name}</h1>
+                <h2>
+                  <p className="text-gray-500 text-sm">
+                    {moment(item.bookedAt).fromNow()}
+                  </p>
+                </h2>
+              </div>
+              <div className="flex flex-col justify-start item-center gap-4">
+                <p className="text-gray-500 text-sm font-bold">
+                  {item.status != "canceled" &&
+                    `Your desk will be available ${moment(
+                      item.occuredAt
+                    ).toNow()}.`}
+                </p>
                 <Badge
                   className="w-fit"
                   variant={
@@ -59,11 +72,6 @@ async function Bookings() {
                 >
                   {item.status}
                 </Badge>
-                <h2>
-                  {/* starts: {moment().calendar(item.startedAt)} ends:{" "}
-                {moment().calendar(item.endedAt)} */}
-                  <p>Booking Date: {moment(item.bookedAt).fromNow()}</p>
-                </h2>
               </div>
             </div>
           ))}
