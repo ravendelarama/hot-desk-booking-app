@@ -1,6 +1,7 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,9 +24,14 @@ function AvatarMenu() {
       <DropdownMenu>
         <DropdownMenuTrigger className="outline-none">
           <Avatar>
-            <AvatarImage src={session?.user.image} />
+            <AvatarImage
+              src={
+                session?.user.image ||
+                "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png"
+              }
+            />
             <AvatarFallback>
-              {session?.user.firstName + session?.user.lastname}
+              <Skeleton className="w-10 h-10 rounded-full" />
             </AvatarFallback>
           </Avatar>
         </DropdownMenuTrigger>

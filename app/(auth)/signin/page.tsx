@@ -16,10 +16,12 @@ import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { loginUser } from "@/actions/actions";
+import { useToast } from "@/components/ui/use-toast";
 
 function SignIn() {
   const { status } = useSession();
   const router = useRouter();
+  const { toast } = useToast();
 
   if (status === "authenticated") router.push("/");
 
@@ -42,6 +44,10 @@ function SignIn() {
               variant="outline"
               onClick={async () => {
                 signIn("google");
+                toast({
+                  title: "Sign in",
+                  description: "You have signed in.",
+                });
               }}
             >
               Sign in with Google

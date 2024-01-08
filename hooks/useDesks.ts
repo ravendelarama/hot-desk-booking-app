@@ -39,7 +39,7 @@ function useDesks() {
         desks,
         setDesks,
         selectedDesk,
-        setSelectedDesk: (value: D) => setSelectedDesk(value)
+        setSelectedDesk: (value: D | null) => setSelectedDesk(value)
     };
 }
 

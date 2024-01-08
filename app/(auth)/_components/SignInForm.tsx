@@ -11,12 +11,18 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Toggle } from "@/components/ui/toggle";
+import { BiSolidShow, BiSolidHide } from "react-icons/bi";
+import { MdErrorOutline } from "react-icons/md";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { useToast } from "@/components/ui/use-toast";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -32,14 +38,38 @@ function SignInForm() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    const res = signIn("credential-login", {
+  const { toast } = useToast();
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const res = await signIn("credential-login", {
       redirect: false,
       ...values,
     });
 
-    console.log(values);
+    if (res?.error && res?.error == "Permission Denied") {
+      toast({
+        // @ts-ignore
+        title: (
+          <p className="flex items-center gap-2">
+            <MdErrorOutline className="h-7 w-7" />
+            Permission Denied
+          </p>
+        ),
+        description:
+          "This account was forbidden from accessing the system. If you have any concerns please contact the administrator.",
+
+        variant: "destructive",
+      });
+    }
+
+    // toast({
+    //   title: "Sign in",
+    //   description: "You have signed in.",
+    // });
   }
+
+  const [seePass, setSeePass] = useState<boolean>(false);
+
   return (
     <div>
       <Form {...form}>
@@ -65,8 +95,30 @@ function SignInForm() {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} />
+                  <div className="relative">
+                    <Input type={seePass ? "text" : "password"} {...field} />
+                    <Button
+                      type="button"
+                      variant={null}
+                      className="absolute right-1 top-0"
+                      onClick={() => setSeePass(!seePass)}
+                    >
+                      <BiSolidShow
+                        className={cn(
+                          "h-5 w-5 scale-0 transition-all duration-200 ease-in-out absolute",
+                          seePass && "scale-1"
+                        )}
+                      />
+                      <BiSolidHide
+                        className={cn(
+                          "h-5 w-5 scale-1 absolute transition-all duration-200 ease-in-out",
+                          seePass && "z-10 scale-0"
+                        )}
+                      />
+                    </Button>
+                  </div>
                 </FormControl>
+
                 <FormDescription>Please enter your password.</FormDescription>
                 <FormMessage />
               </FormItem>

@@ -3,7 +3,7 @@ import { Button } from "../ui/button";
 import Link from "next/link";
 import { MdOutlineDesk, MdOutlineMapsHomeWork } from "react-icons/md";
 import { BiBookBookmark } from "react-icons/bi";
-import { FaUsers, FaUserCheck } from "react-icons/fa";
+import { GrScheduleNew } from "react-icons/gr";
 import { GiDesk } from "react-icons/gi";
 import { GoHome } from "react-icons/go";
 import { useSession } from "next-auth/react";
@@ -40,7 +40,7 @@ const Routes = [
     role: "user",
     alternative: "Reserve",
     path: "/desk",
-    icon: (options: string) => <MdOutlineDesk className={options} />,
+    icon: (options: string) => <GrScheduleNew className={options} />,
   },
   {
     name: "Verifications",

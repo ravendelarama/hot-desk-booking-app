@@ -1,9 +1,7 @@
+import { Skeleton } from "@/components/ui/skeleton";
+
 function Loading() {
-  return (
-    <div className="p-5 text-md text-slate-400">
-      Please select a floor first.
-    </div>
-  );
+  return <Skeleton className="w-full h-52 rounded-sm" />;
 }
 
 export default Loading;

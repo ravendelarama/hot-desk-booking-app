@@ -8,7 +8,7 @@ import { Session } from "next-auth";
 import { revalidatePath } from "next/cache";
 import { eventLogFormats } from "@/lib/db";
 import moment from "moment";
-
+import { utapi } from "@/server/uploadthing";
 
 const FormSchema = z.object({
     floor: z.string()
@@ -250,11 +250,13 @@ async function deleteUserById(email: string) {
     console.log(email)
 
     if (session?.user && session.user.role === Role.admin) {
-        await prisma.user.delete({
+        const user = await prisma.user.delete({
             where: {
                 email
             }
         });
+
+        await utapi.deleteFiles([user?.image!]);
     }
 
     revalidatePath("/employees");

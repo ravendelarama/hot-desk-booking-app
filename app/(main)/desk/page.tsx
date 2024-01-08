@@ -31,6 +31,7 @@ import { useState, Suspense } from "react";
 import DeskMap from "./_components/DeskMap";
 import useDesks from "@/hooks/useDesks";
 import useFloors from "@/hooks/useFloors";
+import { Skeleton } from "@/components/ui/skeleton";
 // import TimeStampPicker from "@/components/TimeStampPicker";
 
 const FloorSchema = z.object({
@@ -90,9 +91,15 @@ function Desk() {
                     <SelectContent>
                       {floors &&
                         floors.map((item) => (
-                          <SelectItem key={item.id} value={item.floor}>
-                            {item.floor}
-                          </SelectItem>
+                          <Suspense
+                            fallback={
+                              <Skeleton className="h-8 w-full rounded-sm" />
+                            }
+                          >
+                            <SelectItem key={item.id} value={item.floor}>
+                              {item.floor}
+                            </SelectItem>
+                          </Suspense>
                         ))}
                     </SelectContent>
                   </Select>

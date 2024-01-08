@@ -46,7 +46,7 @@ function DeskMap({ floor, desks, image, date }: Prop) {
   const ref = useRef(null);
   // const hoverRef = useRef(null);
 
-  const list = [] as MapAreas[];
+  const list: MapAreas[] = [];
 
   useLayoutEffect(() => {
     // @ts-ignore
@@ -79,21 +79,25 @@ function DeskMap({ floor, desks, image, date }: Prop) {
   // dialog to be modified
   return (
     <>
-      <div ref={ref} className="w-full">
-        {date && date.getDate()}
-      </div>
-
-      <h1>{selectedDesk && selectedDesk.name}</h1>
-
-      <div className="border rounded-md overflow-auto">
-        {image ? (
-          <ImageMapper
-            responsive={true}
-            parentWidth={width!}
-            natural={true}
-            src={image!}
-            onClick={(e) => {
-              if (e.fillColor != "#991f37") {
+      <p className="text-slate-500 text-sm font-semibold">
+        {!selectedDesk
+          ? "Please select your desired desk."
+          : selectedDesk.status === DeskStatus.available
+          ? `You have selected desk ${selectedDesk.name} on floor ${floor}.`
+          : `Desk ${selectedDesk.name} is unavailable.`}
+      </p>
+      <div ref={ref} className="w-full border rounded-md overflow-auto">
+        <Suspense fallback={<Loading />}>
+          {image ? (
+            <ImageMapper
+              responsive={true}
+              parentWidth={width!}
+              natural={true}
+              src={image!}
+              onImageClick={() => {
+                setSelectedDesk(null);
+              }}
+              onClick={(e) => {
                 const idx = desks.findIndex((item, i) => {
                   // finds the clicked desk
                   if (e.id === item.id) {
@@ -101,17 +105,18 @@ function DeskMap({ floor, desks, image, date }: Prop) {
                   }
                 });
                 setSelectedDesk(desks[idx]);
-                e.fillColor = "#2EB5C7";
-              }
-            }}
-            map={{
-              name: "desk-map",
-              areas: list,
-            }}
-          />
-        ) : (
-          <Loading />
-        )}
+              }}
+              map={{
+                name: "desk-map",
+                areas: list,
+              }}
+            />
+          ) : (
+            <p className="p-10 text-slate-500 text-center font-bold">
+              Please select a floor.
+            </p>
+          )}
+        </Suspense>
       </div>
       {/* <HoverCard>
         <HoverCardTrigger asChild>
@@ -129,7 +134,7 @@ function DeskMap({ floor, desks, image, date }: Prop) {
           <Button
             variant="outline"
             className="text-sm w-16 px-2"
-            disabled={!floor && !date && !selectedDesk}
+            disabled={!floor || !date || !selectedDesk}
             onClick={() => {
               setBook(selectedDesk!);
               setDate(date!);
@@ -145,8 +150,14 @@ function DeskMap({ floor, desks, image, date }: Prop) {
               <div className="flex flex-col gap-2 py-4">
                 <p>Desk Name: {selectedDesk?.name}</p>
                 <p>Status: {selectedDesk?.status}</p>
-                <p>Starts {moment(date).toNow()}</p>
-                <p>Until: {moment(date).toNow()} </p>
+                <p>
+                  {moment(date) > moment() ? "Starts" : "Started"}{" "}
+                  {moment(date).fromNow()}
+                </p>
+                <p>
+                  {moment(date) < moment() ? "Ends" : "Ended"}{" "}
+                  {moment(date).add(1, "day").fromNow()}{" "}
+                </p>
               </div>
               <Separator />
               <p className="py-4">

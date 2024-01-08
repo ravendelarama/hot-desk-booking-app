@@ -16,6 +16,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { useToast } from "@/components/ui/use-toast";
+import { useState } from "react";
+import { BiSolidShow, BiSolidHide } from "react-icons/bi";
+import { cn } from "@/lib/utils";
+import { MdErrorOutline } from "react-icons/md";
 
 const formSchema = z
   .object({
@@ -50,18 +55,31 @@ function SignUpForm() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      const res = signIn("credential-register", {
-        redirect: false,
-        ...values,
-      });
+  const { toast } = useToast();
 
-      console.log(values);
-    } catch (error) {
-      console.log(error);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const res = await signIn("credential-register", {
+      redirect: false,
+      ...values,
+    });
+
+    if (res?.error) {
+      toast({
+        // @ts-ignore
+        title: (
+          <p className="flex items-center gap-2">
+            <MdErrorOutline className="h-7 w-7" />
+            {res?.error}
+          </p>
+        ),
+        description: "Invalid Credentials",
+        variant: "destructive",
+      });
     }
   }
+
+  const [seePass, setSeePass] = useState<boolean>(false);
+  const [seeConfirmPass, setSeeConfirmPass] = useState<boolean>(false);
 
   return (
     <div>
@@ -115,7 +133,28 @@ function SignUpForm() {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} />
+                  <div className="relative">
+                    <Input type={seePass ? "text" : "password"} {...field} />
+                    <Button
+                      type="button"
+                      variant={null}
+                      className="absolute right-1 top-0"
+                      onClick={() => setSeePass(!seePass)}
+                    >
+                      <BiSolidShow
+                        className={cn(
+                          "h-5 w-5 scale-0 transition-all duration-200 ease-in-out absolute",
+                          seePass && "scale-1"
+                        )}
+                      />
+                      <BiSolidHide
+                        className={cn(
+                          "h-5 w-5 scale-1 absolute transition-all duration-200 ease-in-out",
+                          seePass && "z-10 scale-0"
+                        )}
+                      />
+                    </Button>
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -128,7 +167,31 @@ function SignUpForm() {
               <FormItem>
                 <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} />
+                  <div className="relative">
+                    <Input
+                      type={seeConfirmPass ? "text" : "password"}
+                      {...field}
+                    />
+                    <Button
+                      type="button"
+                      variant={null}
+                      className="absolute right-1 top-0"
+                      onClick={() => setSeeConfirmPass(!seeConfirmPass)}
+                    >
+                      <BiSolidShow
+                        className={cn(
+                          "h-5 w-5 scale-0 transition-all duration-200 ease-in-out absolute",
+                          seeConfirmPass && "scale-1"
+                        )}
+                      />
+                      <BiSolidHide
+                        className={cn(
+                          "h-5 w-5 scale-1 absolute transition-all duration-200 ease-in-out",
+                          seeConfirmPass && "z-10 scale-0"
+                        )}
+                      />
+                    </Button>
+                  </div>
                 </FormControl>
                 <FormDescription>Please confirm your password.</FormDescription>
                 <FormMessage />

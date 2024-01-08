@@ -8,6 +8,8 @@ import bcrypt from "bcrypt";
 import { EventType, Role, User } from "@prisma/client";
 import z from "zod";
 import { loginUser } from "@/actions/actions";
+import { randomUUID } from "crypto";
+import moment from "moment";
 // import jwt from "jsonwebtoken";
 // import { verifyEmail } from "./email";
 
@@ -71,35 +73,17 @@ export const AuthOptions: NextAuthOptions = {
 
                     if (!data) {
                         throw new Error("Invalid Credentials");
-                }
+                    }
                 
                     if (data.isBanned) {
                         throw new Error("Permission Denied");
                     }
-                
-                    // if (data.emailVerified === null) {
-                    //     const token = await jwt.sign(data.id, process.env.EMAIL_SECRET + data.email!, {
-                    //         expiresIn: "1d"
-                    //     });
-
-
-                    //     const result = await verifyEmail({
-                    //         id: data.id,
-                    //         email: data.email,
-                    //         firstName: data.firstName,
-                    //         lastName: data.lastName,
-                    //         token
-                    //     });
-
-                    //     throw new Error("Please verify your email.");
-                    // }
 
                     const hash = await bcrypt.compare(user.password, data.password as string);
-
+                    
                     if (!hash) throw new Error("Invalid Credentials");
                     
-                    const res = await loginUser(data?.id!, data?.firstName, data?.lastName);
-
+                    
                     return {
                         id: data.id,
                         firstName: data.firstName,
@@ -184,8 +168,23 @@ export const AuthOptions: NextAuthOptions = {
         strategy: "jwt"
     },
     callbacks: {
-        async signIn({ user, account, profile }) {
+        async signIn({ account, profile }) {
             // return profile!.email!.endsWith("@student.laverdad.edu.ph");
+            if (account?.provider === "google") {
+                const user = await prisma.user.findUnique({
+                    where: {
+                    email: profile?.email
+                    },
+                })
+
+                await prisma.log.create({
+                    data: {
+                        userId: user?.id!, 
+                        activity: EventType.signed_in,
+                        message: eventLogFormats.signed_in(`${user?.firstName} ${user?.lastName}`)
+                    }
+                });
+            }
             return true;
         },
         async jwt({ token, user }) {
@@ -200,6 +199,7 @@ export const AuthOptions: NextAuthOptions = {
             }
             return token;
         },
+        //  @ts-ignore
         async session({ session, token }) {
             let data = {
                 ...session,
@@ -212,8 +212,17 @@ export const AuthOptions: NextAuthOptions = {
                     role: token.role
                 }
             }
+            
+            const isExist = await prisma.user.findUnique({
+                where: {
+                    id: token.id
+                }
+            });
 
-            ;
+            if (!isExist) {
+                return null;
+            }
+
             return data;
         }
     },

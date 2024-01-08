@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Role, User } from "@prisma/client";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { MdEdit, MdDelete } from "react-icons/md";
 import {
   Dialog,
@@ -21,6 +21,7 @@ import { deleteUserById } from "@/actions/actions";
 import { useToast } from "@/components/ui/use-toast";
 import { DataTable } from "../../bookings/_components/data-table";
 import UpdateRow from "./UpdateRow";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -42,9 +43,17 @@ export const columns: ColumnDef<Employee>[] = [
     cell: (props) => {
       return (
         <Avatar>
-          {/* @ts-ignore */}
-          <AvatarImage src="https://github.com/shadcn.png" />
-          <AvatarFallback>CN</AvatarFallback>
+          <AvatarImage
+            // @ts-ignore
+            src={
+              props.getValue() ||
+              "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png"
+            }
+          />
+          <AvatarFallback>
+            {" "}
+            <Skeleton className="w-10 h-10 rounded-full" />
+          </AvatarFallback>
         </Avatar>
       );
     },
@@ -60,6 +69,14 @@ export const columns: ColumnDef<Employee>[] = [
           First Name
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
+      );
+    },
+    cell: (props) => {
+      return (
+        <Suspense fallback={<Skeleton className="w-32 h-4 rounded-lg" />}>
+          {/* @ts-ignore */}
+          <p>{props.getValue()}</p>
+        </Suspense>
       );
     },
   },
@@ -82,6 +99,14 @@ export const columns: ColumnDef<Employee>[] = [
   {
     accessorKey: "email",
     header: "Email",
+    cell: (props) => {
+      return (
+        <Suspense fallback={<Skeleton className="w-32 h-4 rounded-lg" />}>
+          {/* @ts-ignore */}
+          <p>{props.getValue()}</p>
+        </Suspense>
+      );
+    },
   },
   {
     accessorKey: "role",

@@ -12,7 +12,7 @@ import { BiBookBookmark } from "react-icons/bi";
 import AvatarMenu from "../AvatarMenu";
 import { ModeToggle } from "../ModeToggler";
 
-import { FaUsers, FaUserCheck } from "react-icons/fa";
+import { GrScheduleNew } from "react-icons/gr";
 import { GiDesk } from "react-icons/gi";
 import { GoHome } from "react-icons/go";
 import { useSession } from "next-auth/react";
@@ -49,7 +49,7 @@ const Routes = [
     role: "user",
     alternative: "Reserve",
     path: "/desk",
-    icon: (options: string) => <MdOutlineDesk className={options} />,
+    icon: (options: string) => <GrScheduleNew className={options} />,
   },
   {
     name: "Verifications",
