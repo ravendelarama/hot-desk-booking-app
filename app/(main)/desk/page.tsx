@@ -90,8 +90,9 @@ function Desk() {
                     </FormControl>
                     <SelectContent>
                       {floors &&
-                        floors.map((item) => (
+                        floors.map((item, index) => (
                           <Suspense
+                            key={index}
                             fallback={
                               <Skeleton className="h-8 w-full rounded-sm" />
                             }
