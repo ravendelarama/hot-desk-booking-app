@@ -97,7 +97,7 @@ function Desk() {
                               <Skeleton className="h-8 w-full rounded-sm" />
                             }
                           >
-                            <SelectItem key={item.id} value={item.floor}>
+                            <SelectItem value={item.floor}>
                               {item.floor}
                             </SelectItem>
                           </Suspense>
