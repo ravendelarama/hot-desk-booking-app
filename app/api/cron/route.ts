@@ -19,6 +19,6 @@ export async function GET(req: NextRequest, res: NextResponse) {
             status: BookingStatus.checked_out
         }
     });
-
+    
     return NextResponse.json({ ok: true });
 }
