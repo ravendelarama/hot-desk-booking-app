@@ -150,14 +150,29 @@ export const AuthOptions: NextAuthOptions = {
                     const hash = await bcrypt.compare(user.password, data.password as string);
 
                     if (!hash) throw new Error("Invalid Credentials");
-
+                    
+                    await prisma.user.update({
+                        where: {
+                            id: data?.id
+                        },
+                        data: {
+                            Log: {
+                                create: {
+                                    activity: EventType.signed_in,
+                                    message: eventLogFormats.signed_in(`${data?.firstName} ${data?.lastName}`)
+                                }
+                            }
+                        }
+                    });
+                
                     return {
                         id: data.id,
                         firstName: data.firstName,
                         lastName: data.lastName,
                         email: data.email,
                         image: data.image,
-                        role: data.role
+                        role: data.role,
+                        isBanned: data.isBanned
                     };
                 }
         })
@@ -196,6 +211,7 @@ export const AuthOptions: NextAuthOptions = {
                 token.lastName = u.lastName;
                 token.email = u.email;
                 token.role = u.role;
+                token.isBanned = u.isBanned;
             }
             return token;
         },
@@ -209,7 +225,8 @@ export const AuthOptions: NextAuthOptions = {
                     firstName: token.firstName,
                     lastName: token.lastName,
                     email: token.email,
-                    role: token.role
+                    role: token.role,
+                    isBanned: token.isBanned
                 }
             }
             

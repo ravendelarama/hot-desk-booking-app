@@ -18,4 +18,3 @@ declare module "next-auth" {
 declare module "next-auth/jwt" {
     type JWT = Omit<User, "password" | "createdAt" | "updatedAt", "emailVerified">
 }
-  

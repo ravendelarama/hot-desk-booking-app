@@ -23,6 +23,7 @@ import Link from "next/link";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { loginUser } from "@/actions/actions";
 
 const formSchema = z.object({
   email: z.string().email(),
