@@ -1,3 +1,5 @@
+import { BookingStatus } from '@prisma/client';
+import prisma from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest, res: NextResponse) {
@@ -9,6 +11,14 @@ export async function GET(req: NextRequest, res: NextResponse) {
         });
     }
     
-    console.log("Hello World!");
+    const books = await prisma.booking.updateMany({
+        where: {
+            status: BookingStatus.checked_in,
+        },
+        data: {
+            status: BookingStatus.checked_out
+        }
+    });
+
     return NextResponse.json({ ok: true });
 }
