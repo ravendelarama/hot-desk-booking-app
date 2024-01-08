@@ -11,5 +11,6 @@ export const config = {
         '/activity-logs',
         '/desks',
         '/floors',
+        '/profile-upload'
     ]
 }
