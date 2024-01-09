@@ -28,7 +28,6 @@ import { Input } from "@/components/ui/input";
 import { DialogClose } from "@/components/ui/dialog";
 import { mutateUser } from "@/actions/actions";
 import { useToast } from "@/components/ui/use-toast";
-import { useSession } from "next-auth/react";
 
 const formSchema = z.object({
   firstName: z.string(),
@@ -48,14 +47,10 @@ function UpdateRow({ data }: { data: any }) {
     },
   });
 
-  const { update } = useSession();
-
   const { toast } = useToast();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const response = await mutateUser(data.id, values);
-
-    update(response);
+    await mutateUser(data.id, values);
 
     toast({
       title: "Mutated User",

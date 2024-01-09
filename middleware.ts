@@ -1,65 +1,46 @@
 import { Role } from "@prisma/client";
-import { read } from "fs";
+import { NextRequest, NextResponse } from "next/server";
 import { withAuth } from "next-auth/middleware";
-import { redirect } from "next/dist/server/api-utils";
-import { NextRequest } from "next/server";
-
-export { withAuth } from "next-auth/middleware";
-
-function validateRoutes(req: NextRequest, routes: string[]) {
-    const isExist = routes.map((item, index, list) => {
-        if (req.nextUrl.pathname.endsWith(item)) {
-            return true;
-        }
-
-        if (index == list.length - 1) {
-            return false;
-        }
-    });
-
-    if (isExist.includes(true)) {
-        return true;
-    }
-
-    return false;
-
-}
+// import { validateRoutes } from "./lib/next-auth";
 
 export default withAuth({
     callbacks: {
-        authorized: async ({req, token}) => {
-            if (!token.isBanned) {
-                return false;
-            }
-
-            const adminRoutes = [
-                '/activity-logs',
-                '/desks',
-                '/floors',
-                '/verification-requests'
-            ];
-
-            const managerRoutes = [
-                '/desks',
-                '/floors'
-            ];
-
-            if (token.role === Role.admin) {
-                const isValid = validateRoutes(req, adminRoutes);
-
-                return isValid;
-            }
-
-            if (token.role === Role.manager) {
-                const isValid = validateRoutes(req, managerRoutes);
+        authorized: async ({ req, token }) => {
+            if (token) {
+                if (token.isBanned) return false;
                 
-                return isValid;
-            }
+                if (token.role == Role.admin) return true;
+                
+                let path = req.nextUrl.pathname;
 
+                if (token.role == Role.manager) {
+                
+                    if (!path.endsWith("activity-logs") ||
+                        !path.endsWith("verification-requests")
+                    ) {
+                        return true;
+                    }
+                }
+
+                if (token.role == Role.user) {
+                
+                    if (
+                        !path.endsWith("activity-logs") ||
+                        !path.endsWith("verification-requests") ||
+                        !path.endsWith("floors") ||
+                        !path.endsWith("desks")
+                    ) {
+                        return true;
+                    }
+                }
+            }
             return false;
         }
+        
     }
-})
+});
+
+// export { default } from "next-auth/middleware";
 
 export const config = {
     matcher: [

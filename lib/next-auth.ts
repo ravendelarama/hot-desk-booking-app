@@ -10,6 +10,7 @@ import z from "zod";
 import { loginUser } from "@/actions/actions";
 import { randomUUID } from "crypto";
 import moment from "moment";
+import { NextRequest } from "next/server";
 // import jwt from "jsonwebtoken";
 // import { verifyEmail } from "./email";
 
@@ -132,6 +133,7 @@ export const AuthOptions: NextAuthOptions = {
 
                     const data = await prisma.user.create({
                         data: {
+                            image: user.image,
                             firstName: user.firstName,
                             lastName: user.lastName,
                             email: user.email,
@@ -188,17 +190,24 @@ export const AuthOptions: NextAuthOptions = {
             if (account?.provider === "google") {
                 const user = await prisma.user.findUnique({
                     where: {
-                    email: profile?.email
+                        email: profile?.email
                     },
-                })
-
-                await prisma.log.create({
-                    data: {
-                        userId: user?.id!, 
-                        activity: EventType.signed_in,
-                        message: eventLogFormats.signed_in(`${user?.firstName} ${user?.lastName}`)
-                    }
                 });
+
+                if (user?.isBanned) {
+                    throw new Error("Permission Denied");
+                }
+                
+                if (user) {
+                    await prisma.log.create({
+                        data: {
+                            userId: user?.id!, 
+                            activity: EventType.signed_in,
+                            message: eventLogFormats.signed_in(`${user?.firstName} ${user?.lastName}`)
+                        }
+                    });
+                }
+                
             }
             return true;
         },
@@ -250,3 +259,17 @@ export const AuthOptions: NextAuthOptions = {
 }
 
 export const getSession = async () => await getServerSession(AuthOptions);
+
+export function validateRoutes(req: NextRequest, routes: string[]) {
+    const isValid = routes.map((item, index, list) => {
+        if (req.nextUrl.pathname === item || index === list.length - 1) {
+            return false;
+        }
+    });
+
+    if (!isValid.includes(false)) {
+        return true;
+    }
+
+    return false;
+}

@@ -24,6 +24,7 @@ import { MdErrorOutline } from "react-icons/md";
 
 const formSchema = z
   .object({
+    image: z.string().nullable(),
     firstName: z.string().min(2),
     lastName: z.string().min(2),
     email: z.string().email(),
@@ -44,10 +45,11 @@ const formSchema = z
     path: ["confirmPassword"],
   });
 
-function SignUpForm() {
+function SignUpForm({ image }: { image: string | null }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      image: null,
       firstName: "",
       lastName: "",
       email: "",
@@ -69,10 +71,10 @@ function SignUpForm() {
         title: (
           <p className="flex items-center gap-2">
             <MdErrorOutline className="h-7 w-7" />
-            {res?.error}
+            Warning
           </p>
         ),
-        description: "Invalid Credentials",
+        description: res.error,
         variant: "destructive",
       });
     }

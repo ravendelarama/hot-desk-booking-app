@@ -8,6 +8,7 @@ import { Role } from "@prisma/client";
 import { getBookings, getUserBookingCount } from "@/actions/actions";
 import ItemDialog from "./_components/ItemDialog";
 import { Calendar } from "@/components/ui/calendar";
+import { RedirectType, redirect } from "next/navigation";
 // import Image from "next/image";
 // import { Calendar } from "@/components/ui/calendar";
 
@@ -15,6 +16,8 @@ async function Bookings() {
   const session = await getSession();
   const bookings = await getBookings();
   const totalUserBookings = await getUserBookingCount();
+
+  if (session?.user.isBanned) redirect("/signin", RedirectType.replace);
 
   // ui to be modified
   return (

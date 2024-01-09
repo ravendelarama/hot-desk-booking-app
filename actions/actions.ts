@@ -144,6 +144,14 @@ async function getDesks(value: z.infer<typeof FormSchema>) {
     return desks;
 }
 
+async function getAvailableDesksCount() {
+    return await prisma.desk.count({
+        where: {
+            status: DeskStatus.available
+        }
+    })
+}
+
 async function getFloors() {
     return await prisma.floor.findMany();
 }
@@ -256,7 +264,12 @@ async function deleteUserById(email: string) {
             }
         });
 
-        await utapi.deleteFiles([user?.image!]);
+        user?.image?.split("/").findLast((value) => {
+            console.log(`${value} ${user?.image}`)
+        })
+
+        if(user?.image) await utapi.deleteFiles(user?.image);
+
     }
 
     revalidatePath("/employees");
@@ -346,32 +359,45 @@ async function checkOut(bookId: string) {
     
     revalidatePath("/bookings");
 }
+
+
  
 async function mutateUser(userId: string, credentials: any) {
     const session = await getSession();
-
-    const EventLogs = [
-        {
-            activity: EventType.promoted,
-            message: eventLogFormats.promoted(`${session?.user?.firstName} ${session?.user.lastName}`, credentials.role)
-        },
-        {
-            activity: EventType.update_user,
-            message: eventLogFormats.update_user()
-        }
-    ];
 
     const data = await prisma.user.update({
         where: {
             id: userId
         },
         data: {
-            ...credentials,
+            firstName: credentials.firstName,
+            lastName: credentials.lastName,
+            isBanned: credentials.isBanned,
             Log: {
-                create: EventLogs 
+                create: {
+                    activity: EventType.update_user,
+                    message: eventLogFormats.update_user()
+                }
             }
         }
     });
+
+    if (credentials.role != data.role) {
+        await prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                role: credentials.role,
+                Log: {
+                    create: {
+                        activity: EventType.promoted,
+                        message: eventLogFormats.promoted(`${session?.user?.firstName} ${session?.user.lastName}`, credentials.role)
+                    },
+                }
+            }
+        });
+    }
     
     revalidatePath("/employees");
 }
@@ -397,10 +423,22 @@ async function getActivityLogs() {
     return logs;
 }
 
+async function upcomingBookings() {
+    return await prisma.booking.count({
+        where: {
+            status: BookingStatus.checked_in
+        },
+        select: {
+            userId: true
+        }
+    });
+}
+
 // reset password
 
 export {
     getDesks,
+    getAvailableDesksCount,
     getBookings,
     getFloors,
     addBooking,

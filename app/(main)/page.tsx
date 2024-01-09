@@ -1,9 +1,10 @@
-import Image from "next/image";
 import { getSession } from "@/lib/next-auth";
-import { signIn } from "next-auth/react";
+import { RedirectType, redirect } from "next/navigation";
 
 export default async function Home() {
   const session = await getSession();
+
+  if (session?.user.isBanned) redirect("/signin", RedirectType.replace);
 
   return (
     <div className="p-6">

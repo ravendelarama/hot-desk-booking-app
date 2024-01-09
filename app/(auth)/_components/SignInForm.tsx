@@ -63,10 +63,18 @@ function SignInForm() {
       });
     }
 
-    // toast({
-    //   title: "Sign in",
-    //   description: "You have signed in.",
-    // });
+    if (res?.error) {
+      toast({
+        // @ts-ignore
+        title: (
+          <p className="flex items-center gap-2">
+            <MdErrorOutline className="h-7 w-7" />
+            Warning
+          </p>
+        ),
+        description: res.error,
+      });
+    }
   }
 
   const [seePass, setSeePass] = useState<boolean>(false);
