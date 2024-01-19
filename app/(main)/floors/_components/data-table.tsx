@@ -45,9 +45,9 @@ import {
 import { useRouter } from "next/navigation";
 import { LuRefreshCcw } from "react-icons/lu";
 import { cn } from "@/lib/utils";
-import { MdDelete } from "react-icons/md";
-import { deleteAllActivityLogs } from "@/actions/actions";
-import { IoIosRemoveCircle, IoIosWarning } from "react-icons/io";
+import { IoIosWarning } from "react-icons/io";
+import { MdAdd } from "react-icons/md";
+import AddFloor from "./AddFloor";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -86,12 +86,10 @@ export function DataTable<TData, TValue>({
       <div className="flex justify-between items-center">
         <div className="flex items-center py-4">
           <Input
-            placeholder="Filter Messages..."
-            value={
-              (table.getColumn("message")?.getFilterValue() as string) ?? ""
-            }
+            placeholder="Filter Desks..."
+            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
-              table.getColumn("message")?.setFilterValue(event.target.value)
+              table.getColumn("name")?.setFilterValue(event.target.value)
             }
             className="max-w-sm"
           />
@@ -116,8 +114,8 @@ export function DataTable<TData, TValue>({
           </Button>
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant={"destructive"} size={"icon"}>
-                <MdDelete className="h-4 w-4" />
+              <Button variant={"warning"} size={"icon"}>
+                <MdAdd className="h-4 w-4" />
               </Button>
             </DialogTrigger>
             <DialogContent>
@@ -132,6 +130,7 @@ export function DataTable<TData, TValue>({
                   all of the data will be completely removed from the database.
                 </DialogDescription>
               </DialogHeader>
+              <AddFloor />
               <DialogFooter>
                 <DialogClose asChild>
                   <Button variant={"secondary"}>Cancel</Button>
@@ -141,7 +140,7 @@ export function DataTable<TData, TValue>({
                     variant={"destructive"}
                     onClick={async () => {
                       // @ts-ignore
-                      await deleteAllActivityLogs(data as string);
+                      //   await deleteAllActivityLogs(data as string);
                     }}
                   >
                     Continue

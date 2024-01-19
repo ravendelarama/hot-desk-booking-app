@@ -212,15 +212,22 @@ export const AuthOptions: NextAuthOptions = {
             return true;
         },
         async jwt({ token, user }) {
-            
             if (user) {
-                let u = user as User;
-                token.id = u.id;
-                token.firstName = u.firstName;
-                token.lastName = u.lastName;
-                token.email = u.email;
-                token.role = u.role;
-                token.isBanned = u.isBanned;
+                const data = await prisma.user.findFirst({
+                    where: {
+                        id: user.id
+                    }
+                });
+            
+
+                if (data) {
+                    token.id = data.id;
+                    token.firstName = data.firstName;
+                    token.lastName = data.lastName;
+                    token.email = data.email;
+                    token.role = data.role;
+                    token.isBanned = data.isBanned;
+                }
             }
             return token;
         },
@@ -259,17 +266,3 @@ export const AuthOptions: NextAuthOptions = {
 }
 
 export const getSession = async () => await getServerSession(AuthOptions);
-
-export function validateRoutes(req: NextRequest, routes: string[]) {
-    const isValid = routes.map((item, index, list) => {
-        if (req.nextUrl.pathname === item || index === list.length - 1) {
-            return false;
-        }
-    });
-
-    if (!isValid.includes(false)) {
-        return true;
-    }
-
-    return false;
-}

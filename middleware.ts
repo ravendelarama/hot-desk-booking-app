@@ -1,46 +1,43 @@
 import { Role } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { withAuth } from "next-auth/middleware";
-// import { validateRoutes } from "./lib/next-auth";
 
-export default withAuth({
+export default withAuth(
+    function middleware(req) {
+        const { pathname } = req.nextUrl;
+        const { token } = req.nextauth;
+
+        if (
+            token?.role == Role.user && 
+            [
+                "/floors",
+                "/employees",
+                "/desks",
+                "/verification-requests",
+                "/activity-logs"
+            ].includes(pathname)
+        ) {
+            return NextResponse.redirect(new URL("/home", req.url))
+        }
+
+        if (
+            token?.role == Role.manager &&
+            [
+                "/verification-requests",
+                "/activity-logs",
+                "/employees",
+            ].includes(pathname)
+        ) {
+            return NextResponse.redirect(new URL("/home", req.url))
+        }
+    }, {
     callbacks: {
         authorized: async ({ req, token }) => {
-            if (token) {
-                if (token.isBanned) return false;
-                
-                if (token.role == Role.admin) return true;
-                
-                let path = req.nextUrl.pathname;
-
-                if (token.role == Role.manager) {
-                
-                    if (!path.endsWith("activity-logs") ||
-                        !path.endsWith("verification-requests")
-                    ) {
-                        return true;
-                    }
-                }
-
-                if (token.role == Role.user) {
-                
-                    if (
-                        !path.endsWith("activity-logs") ||
-                        !path.endsWith("verification-requests") ||
-                        !path.endsWith("floors") ||
-                        !path.endsWith("desks")
-                    ) {
-                        return true;
-                    }
-                }
-            }
-            return false;
+            return !!token;
         }
         
     }
 });
-
-// export { default } from "next-auth/middleware";
 
 export const config = {
     matcher: [
@@ -53,6 +50,7 @@ export const config = {
         '/activity-logs',
         '/desks',
         '/floors',
-        '/profile-upload'
+        '/profile-upload',
+        '/verification-requests'
     ]
 }

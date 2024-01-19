@@ -1,11 +1,9 @@
 "use client";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+
 import { Button } from "@/components/ui/button";
+import { MdDelete, MdEdit } from "react-icons/md";
+
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
-import { Role } from "@prisma/client";
-import { Suspense } from "react";
-import { MdEdit, MdDelete } from "react-icons/md";
 import {
   Dialog,
   DialogClose,
@@ -16,92 +14,53 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { deleteUserById } from "@/actions/actions";
-import UpdateRow from "./UpdateRow";
-import { Skeleton } from "@/components/ui/skeleton";
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-export type Employee = {
-  image: string | null;
+import { deleteDeskById, deleteFloorById } from "@/actions/actions";
+import { IoIosWarning } from "react-icons/io";
+import UpdateRow from "./UpdateRow";
+import Link from "next/link";
+import { FileUploader } from "react-drag-drop-files";
+
+type Floors = {
+  id: string;
   name: string;
-  email: string | null;
-  role: Role;
-  isBanned: boolean;
+  image?: string;
   edit: object;
   delete: string;
 };
 
-export const columns: ColumnDef<Employee>[] = [
-  {
-    accessorKey: "image",
-    header: "image",
-    cell: (props) => {
-      return (
-        <Avatar>
-          <AvatarImage
-            // @ts-ignore
-            src={
-              props.getValue() ||
-              "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png"
-            }
-          />
-          <AvatarFallback>
-            {" "}
-            <Skeleton className="w-10 h-10 rounded-full" />
-          </AvatarFallback>
-        </Avatar>
-      );
-    },
-  },
+export const columns: ColumnDef<Floors>[] = [
   {
     accessorKey: "name",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Name
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: "Name",
     cell: (props) => {
-      return (
-        <Suspense fallback={<Skeleton className="w-32 h-4 rounded-lg" />}>
-          {/* @ts-ignore */}
-          <p>{props.getValue()}</p>
-        </Suspense>
-      );
+      const data = props.getValue();
+      // @ts-ignore
+      return data;
     },
   },
 
   {
-    accessorKey: "email",
-    header: "Email",
+    accessorKey: "image",
+    header: "Image",
     cell: (props) => {
+      const data = props.getValue();
+      // @ts-ignore
+      let arr = data.split("/");
       return (
-        <Suspense fallback={<Skeleton className="w-32 h-4 rounded-lg" />}>
-          {/* @ts-ignore */}
-          <p className="truncate">{props.getValue()}</p>
-        </Suspense>
+        // @ts-ignore
+        <Link href={data} target="_" className="text-ellipsis overlow-hiden">
+          {arr[arr.length - 1]}
+        </Link>
       );
     },
-  },
-  {
-    accessorKey: "role",
-    header: "Role",
-  },
-  {
-    accessorKey: "isBanned",
-    header: "isBanned",
   },
   {
     accessorKey: "edit",
     header: "edit",
     cell: (props) => {
       const data = props.getValue();
+
       return (
         <Dialog>
           <DialogTrigger asChild>
@@ -114,6 +73,7 @@ export const columns: ColumnDef<Employee>[] = [
               <DialogTitle>Edit</DialogTitle>
               <DialogDescription></DialogDescription>
             </DialogHeader>
+            {/* @ts-ignore */}
             <UpdateRow data={data} />
           </DialogContent>
         </Dialog>
@@ -134,12 +94,13 @@ export const columns: ColumnDef<Employee>[] = [
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>
-                Are you sure you want to delete this user?
+              <DialogTitle className="flex items-center gap-2">
+                <IoIosWarning className="h-7 w-7 inline" />
+                Are you sure you want to delete this floor?
               </DialogTitle>
               {/** @ts-ignore */}
               <DialogDescription>
-                This action cannot be undone. Once you delete a certain user,
+                This action cannot be undone. Once you delete a certain floor,
                 the data will be completely removed from the database.
               </DialogDescription>
             </DialogHeader>
@@ -151,7 +112,7 @@ export const columns: ColumnDef<Employee>[] = [
                 <Button
                   variant={"destructive"}
                   onClick={async () => {
-                    await deleteUserById(data as string);
+                    await deleteFloorById(data as string);
                   }}
                 >
                   {/* @ts-ignore */}

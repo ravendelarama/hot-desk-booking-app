@@ -5,7 +5,12 @@ import { columns } from "./_components/columns";
 import { DataTable } from "./_components/data-table";
 import { Role } from "@prisma/client";
 // import { Separator } from "@/components/ui/separator";
-import { getBookings, getUserBookingCount } from "@/actions/actions";
+import {
+  getBookings,
+  getUserBookingCount,
+  getAllBookings,
+  getAllBookingCount,
+} from "@/actions/actions";
 import ItemDialog from "./_components/ItemDialog";
 import { Calendar } from "@/components/ui/calendar";
 import { RedirectType, redirect } from "next/navigation";
@@ -15,7 +20,9 @@ import { RedirectType, redirect } from "next/navigation";
 async function Bookings() {
   const session = await getSession();
   const bookings = await getBookings();
+  const allBookings = await getAllBookings();
   const totalUserBookings = await getUserBookingCount();
+  const totalBookings = await getAllBookingCount();
 
   if (session?.user.isBanned) redirect("/signin", RedirectType.replace);
 
@@ -29,7 +36,10 @@ async function Bookings() {
           : "My Bookings"}
       </h1>
       <h2 className="text-slate-500 text-sm">
-        You have {totalUserBookings} total amount of reservation as of now.
+        {session?.user?.role == Role.admin
+          ? `There ${totalBookings == 1 ? "is " : "are "} ${totalBookings} `
+          : `You have ${totalUserBookings} `}{" "}
+        total of reservation.
       </h2>
       {session?.user?.role === Role.user ||
       session?.user.role === Role.manager ? (
@@ -39,7 +49,7 @@ async function Bookings() {
           ))}
         </div>
       ) : (
-        <DataTable columns={columns} data={bookings} />
+        <DataTable columns={columns} data={allBookings} />
       )}
     </div>
   );

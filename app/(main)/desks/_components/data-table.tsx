@@ -86,12 +86,10 @@ export function DataTable<TData, TValue>({
       <div className="flex justify-between items-center">
         <div className="flex items-center py-4">
           <Input
-            placeholder="Filter Messages..."
-            value={
-              (table.getColumn("message")?.getFilterValue() as string) ?? ""
-            }
+            placeholder="Filter Desks..."
+            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
-              table.getColumn("message")?.setFilterValue(event.target.value)
+              table.getColumn("name")?.setFilterValue(event.target.value)
             }
             className="max-w-sm"
           />
@@ -114,42 +112,6 @@ export function DataTable<TData, TValue>({
               )}
             />
           </Button>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant={"destructive"} size={"icon"}>
-                <MdDelete className="h-4 w-4" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
-                  <IoIosWarning className="h-7 w-7 inline" />
-                  Are you sure you want to delete all the activities?
-                </DialogTitle>
-                {/** @ts-ignore */}
-                <DialogDescription>
-                  This action cannot be undone. Once you delete all activities,
-                  all of the data will be completely removed from the database.
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button variant={"secondary"}>Cancel</Button>
-                </DialogClose>
-                <DialogClose asChild>
-                  <Button
-                    variant={"destructive"}
-                    onClick={async () => {
-                      // @ts-ignore
-                      await deleteAllActivityLogs(data as string);
-                    }}
-                  >
-                    Continue
-                  </Button>
-                </DialogClose>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon" className="ml-auto">

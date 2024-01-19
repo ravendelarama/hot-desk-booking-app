@@ -12,7 +12,7 @@ interface Prop {
 
 function layout({ children }: Prop) {
   return (
-    <div className="min-h-screen flex overflow-hidden dark:bg-slate-950">
+    <div className="h-full flex overflow-hidden dark:bg-slate-950">
       <SideBar />
       <div className="relative flex flex-col sm:ml-72 w-full">
         <Header />

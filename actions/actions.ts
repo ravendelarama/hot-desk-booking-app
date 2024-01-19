@@ -9,6 +9,7 @@ import { revalidatePath } from "next/cache";
 import { eventLogFormats } from "@/lib/db";
 import moment from "moment";
 import { utapi } from "@/server/uploadthing";
+import { DesksFormSchema } from "@/app/(main)/desks/_components/UpdateRow";
 
 const FormSchema = z.object({
     floor: z.string()
@@ -46,6 +47,34 @@ async function getBookings() {
     return bookings;
 }
 
+async function getAllBookings() {
+    const data = await prisma.booking.findMany({
+        include: {
+            user: true,
+            desk: true
+        }
+    });
+
+    const bookings = data.reverse().map((item) => {
+        return {
+            id: item.id,
+            user: item.user,
+            desk: item.desk,
+            status: item.status,
+            occuredAt: item.startedAt,
+            bookedAt: item.bookedAt,
+            edit: {
+                id: item.id,
+                status: item.status
+            },
+            delete: item.id
+        }
+    });
+
+    revalidatePath("/bookings");
+    return bookings;
+}
+
 async function getUserBookingCount() {
     const session = await getSession();
 
@@ -54,11 +83,6 @@ async function getUserBookingCount() {
             userId: session?.user.id!
         }
     })
-}
-
-
-async function getAllBookings() {
-    return await prisma.booking.findMany()
 }
 
 async function getAllBookingCount() {
@@ -108,15 +132,6 @@ async function addBooking(book: Book, date: Date) {
 }
 
 async function getDesks(value: z.infer<typeof FormSchema>) {
-    // const parsed = FormSchema.safeParse(value);
-
-    // if (!parsed.success) {
-        
-    //     return {
-    //         message: "Validation Failed"
-    //     }
-    // }
-
     const desks = await prisma.floor.findUnique({
         where: {
             floor: value.floor
@@ -144,6 +159,69 @@ async function getDesks(value: z.infer<typeof FormSchema>) {
     return desks;
 }
 
+async function getAllDesks() {
+    const data = await prisma.desk.findMany({
+        include: {
+            Floor: true
+        }
+    });
+
+    const desks = data.map((item) => {
+        return {
+            id: item.id,
+            floor: item.Floor.floor,
+            name: item.name,
+            coordinates: item.coordinates,
+            status: item.status,
+            edit: {
+                id: item.id,
+                name: item.name,
+                coordinates: item.coordinates,
+                status: item.status
+            },
+            delete: item.id
+        }
+    })
+    revalidatePath("/desks");
+
+    return desks;
+}
+
+async function mutateDesk(
+    id: string,
+    name: string,
+    coord1: number,
+    coord2: number,
+    coord3: number,
+    status: DeskStatus
+) {
+
+    let arr = [coord1,coord2,coord3]
+
+    await prisma.desk.update({
+        where: {
+            id
+        },
+        data: {
+            name,
+            coordinates: arr,
+            status: status
+        }
+    });
+
+    revalidatePath("/desks");
+}
+
+async function deleteDeskById(id: string) {
+    await prisma.desk.delete({
+        where: {
+            id
+        }
+    });
+
+    revalidatePath("/desks");
+}
+
 async function getAvailableDesksCount() {
     return await prisma.desk.count({
         where: {
@@ -152,27 +230,97 @@ async function getAvailableDesksCount() {
     })
 }
 
-async function getFloors() {
-    return await prisma.floor.findMany();
+async function getAllFloors() {
+    const data = await prisma.floor.findMany();
+
+    const floors = data.map((item) => {
+        return {
+            id: item.id,
+            name: item.floor,
+            image: item.image,
+            edit: {
+                id: item.id,
+                name: item.floor,
+                image: item.image
+            },
+            delete: item.id
+        }
+    });
+
+    revalidatePath("/floors");
+    return floors;
 }
 
-async function addFloors(userId: string, image: string) {
-    const session = await getSession();
+async function deleteFloorById(id: string) {
+    const data = await prisma.floor.delete({
+        where: {
+            id
+        }
+    });
 
-    if (session?.user?.id === userId && session?.user?.role === Role.admin) {
-        
+    if (data?.image && data?.image.includes("https://utfs.io/f/")) {
+
+        const image = data?.image?.split("/")!;
+        console.log(image);
+        await utapi.deleteFiles(image[image?.length - 1]!);
     }
+
+    revalidatePath("/floors");
+}
+
+async function addFloor(name: string, image: File) {
+    
+    const uploaded = await utapi.uploadFiles(image)
+
+    const data = await prisma.floor.create({
+        // @ts-ignore
+        data: {
+            floor: name!,
+            image: uploaded.data?.url!
+        }
+    })
+
+    revalidatePath("/floors");
+}
+
+async function mutateFloor(id: string, name: string, image: File) {
+    const prev = await prisma.floor.findFirst({
+        where: {
+            id
+        }
+    });
+
+    if (prev?.image && prev?.image.includes("https://utfs.io/f/")) {
+
+        const image = prev?.image?.split("/")!;
+        console.log(image);
+        await utapi.deleteFiles(image[image?.length - 1]!);
+    }
+
+    const uploaded = await utapi.uploadFiles(image)
+
+    await prisma.floor.update({
+        where: {
+            id
+        },
+        // @ts-ignore
+        data: {
+            floor: name!,
+            image: uploaded.data?.url!
+        }
+    })
+
+    revalidatePath("/floors");
+}
+
+async function addDesk() {
+
 }
 
 
 async function getOtherUsers() {
     const session = await getSession();
 
-    // if (!session?.user) {
-    //     return {
-    //         message: "Session has expired."
-    //     }
-    // }
 
     const data = await prisma.user.findMany({
         where: {
@@ -255,27 +403,21 @@ async function logoutUser() {
 async function deleteUserById(email: string) {
     const session = await getSession();
 
-    console.log(email)
-
-    if (session?.user && session.user.role === Role.admin) {
-        const user = await prisma.user.delete({
+    const user = await prisma.user.delete({
             where: {
                 email
             }
-        });
+    });
 
-        user?.image?.split("/").findLast((value) => {
-            console.log(`${value} ${user?.image}`)
-        })
+    if (user?.image && user?.image.includes("https://utfs.io/f/")) {
 
-        if(user?.image) await utapi.deleteFiles(user?.image);
-
+        const image = user.image?.split("/")!;
+        console.log(image);
+        await utapi.deleteFiles(image[image?.length - 1]!);
     }
+    
 
     revalidatePath("/employees");
-    return {
-        message: "User has been deleted successfully."
-    }
 }
 
 async function cancelBooking(bookId: string) {
@@ -360,7 +502,9 @@ async function checkOut(bookId: string) {
     revalidatePath("/bookings");
 }
 
-
+async function getFloors() {
+    return await prisma.floor.findMany();
+}
  
 async function mutateUser(userId: string, credentials: any) {
     const session = await getSession();
@@ -416,7 +560,8 @@ async function getActivityLogs() {
             user: item.User,
             activity: item.activity,
             message: item.message,
-            occuredAt: item.occuredAt
+            occuredAt: item.occuredAt,
+            delete: item.id
         }
     });
     
@@ -434,13 +579,59 @@ async function upcomingBookings() {
     });
 }
 
+async function deleteBookingById(id: string) {
+    await prisma.booking.delete({
+        where: {
+            id
+        }
+    });
+
+    revalidatePath("/bookings");
+
+}
+
+async function mutateBooking(id: string, status: string) {
+    await prisma.booking.update({
+        where: {
+            id
+        },
+        data: {
+            // @ts-ignore
+            status
+        }
+    });
+
+    revalidatePath("/bookings");
+}
+
+async function deleteActivityLogById(id: string) {
+    await prisma.log.delete({
+        where: {
+            id
+        }
+    });
+
+    revalidatePath("/activity-logs");
+}
+
+async function deleteAllActivityLogs() {
+    await prisma.log.deleteMany();
+
+    revalidatePath("/activity-logs");
+}
+
 // reset password
 
 export {
     getDesks,
+    getFloors,
     getAvailableDesksCount,
     getBookings,
-    getFloors,
+    getAllBookings,
+    mutateFloor,
+    getAllFloors,
+    deleteFloorById,
+    addFloor,
     addBooking,
     getOtherUsers,
     getAllBookingCount,
@@ -452,8 +643,15 @@ export {
     checkIn,
     checkOut,
     mutateUser,
+    deleteBookingById,
     deleteUserById,
-    getActivityLogs
+    mutateBooking,
+    getActivityLogs,
+    deleteActivityLogById,
+    deleteAllActivityLogs,
+    deleteDeskById,
+    getAllDesks,
+    mutateDesk
 }
 
 

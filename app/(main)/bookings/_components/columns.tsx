@@ -3,13 +3,15 @@
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { useState } from "react";
-import { MdEdit } from "react-icons/md";
+import { MdDelete, MdEdit } from "react-icons/md";
 
 import { ColumnDef } from "@tanstack/react-table";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -31,6 +33,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { MdManageAccounts } from "react-icons/md";
 import { FaUserCheck, FaUserEdit } from "react-icons/fa";
+import { deleteBookingById } from "@/actions/actions";
+import UpdateRow from "./UpdateRow";
 
 type Bookings = {
   id: string;
@@ -39,6 +43,8 @@ type Bookings = {
   status: string;
   occuredAt: Date;
   bookedAt: Date;
+  edit?: object;
+  delete?: string;
 };
 
 export const columns: ColumnDef<Bookings>[] = [
@@ -166,6 +172,73 @@ export const columns: ColumnDef<Bookings>[] = [
           Booking Date
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
+      );
+    },
+  },
+  {
+    accessorKey: "edit",
+    header: "edit",
+    cell: (props) => {
+      const data = props.getValue();
+      return (
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant={"secondary"} size={"icon"}>
+              <MdEdit className="h-4 w-4" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Edit</DialogTitle>
+              <DialogDescription></DialogDescription>
+            </DialogHeader>
+            <UpdateRow data={data} />
+          </DialogContent>
+        </Dialog>
+      );
+    },
+  },
+  {
+    accessorKey: "delete",
+    header: "delete",
+    cell: (props) => {
+      const data = props.getValue();
+      return (
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant={"destructive"} size={"icon"}>
+              <MdDelete className="h-4 w-4" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>
+                Are you sure you want to delete this user?
+              </DialogTitle>
+              {/** @ts-ignore */}
+              <DialogDescription>
+                This action cannot be undone. Once you delete a certain user,
+                the data will be completely removed from the database.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant={"secondary"}>Cancel</Button>
+              </DialogClose>
+              <DialogClose asChild>
+                <Button
+                  variant={"destructive"}
+                  onClick={async () => {
+                    await deleteBookingById(data as string);
+                  }}
+                >
+                  {/* @ts-ignore */}
+                  Continue
+                </Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       );
     },
   },
