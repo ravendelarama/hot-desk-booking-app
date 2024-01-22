@@ -24,17 +24,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-
-import {
   Table,
   TableBody,
   TableCell,
@@ -45,9 +34,6 @@ import {
 import { useRouter } from "next/navigation";
 import { LuRefreshCcw } from "react-icons/lu";
 import { cn } from "@/lib/utils";
-import { MdDelete } from "react-icons/md";
-import { deleteAllActivityLogs } from "@/actions/actions";
-import { IoIosRemoveCircle, IoIosWarning } from "react-icons/io";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];

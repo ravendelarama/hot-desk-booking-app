@@ -32,7 +32,7 @@ function SignUp() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <UploadDropzone
+          {/* <UploadDropzone
             endpoint="imageUploader"
             onClientUploadComplete={async (res) => {
               // Do something with the response
@@ -55,7 +55,7 @@ function SignUp() {
               alert(`ERROR! ${error.message}`);
             }}
             className="p-10 border-none hover:border-slate-800 ut-label:text-lg ut-allowed-content:ut-uploading:text-red-300"
-          />
+          /> */}
           <Form image={image!} />
         </CardContent>
         <CardFooter className="flex flex-col items-center space-y-4">

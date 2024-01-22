@@ -569,14 +569,93 @@ async function getActivityLogs() {
 }
 
 async function upcomingBookings() {
-    return await prisma.booking.count({
+    const bookings = await prisma.booking.findMany({
         where: {
             status: BookingStatus.checked_in
         },
-        select: {
-            userId: true
+        include: {
+            desk: {
+                select: {
+                    name: true
+                }
+            },
+        },
+        orderBy: {
+            startedAt: "asc"
         }
     });
+
+    revalidatePath("/home");
+
+    return bookings;
+}
+
+async function recentActivityLogs() {
+    const logs = await prisma.log.findMany({
+        take: 5,
+        orderBy: {
+            occuredAt: "desc"
+        }
+    });
+
+    revalidatePath("/home");
+    
+    return logs;
+}
+
+async function getMonthlyBookings() {
+    const bookings = await prisma.booking.findMany({});
+
+    let month1 = bookings.map((item) => {
+        if (item.bookedAt.getMonth() == moment().month()) {
+            return true;
+        }
+    });
+
+    let month2 = bookings.map((item) => {
+        if (item.bookedAt.getMonth() == moment().subtract(2, "months").month()) {
+            return true;
+        }
+    });
+
+
+    let month3 = bookings.map((item) => {
+        if (item.bookedAt.getMonth() == moment().subtract(3, "months").month()) {
+            return true;
+        }
+    });
+
+    let month4 = bookings.map((item) => {
+        if (item.bookedAt.getMonth() == moment().subtract(4, "months").month()) {
+            return true;
+        }
+    });
+
+
+    month1 = month1.filter((item) => {
+        return typeof item != undefined && item;
+    });
+
+    month2 = month2.filter((item) => {
+        if(typeof item != undefined) return item;
+    });
+
+    month3 = month3.filter((item) => {
+        if(typeof item != undefined) return item;
+    });
+
+    month4 = month4.filter((item) => {
+        if(typeof item != undefined) return item;
+    });
+
+    revalidatePath("/home");
+
+    return [
+        month1,
+        month2,
+        month3,
+        month4,
+    ];
 }
 
 async function deleteBookingById(id: string) {
@@ -597,11 +676,12 @@ async function mutateBooking(id: string, status: string) {
         },
         data: {
             // @ts-ignore
-            status
+            status,
         }
     });
 
     revalidatePath("/bookings");
+    revalidatePath("/home");
 }
 
 async function deleteActivityLogById(id: string) {
@@ -624,6 +704,7 @@ async function deleteAllActivityLogs() {
 
 export {
     getDesks,
+    recentActivityLogs,
     getFloors,
     getAvailableDesksCount,
     getBookings,
@@ -651,7 +732,9 @@ export {
     deleteAllActivityLogs,
     deleteDeskById,
     getAllDesks,
-    mutateDesk
+    getMonthlyBookings,
+    mutateDesk,
+    upcomingBookings
 }
 
 

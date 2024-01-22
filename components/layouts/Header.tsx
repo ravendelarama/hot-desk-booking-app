@@ -21,6 +21,7 @@ import { RxActivityLog } from "react-icons/rx";
 import { FiUserCheck } from "react-icons/fi";
 import { PiUsersThree } from "react-icons/pi";
 import { FaQ } from "react-icons/fa6";
+import { BsFillJournalBookmarkFill } from "react-icons/bs";
 
 const Routes = [
   {
@@ -42,7 +43,9 @@ const Routes = [
     role: "user",
     alternative: "Bookings",
     path: "/bookings",
-    icon: (options: string) => <BiBookBookmark className={options} />,
+    icon: (options: string) => (
+      <BsFillJournalBookmarkFill className={options} />
+    ),
   },
   {
     name: "Reserve",
@@ -57,20 +60,6 @@ const Routes = [
     alternative: "Verifications",
     path: "/verification-requests",
     icon: (options: string) => <FiUserCheck className={options} />,
-  },
-  {
-    name: "Activity Logs",
-    role: "admin",
-    alternative: "Activity Logs",
-    path: "/activity-logs",
-    icon: (options: string) => <RxActivityLog className={options} />,
-  },
-  {
-    name: "FAQs",
-    role: "user",
-    alternative: "FAQs",
-    path: "/faq",
-    icon: (options: string) => <FaQ className={options} />,
   },
   {
     name: "Floors",
@@ -92,7 +81,7 @@ function Header() {
   const { data: session } = useSession();
 
   return (
-    <div className="z-10 h-20 w-full fixed top-0 right-0 border-b border-slate-300 bg-white dark:bg-slate-950 dark:border-b-slate-800 sm:pl-72">
+    <div className="z-10 h-16 w-full fixed top-0 right-0 border-b border-slate-300 bg-white dark:bg-slate-950 dark:border-b-slate-800 sm:pl-72">
       <div className="h-full flex justify-between items-center px-6">
         <SideBarSheet title="HotDeskBooking">
           {Routes.map((item) => {
@@ -108,9 +97,7 @@ function Header() {
 
             if (
               !(session?.user.role == Role.admin) &&
-              (item.name == "Colleagues" ||
-                item.name == "Verifications" ||
-                item.name == "Activity Logs")
+              (item.name == "Colleagues" || item.name == "Verifications")
             ) {
               return null;
             }

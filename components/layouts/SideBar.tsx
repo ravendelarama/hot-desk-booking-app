@@ -12,6 +12,7 @@ import { RxActivityLog } from "react-icons/rx";
 import { FiUserCheck } from "react-icons/fi";
 import { PiUsersThree } from "react-icons/pi";
 import { FaQ } from "react-icons/fa6";
+import { BsFillJournalBookmarkFill } from "react-icons/bs";
 
 const Routes = [
   {
@@ -33,7 +34,9 @@ const Routes = [
     role: "user",
     alternative: "Bookings",
     path: "/bookings",
-    icon: (options: string) => <BiBookBookmark className={options} />,
+    icon: (options: string) => (
+      <BsFillJournalBookmarkFill className={options} />
+    ),
   },
   {
     name: "Reserve",
@@ -48,20 +51,6 @@ const Routes = [
     alternative: "Verifications",
     path: "/verification-requests",
     icon: (options: string) => <FiUserCheck className={options} />,
-  },
-  {
-    name: "Activity Logs",
-    role: "admin",
-    alternative: "Activity Logs",
-    path: "/activity-logs",
-    icon: (options: string) => <RxActivityLog className={options} />,
-  },
-  {
-    name: "FAQs",
-    role: "user",
-    alternative: "FAQs",
-    path: "/faq",
-    icon: (options: string) => <FaQ className={options} />,
   },
   {
     name: "Floors",
@@ -83,7 +72,7 @@ function SideBar() {
   const { data: session } = useSession();
 
   return (
-    <div className="z-20 w-72 p-5 h-screen bg-white fixed top-0 left-0 hidden border-r border-r-slate-300 dark:border-r-slate-800 dark:bg-slate-950 sm:block">
+    <div className="z-20 w-56 p-5 h-screen bg-white fixed top-0 left-0 hidden border-r border-r-slate-300 dark:border-r-slate-800 dark:bg-slate-950 sm:block">
       <div className="h-20 flex space-x-3 gap-5">
         <h1>HotDeskBooking</h1>
       </div>
@@ -101,9 +90,7 @@ function SideBar() {
 
           if (
             !(session?.user.role == Role.admin) &&
-            (item.name == "Colleagues" ||
-              item.name == "Verifications" ||
-              item.name == "Activity Logs")
+            (item.name == "Colleagues" || item.name == "Verifications")
           ) {
             return null;
           }

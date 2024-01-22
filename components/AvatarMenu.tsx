@@ -14,11 +14,14 @@ import { Button } from "./ui/button";
 import { useSession, signOut } from "next-auth/react";
 import { DropdownMenuGroup } from "@radix-ui/react-dropdown-menu";
 import { ModeToggle } from "./ModeToggler";
+import { Suspense } from "react";
 import { logoutUser } from "@/actions/actions";
+import { Link } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 function AvatarMenu() {
   const { data: session } = useSession();
-
+  const router = useRouter();
   return (
     <div className="">
       <DropdownMenu>
@@ -30,9 +33,7 @@ function AvatarMenu() {
                 "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png"
               }
             />
-            <AvatarFallback>
-              <Skeleton className="w-10 h-10 rounded-full" />
-            </AvatarFallback>
+            <AvatarFallback>SD</AvatarFallback>
           </Avatar>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
@@ -51,10 +52,25 @@ function AvatarMenu() {
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem className="p-0"></DropdownMenuItem>
+            <DropdownMenuItem className="flex justify-start" asChild>
+              <Button
+                variant={null}
+                className="w-full h-8 cursor-pointer"
+                onClick={() => {
+                  router.push("/activity-logs");
+                }}
+              >
+                Activity logs
+              </Button>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
           <DropdownMenuItem className="flex justify-start" asChild>
             <Button
               variant={null}
-              className="w-full cursor-pointer"
+              className="w-full h-8 cursor-pointer"
               onClick={async () => {
                 await logoutUser();
                 signOut();

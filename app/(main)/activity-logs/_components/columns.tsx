@@ -57,8 +57,9 @@ export const columns: ColumnDef<Logs>[] = [
           <HoverCardContent className="md:w-600">
             <div className="flex gap-3 justify-between h-full">
               <Avatar>
-                <AvatarImage src="https://github.com/shadcn.png" />
-                <AvatarFallback>CN</AvatarFallback>
+                {/* @ts-ignore */}
+                <AvatarImage src={data?.image} />
+                <AvatarFallback>SD</AvatarFallback>
               </Avatar>
               <div className="flex flex-col gap-3">
                 <TooltipProvider>
