@@ -35,11 +35,11 @@ import {
 } from "@/actions/actions";
 import { useToast } from "@/components/ui/use-toast";
 import { DeskStatus } from "@prisma/client";
-import { useState } from "react";
-import { FileUploader } from "react-drag-drop-files";
-import ImageUploader from "./ImageUploader";
+import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { UploadDropzone } from "@/utils/uploadthing";
+import { generateClientDropzoneAccept } from "uploadthing/client";
+import { useUploadThing } from "@/utils/uploadthing";
+import { HiOutlineUpload } from "react-icons/hi";
 
 export const formSchema = z.object({
   name: z.string(),
@@ -62,16 +62,39 @@ function UpdateRow({
     },
   });
 
-  const [file, setFile] = useState<any>();
-  const [selected, setSelected] = useState<boolean>(false);
+  const [files, setFiles] = useState<File[]>([]);
   const { toast } = useToast();
 
-  function handleChange(image: File) {
-    setFile(file);
-  }
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    setFiles(acceptedFiles);
+  }, []);
+
+  const { startUpload, permittedFileInfo } = useUploadThing("imageUploader", {
+    onClientUploadComplete: () => {
+      alert("uploaded successfully!");
+    },
+    onUploadError: () => {
+      alert("error occurred while uploading");
+    },
+    onUploadBegin: () => {
+      alert("upload has begun");
+    },
+  });
+
+  const fileTypes = permittedFileInfo?.config
+    ? Object.keys(permittedFileInfo?.config)
+    : [];
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
+  });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await mutateFloor(data?.id, values.name, file);
+    const image = startUpload(files);
+    if (image) {
+      await mutateFloor(data?.id, values.name, image);
+    }
 
     toast({
       title: "Updated Desk",
@@ -81,26 +104,16 @@ function UpdateRow({
 
   return (
     <>
-      <div>
-        <UploadDropzone
-          className="py-10 px-20 rounded border border-slate-600"
-          content={{
-            button: "Select",
-            allowedContent: selected ? file[0].name : "Floor map",
-          }}
-          endpoint="imageUploader"
-          onClientUploadComplete={(res) => {
-            // Do something with the response
-            setFile(res);
-            setSelected(true);
-          }}
-          onUploadError={(error: Error) => {
-            // Do something with the error.
-            toast({
-              title: "Uploading Failed!",
-            });
-          }}
-        />
+      <div
+        {...getRootProps()}
+        className="flex justify-center items-center p-10 border border-dashed border-[#53BDFF] rounded-md w-full"
+      >
+        <input {...getInputProps()} />
+        <div className="w-full flex flex-col justify-center items-center gap-3">
+          <HiOutlineUpload className="h-12 w-12 text-[#53BDFF] text-center" />
+          <h4 className="text-center text-sm">Drop files here!</h4>
+          <p>{files.length > 0 && files[0].name}</p>
+        </div>
       </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -120,22 +133,7 @@ function UpdateRow({
 
           <div className="flex flex-col md:flex-row justify-end gap-5 item-center">
             <DialogClose asChild>
-              <Button
-                variant={"secondary"}
-                onClick={async () => {
-                  if (file) {
-                    const res = await deleteImageByUrl(file[0].key);
-
-                    if (res.success) {
-                      toast({
-                        description: "Canceled",
-                      });
-                    }
-                  }
-                }}
-              >
-                Cancel
-              </Button>
+              <Button variant={"secondary"}>Cancel</Button>
             </DialogClose>
             <DialogClose asChild>
               <Button variant={"success"} type="submit">

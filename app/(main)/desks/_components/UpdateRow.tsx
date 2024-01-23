@@ -87,7 +87,7 @@ function UpdateRow({
             <FormItem>
               <FormLabel>Desk Name</FormLabel>
               <FormControl>
-                <Input placeholder="D#" {...field} />
+                <Input placeholder="Desk" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -95,14 +95,14 @@ function UpdateRow({
         />
 
         <div className="flex justify-around items-center gap-4">
-          <p>Coordinates</p>
           <FormField
             control={form.control}
             name="coord1"
             render={({ field }) => (
               <FormItem>
+                <FormLabel>x</FormLabel>
                 <FormControl>
-                  <Input placeholder="" {...field} />
+                  <Input placeholder="0" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -113,8 +113,9 @@ function UpdateRow({
             name="coord2"
             render={({ field }) => (
               <FormItem>
+                <FormLabel>y</FormLabel>
                 <FormControl>
-                  <Input placeholder="" {...field} />
+                  <Input placeholder="0" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -125,8 +126,9 @@ function UpdateRow({
             name="coord3"
             render={({ field }) => (
               <FormItem>
+                <FormLabel>scale</FormLabel>
                 <FormControl>
-                  <Input placeholder="" {...field} />
+                  <Input placeholder="0" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

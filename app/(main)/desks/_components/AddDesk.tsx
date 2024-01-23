@@ -109,7 +109,7 @@ function AddDesk() {
             <FormItem>
               <FormLabel>Desk Name</FormLabel>
               <FormControl>
-                <Input placeholder="D#" {...field} />
+                <Input placeholder="Desk" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -124,7 +124,7 @@ function AddDesk() {
               <FormItem>
                 <FormLabel>x</FormLabel>
                 <FormControl>
-                  <Input placeholder="" {...field} />
+                  <Input placeholder="0" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -137,7 +137,7 @@ function AddDesk() {
               <FormItem>
                 <FormLabel>y</FormLabel>
                 <FormControl>
-                  <Input placeholder="" {...field} />
+                  <Input placeholder="0" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -150,7 +150,7 @@ function AddDesk() {
               <FormItem>
                 <FormLabel>scale</FormLabel>
                 <FormControl>
-                  <Input placeholder="" {...field} />
+                  <Input placeholder="0" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

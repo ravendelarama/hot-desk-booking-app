@@ -1,45 +1,58 @@
 "use client";
 
-import { useState } from "react";
-import ImageUploader from "./ImageUploader";
+import { useCallback, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { addFloor, deleteImageByUrl } from "@/actions/actions";
-import { UploadButton, UploadDropzone } from "@/utils/uploadthing";
+import { addFloor } from "@/actions/actions";
 import { toast } from "@/components/ui/use-toast";
 import { DialogClose, DialogFooter } from "@/components/ui/dialog";
+import { useDropzone } from "@uploadthing/react/hooks";
+import { generateClientDropzoneAccept } from "uploadthing/client";
+import { useUploadThing } from "@/utils/uploadthing";
+import { HiOutlineUpload } from "react-icons/hi";
 
 function AddFloor() {
   const [name, setName] = useState<string>("");
-  const [file, setFile] = useState<any>();
-  const [selected, setSelected] = useState<boolean>(false);
+  const [files, setFiles] = useState<File[]>([]);
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    setFiles(acceptedFiles);
+  }, []);
 
-  function handleChange(image: any) {
-    setFile(image);
-  }
+  const { startUpload, permittedFileInfo } = useUploadThing("imageUploader", {
+    onClientUploadComplete: () => {
+      alert("uploaded successfully!");
+    },
+    onUploadError: () => {
+      alert("error occurred while uploading");
+    },
+    onUploadBegin: () => {
+      alert("upload has begun");
+    },
+  });
+
+  const fileTypes = permittedFileInfo?.config
+    ? Object.keys(permittedFileInfo?.config)
+    : [];
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
+  });
 
   return (
     <div className="space-y-4">
-      <div className="py-5 px-4">
-        <UploadDropzone
-          className="py-10 px-20 rounded border border-slate-600"
-          content={{
-            button: "Select",
-            allowedContent: selected ? file[0].name : "Floor map",
-          }}
-          endpoint="imageUploader"
-          onClientUploadComplete={(res) => {
-            // Do something with the response
-            setFile(res);
-            setSelected(true);
-          }}
-          onUploadError={(error: Error) => {
-            // Do something with the error.
-            toast({
-              title: "Uploading Failed!",
-            });
-          }}
-        />
+      <div
+        {...getRootProps()}
+        className="flex justify-center items-center p-10 border border-dashed border-[#53BDFF] rounded-md w-full"
+      >
+        <input {...getInputProps()} />
+        <div className="w-full flex flex-col justify-center items-center gap-3">
+          <h3 className="text-2xl font-bold">
+            <HiOutlineUpload className="h-12 w-12 text-[#53BDFF] text-center" />
+          </h3>
+          <h4 className="text-center text-sm">Drop files here!</h4>
+          <p>{files.length > 0 && files[0].name}</p>
+        </div>
       </div>
       <Input
         placeholder="Floor name"
@@ -49,22 +62,16 @@ function AddFloor() {
       />
       <DialogFooter>
         <DialogClose asChild>
-          <Button
-            variant={"secondary"}
-            onClick={async () => {
-              if (file) {
-                await deleteImageByUrl(file[0].key);
-              }
-            }}
-          >
-            Cancel
-          </Button>
+          <Button variant={"secondary"}>Cancel</Button>
         </DialogClose>
         <DialogClose asChild>
           <Button
             variant={"success"}
             onClick={async () => {
-              await addFloor(name, file);
+              const image = startUpload(files);
+              if (image) {
+                await addFloor(name, image);
+              }
             }}
           >
             Continue

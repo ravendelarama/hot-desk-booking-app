@@ -569,7 +569,6 @@ async function getFloors() {
 }
  
 async function mutateUser(userId: string, credentials: any) {
-    const session = await getSession();
 
     const data = await prisma.user.update({
         where: {
@@ -598,7 +597,7 @@ async function mutateUser(userId: string, credentials: any) {
                 Log: {
                     create: {
                         activity: EventType.promoted,
-                        message: eventLogFormats.promoted(`${session?.user?.firstName} ${session?.user.lastName}`, credentials.role)
+                        message: eventLogFormats.promoted(`${data?.firstName} ${data?.lastName}`, credentials.role)
                     },
                 }
             }
