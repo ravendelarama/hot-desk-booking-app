@@ -13,7 +13,6 @@ import Form from "../../_components/SignUpForm";
 import { Separator } from "@/components/ui/separator";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { UploadDropzone } from "@/utils/uploadthing";
 import { useToast } from "@/components/ui/use-toast";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
