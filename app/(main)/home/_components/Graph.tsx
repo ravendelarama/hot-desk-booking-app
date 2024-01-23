@@ -36,10 +36,10 @@ export default function BookingGraph({
 }: {
   data: (boolean | undefined)[][];
 }) {
-  const month4 = moment().subtract(3, "months").format("MMM");
-  const month3 = moment().subtract(2, "months").format("MMM");
-  const month2 = moment().subtract(1, "months").format("MMM");
-  const month1 = moment().format("MMM");
+  const month4 = moment().subtract(4, "months").format("MMM");
+  const month3 = moment().subtract(3, "months").format("MMM");
+  const month2 = moment().subtract(2, "months").format("MMM");
+  const month1 = moment().subtract(1, "month").format("MMM");
 
   console.log(data);
 
@@ -51,7 +51,7 @@ export default function BookingGraph({
           labels: [month4, month3, month2, month1],
           datasets: [
             {
-              label: "months",
+              label: "Bookings",
               backgroundColor: "#53BDFF",
               borderRadius: 5,
               data: [

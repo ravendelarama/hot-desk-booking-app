@@ -13,6 +13,10 @@ import { FiUserCheck } from "react-icons/fi";
 import { PiUsersThree } from "react-icons/pi";
 import { FaQ } from "react-icons/fa6";
 import { BsFillJournalBookmarkFill } from "react-icons/bs";
+import Image from "next/image";
+import textPicDark from "@/public/text-dark.png";
+import textPicLight from "@/public/text-light.png";
+import { useTheme } from "next-themes";
 
 const Routes = [
   {
@@ -70,12 +74,15 @@ const Routes = [
 
 function SideBar() {
   const { data: session } = useSession();
+  const { theme } = useTheme();
 
   return (
     <div className="z-20 w-56 p-5 h-screen bg-white fixed top-0 left-0 hidden border-r border-r-slate-300 dark:border-r-slate-800 dark:bg-slate-950 sm:block">
-      <div className="h-20 flex space-x-3 gap-5">
-        <h1>HotDeskBooking</h1>
-      </div>
+      {theme == "dark" ? (
+        <Image src={textPicLight} alt="" width={100} height={3} />
+      ) : (
+        <Image src={textPicDark} alt="" width={100} height={3} />
+      )}
       <div>
         {Routes.map((item) => {
           if (

@@ -86,6 +86,25 @@ async function getUserBookingCount() {
     })
 }
 
+async function getUserCheckInCount() {
+    const checkins = await prisma.booking.count({
+        where: {
+            OR: [
+                {
+                    status: BookingStatus.checked_in
+                },
+                {
+                    status: BookingStatus.checked_out
+                }
+            ]
+        }
+    });
+
+    revalidatePath("/home");
+    
+    return checkins;
+}
+
 async function getAllBookingCount() {
     return await prisma.booking.count()
 }
@@ -668,26 +687,26 @@ async function getMonthlyBookings() {
     const bookings = await prisma.booking.findMany({});
 
     let month1 = bookings.map((item) => {
-        if (item.bookedAt.getMonth() == moment().month()) {
+        if (item.bookedAt.getMonth() == moment().subtract(0, "month").month()) {
             return true;
         }
     });
 
     let month2 = bookings.map((item) => {
-        if (item.bookedAt.getMonth() == moment().subtract(1, "months").month()) {
+        if (item.bookedAt.getMonth() == moment().subtract(2, "months").month()) {
             return true;
         }
     });
 
 
     let month3 = bookings.map((item) => {
-        if (item.bookedAt.getMonth() == moment().subtract(2, "months").month()) {
+        if (item.bookedAt.getMonth() == moment().subtract(3, "months").month()) {
             return true;
         }
     });
 
     let month4 = bookings.map((item) => {
-        if (item.bookedAt.getMonth() == moment().subtract(3, "months").month()) {
+        if (item.bookedAt.getMonth() == moment().subtract(4, "months").month()) {
             return true;
         }
     });
@@ -761,12 +780,35 @@ async function deleteAllActivityLogs() {
     revalidatePath("/activity-logs");
 }
 
+
+async function getUserUpcomingReservation() {
+    const session = await getSession();
+
+    const upReservation = await prisma.booking.findMany({
+        where: {
+            userId: session?.user.id,
+            status: BookingStatus.waiting,
+        },
+        include: {
+            desk: {
+                select: {
+                    name: true
+                }
+            }
+        }
+    });
+
+    revalidatePath("/home");
+    return upReservation;
+}
+
 // reset password
 
 export {
     getDesks,
     recentActivityLogs,
     getFloors,
+    getUserUpcomingReservation,
     getAvailableDesksCount,
     getBookings,
     getAllBookings,
@@ -792,6 +834,7 @@ export {
     getActivityLogs,
     deleteActivityLogById,
     deleteAllActivityLogs,
+    getUserCheckInCount,
     deleteDeskById,
     getAllDesks,
     getMonthlyBookings,

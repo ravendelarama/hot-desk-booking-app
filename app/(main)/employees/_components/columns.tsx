@@ -79,7 +79,17 @@ export const columns: ColumnDef<Employee>[] = [
 
   {
     accessorKey: "email",
-    header: "Email",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Email
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
     cell: (props) => {
       return (
         <Suspense fallback={<Skeleton className="w-32 h-4 rounded-lg" />}>

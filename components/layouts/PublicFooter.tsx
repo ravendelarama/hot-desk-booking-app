@@ -1,8 +1,7 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
 
-function Footer() {
+function PublicFooter() {
   function getYear() {
     return new Date().getFullYear();
   }
@@ -25,9 +24,6 @@ function Footer() {
         px-5 
         lg:py-6
         lg:px-10
-        border-t
-      border-t-slate-300
-      dark:border-t-slate-800
       "
     >
       <p className="text-xs font-medium text-slate-600 transition-colors duration-75 ease-in hover:text-slate-400">
@@ -73,7 +69,7 @@ function Footer() {
             ease-in 
             hover:text-slate-400
           "
-          href="https://www.termsfeed.com/live/90cde2b8-5eff-49bc-8f0d-76439c30594c"
+          href="https://www.termsfeed.com/live/692e4cf6-fab6-4248-b2d1-f70df161dd08"
           target="_"
         >
           Privacy Policy
@@ -100,4 +96,4 @@ function Footer() {
   );
 }
 
-export default Footer;
+export default PublicFooter;

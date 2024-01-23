@@ -114,7 +114,7 @@ export function DataTable<TData, TValue>({
               )}
             />
           </Button>
-          <Dialog>
+          {/* <Dialog>
             <DialogTrigger asChild>
               <Button variant={"destructive"} size={"icon"}>
                 <MdDelete className="h-4 w-4" />
@@ -126,7 +126,6 @@ export function DataTable<TData, TValue>({
                   <IoIosWarning className="h-7 w-7 inline" />
                   Are you sure you want to delete all the activities?
                 </DialogTitle>
-                {/** @ts-ignore */}
                 <DialogDescription>
                   This action cannot be undone. Once you delete all activities,
                   all of the data will be completely removed from the database.
@@ -140,7 +139,6 @@ export function DataTable<TData, TValue>({
                   <Button
                     variant={"destructive"}
                     onClick={async () => {
-                      // @ts-ignore
                       await deleteAllActivityLogs(data as string);
                     }}
                   >
@@ -149,7 +147,7 @@ export function DataTable<TData, TValue>({
                 </DialogClose>
               </DialogFooter>
             </DialogContent>
-          </Dialog>
+          </Dialog> */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon" className="ml-auto">

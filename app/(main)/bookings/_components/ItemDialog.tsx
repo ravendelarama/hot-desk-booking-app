@@ -39,11 +39,9 @@ function ItemDialog({ item }: any) {
           <div className="w-full flex flex-col py-5 px-10 gap-5 border border-slate-800 rounded-lg">
             <div className="flex justify-between gap-1">
               <h1>{item.desk?.name}</h1>
-              <h2>
-                <p className="text-gray-500 text-sm">
-                  {moment(item.bookedAt).fromNow()}
-                </p>
-              </h2>
+              <p className="text-gray-500 text-sm">
+                {moment(item.bookedAt).fromNow()}
+              </p>
             </div>
             <div className="flex flex-col justify-start item-center gap-4">
               <p className="text-gray-500 text-sm font-bold">
@@ -57,7 +55,7 @@ function ItemDialog({ item }: any) {
                     moment(item.occuredAt).fromNow()}
               </p>
               <Badge
-                className="w-fit"
+                className="w-fit self-end"
                 variant={
                   item.status === "no_show"
                     ? "default"

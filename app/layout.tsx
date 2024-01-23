@@ -8,11 +8,12 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "./api/uploadthing/core";
+import PublicFooter from "@/components/layouts/PublicFooter";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Hot Desk",
+  title: "SpotDesk",
   description: "Hot desk booking web application",
 };
 

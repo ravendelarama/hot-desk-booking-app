@@ -6,6 +6,8 @@ import {
   getMonthlyBookings,
   getOtherUsers,
   getUserBookingCount,
+  getUserCheckInCount,
+  getUserUpcomingReservation,
   recentActivityLogs,
 } from "@/actions/actions";
 import {
@@ -17,23 +19,23 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { BsFillJournalBookmarkFill } from "react-icons/bs";
-import { FaUsers } from "react-icons/fa6";
 
-import { Separator } from "@/components/ui/separator";
 import { getSession } from "@/lib/next-auth";
 import moment from "moment";
 import { RedirectType, redirect } from "next/navigation";
 import { PiUsersThree, PiUsersThreeFill } from "react-icons/pi";
 import { GiDesk } from "react-icons/gi";
 import BookingGraph from "./_components/Graph";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Role } from "@prisma/client";
 
 async function Home() {
   const totalEmployees = await getAllUserCount();
   const totalBookings = await getAllBookingCount();
+  const totalUserBookings = await getUserBookingCount();
   const totalAvailableDesks = await getAvailableDesksCount();
   const recentLogs = await recentActivityLogs();
+  const upcomingReservations = await getUserUpcomingReservation();
+  const userCheckins = await getUserCheckInCount();
   const session = await getSession();
   const monthlyBookings = await getMonthlyBookings();
 
@@ -42,7 +44,7 @@ async function Home() {
   return (
     <div className="p-3 sm:pt-10 sm:pl-10 flex flex-col space-y-5">
       <h1 className="text-3xl font-bold font-sans">Home</h1>
-      {session?.user?.role === Role.admin && (
+      {session?.user?.role === Role.admin ? (
         <>
           <div className="flex justify-around item-center flex-wrap gap-5">
             <Card className="grow">
@@ -135,6 +137,74 @@ async function Home() {
                 ))}
               </CardContent>
             </Card>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="flex item-center flex-wrap gap-5">
+            <Card className="grow">
+              <CardHeader>
+                <CardTitle className="flex justify-between items-center w-full">
+                  <p className="text-sm text-left">Your total bookings</p>
+
+                  <BsFillJournalBookmarkFill className="text-slate-600 h-5 w-5" />
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="pl-3 text-4xl font-bold">+{totalUserBookings}</p>
+              </CardContent>
+              <CardFooter>
+                <p className="text-xs text-slate-400">
+                  Total amount of reservation you made as of today.
+                </p>
+              </CardFooter>
+            </Card>
+            <Card className="grow">
+              <CardHeader>
+                <CardTitle className="flex justify-between items-center w-full">
+                  <p className="text-sm text-left">Total check-ins</p>
+                  <PiUsersThreeFill className="h-5 w-5 text-slate-600" />
+                </CardTitle>
+                <CardDescription></CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="pl-3 text-4xl font-bold">+{userCheckins}</p>
+              </CardContent>
+              <CardFooter>
+                <p className="text-xs text-slate-400">
+                  Total amount of your checked ins.
+                </p>
+              </CardFooter>
+            </Card>
+            {/* <Card className="w-full lg:w-1/2">
+              <CardHeader>
+                <CardTitle>
+                  <p className="text-[16px]">Upcoming Reservation</p>
+                </CardTitle>
+                <CardDescription>As of {moment().calendar()}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {upcomingReservations.length > 0 ? (
+                  upcomingReservations.map((item) => (
+                    <div
+                      className="w-full rounded-md p-1 space-y-1"
+                      key={item.id}
+                    >
+                      {moment(item.startedAt) > moment() ? (
+                        <p className="py-2 text-sm">
+                          <span className="text-sm font-bold">
+                            {item.desk.name}
+                          </span>{" "}
+                          will be available {moment(item.startedAt).fromNow()}
+                        </p>
+                      ) : null}
+                    </div>
+                  ))
+                ) : (
+                  <div>No upcoming reservation.</div>
+                )}
+              </CardContent>
+            </Card> */}
           </div>
         </>
       )}

@@ -46,7 +46,6 @@ export const config = {
         '/desk',
         '/home',
         '/employees',
-        '/faq',
         '/activity-logs',
         '/desks',
         '/floors',
