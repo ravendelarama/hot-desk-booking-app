@@ -26,7 +26,7 @@ type Desks = {
   id: string;
   floor: string;
   name: string;
-  coordinates: number[];
+  coordinates: string[];
   status: DeskStatus;
   edit: object;
   delete: string;

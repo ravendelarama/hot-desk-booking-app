@@ -10,6 +10,7 @@ import { eventLogFormats } from "@/lib/db";
 import moment from "moment";
 import { utapi } from "@/server/uploadthing";
 import { DesksFormSchema } from "@/app/(main)/desks/_components/UpdateRow";
+import { NewDeskSchema } from "@/app/(main)/desks/_components/AddDesk";
 
 const FormSchema = z.object({
     floor: z.string()
@@ -163,6 +164,9 @@ async function getAllDesks() {
     const data = await prisma.desk.findMany({
         include: {
             Floor: true
+        },
+        orderBy: {
+            name: "asc"
         }
     });
 
@@ -171,7 +175,7 @@ async function getAllDesks() {
             id: item.id,
             floor: item.Floor.floor,
             name: item.name,
-            coordinates: item.coordinates,
+            coordinates: item.coordinates.map((i) => i.toString()),
             status: item.status,
             edit: {
                 id: item.id,
@@ -196,7 +200,6 @@ async function mutateDesk(
     status: DeskStatus
 ) {
 
-    let arr = [coord1,coord2,coord3]
 
     await prisma.desk.update({
         where: {
@@ -204,12 +207,13 @@ async function mutateDesk(
         },
         data: {
             name,
-            coordinates: arr,
+            coordinates: [Number(coord1),Number(coord2),Number(coord3)],
             status: status
         }
     });
 
     revalidatePath("/desks");
+    revalidatePath("/desk");
 }
 
 async function deleteDeskById(id: string) {
@@ -226,12 +230,19 @@ async function getAvailableDesksCount() {
     return await prisma.desk.count({
         where: {
             status: DeskStatus.available
+        },
+        orderBy: {
+            name: "asc"
         }
     })
 }
 
 async function getAllFloors() {
-    const data = await prisma.floor.findMany();
+    const data = await prisma.floor.findMany({
+        orderBy: {
+            floor: "asc"
+        }
+    });
 
     const floors = data.map((item) => {
         return {
@@ -268,36 +279,50 @@ async function deleteFloorById(id: string) {
     revalidatePath("/floors");
 }
 
-async function addFloor(name: string, image: File) {
-    
-    const uploaded = await utapi.uploadFiles(image)
+async function addFloor(name: string, image: any) {
 
     const data = await prisma.floor.create({
         // @ts-ignore
         data: {
             floor: name!,
-            image: uploaded.data?.url!
+            image: image[0].url
         }
     })
 
     revalidatePath("/floors");
 }
 
-async function mutateFloor(id: string, name: string, image: File) {
+async function mutateFloor(id: string, name: string, image: any) {
     const prev = await prisma.floor.findFirst({
         where: {
             id
         }
     });
 
-    if (prev?.image && prev?.image.includes("https://utfs.io/f/")) {
+    console.log(image);
 
-        const image = prev?.image?.split("/")!;
-        console.log(image);
-        await utapi.deleteFiles(image[image?.length - 1]!);
+    if (image) {
+        if (prev?.image && prev?.image.includes("https://utfs.io/f/")) {
+
+            const imageF = prev?.image?.split("/")!;
+            console.log(imageF);
+            await utapi.deleteFiles(imageF[imageF?.length - 1]!);
+        }
     }
 
-    const uploaded = await utapi.uploadFiles(image)
+
+
+    if (image) {
+        await prisma.floor.update({
+            where: {
+                id
+            },
+            // @ts-ignore
+            data: {
+                image: image[0].url
+            }
+        })
+    }
 
     await prisma.floor.update({
         where: {
@@ -305,18 +330,48 @@ async function mutateFloor(id: string, name: string, image: File) {
         },
         // @ts-ignore
         data: {
-            floor: name!,
-            image: uploaded.data?.url!
+            floor: name!
         }
     })
+
+    
 
     revalidatePath("/floors");
 }
 
-async function addDesk() {
+async function addDesk(
+    floor: string,
+    name: string,
+    coord1: string,
+    coord2: string,
+    coord3: string,
+) {
+    
 
+    const desk = await prisma.desk.create({
+        data: {
+            floorId: floor,
+            name,
+            coordinates: [Number(coord1), Number(coord2), Number(coord3)]
+        }
+    });
+
+    console.log(desk)
+
+    revalidatePath("/desks");
+    revalidatePath("/home");
+    revalidatePath("/desk");
 }
 
+async function deleteImageByUrl(file: string) {
+    const response = await utapi.deleteFiles(file);
+
+    if (response.success) {
+        return { success: "File deleted successfully!"}
+    }
+
+    return { success: "Cannot delete file." };
+}
 
 async function getOtherUsers() {
     const session = await getSession();
@@ -503,7 +558,14 @@ async function checkOut(bookId: string) {
 }
 
 async function getFloors() {
-    return await prisma.floor.findMany();
+    const floors = await prisma.floor.findMany({
+        orderBy: {
+            floor: "asc"
+        }
+    });
+
+    revalidatePath("/desk");
+    return floors;
 }
  
 async function mutateUser(userId: string, credentials: any) {
@@ -613,20 +675,20 @@ async function getMonthlyBookings() {
     });
 
     let month2 = bookings.map((item) => {
-        if (item.bookedAt.getMonth() == moment().subtract(2, "months").month()) {
+        if (item.bookedAt.getMonth() == moment().subtract(1, "months").month()) {
             return true;
         }
     });
 
 
     let month3 = bookings.map((item) => {
-        if (item.bookedAt.getMonth() == moment().subtract(3, "months").month()) {
+        if (item.bookedAt.getMonth() == moment().subtract(2, "months").month()) {
             return true;
         }
     });
 
     let month4 = bookings.map((item) => {
-        if (item.bookedAt.getMonth() == moment().subtract(4, "months").month()) {
+        if (item.bookedAt.getMonth() == moment().subtract(3, "months").month()) {
             return true;
         }
     });
@@ -710,6 +772,7 @@ export {
     getBookings,
     getAllBookings,
     mutateFloor,
+    deleteImageByUrl,
     getAllFloors,
     deleteFloorById,
     addFloor,
@@ -734,7 +797,8 @@ export {
     getAllDesks,
     getMonthlyBookings,
     mutateDesk,
-    upcomingBookings
+    upcomingBookings,
+    addDesk
 }
 
 

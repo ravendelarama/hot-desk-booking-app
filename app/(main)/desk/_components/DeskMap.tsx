@@ -24,6 +24,8 @@ import moment from "moment";
 
 import { toast } from "@/components/ui/use-toast";
 import { DialogClose } from "@radix-ui/react-dialog";
+import { LuRefreshCcw } from "react-icons/lu";
+import { useRouter } from "next/navigation";
 // import {
 //   HoverCard,
 //   HoverCardContent,
@@ -41,7 +43,8 @@ function DeskMap({ floor, desks, image, date }: Prop) {
   const { selectedDesk, setSelectedDesk } = useDesks();
   const { setBook, setDate, handleBooking } = useBook();
   const [prevDesk, setPrevDesk] = useState<any>(null);
-
+  const [isRotated, setRotate] = useState<boolean>(false);
+  const router = useRouter();
   const [width, setWidth] = useState<number>(0);
   const ref = useRef(null);
   // const hoverRef = useRef(null);
@@ -51,6 +54,12 @@ function DeskMap({ floor, desks, image, date }: Prop) {
   useLayoutEffect(() => {
     // @ts-ignore
     setWidth(ref?.current?.offsetWidth);
+    window.addEventListener("resize", (event) => {
+      event.preventDefault();
+
+      // @ts-ignore
+      setWidth(ref?.current?.offsetWidth);
+    });
   }, []);
 
   desks.forEach((item, index) => {
@@ -79,13 +88,71 @@ function DeskMap({ floor, desks, image, date }: Prop) {
   // dialog to be modified
   return (
     <>
-      <p className="text-slate-500 text-sm font-semibold">
-        {!selectedDesk
-          ? "Please select your desired desk."
-          : selectedDesk.status === DeskStatus.available
-          ? `You have selected desk ${selectedDesk.name} on floor ${floor}.`
-          : `Desk ${selectedDesk.name} is unavailable.`}
-      </p>
+      <div className="flex justify-between items-center">
+        <p className="text-slate-500 text-sm font-semibold">
+          {!selectedDesk
+            ? "Please select your desired desk."
+            : selectedDesk.status === DeskStatus.available
+            ? `You have selected desk ${selectedDesk.name} on floor ${floor}.`
+            : `Desk ${selectedDesk.name} is unavailable.`}
+        </p>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button
+              variant="outline"
+              className="text-sm w-16 px-2"
+              disabled={!floor || !date || !selectedDesk}
+              onClick={() => {
+                setBook(selectedDesk!);
+                setDate(date!);
+              }}
+            >
+              Book
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Are you sure absolutely sure?</DialogTitle>
+              <DialogDescription>
+                <div className="flex flex-col gap-2 py-4">
+                  <p>Desk Name: {selectedDesk?.name}</p>
+                  <p>Status: {selectedDesk?.status}</p>
+                  <p>
+                    {moment(date) > moment() ? "Starts" : "Started"}{" "}
+                    {moment(date).fromNow()}
+                  </p>
+                  <p>
+                    {moment(date) < moment() ? "Ends" : "Ended"}{" "}
+                    {moment(date).add(1, "day").fromNow()}{" "}
+                  </p>
+                </div>
+                <Separator />
+                <p className="py-4">
+                  This action cannot be undone. If you want to cancel your
+                  reservation, please go to the bookings page.
+                </p>
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant={"secondary"} className="text-sm">
+                  Cancel
+                </Button>
+              </DialogClose>
+              <DialogClose asChild>
+                <Button
+                  onClick={book}
+                  variant="success"
+                  className="text-sm"
+                  disabled={selectedDesk?.status == "unavailable"}
+                >
+                  Continue
+                </Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
       <div ref={ref} className="w-full border rounded-md overflow-auto">
         <Suspense fallback={<Loading />}>
           {image ? (
@@ -129,57 +196,6 @@ function DeskMap({ floor, desks, image, date }: Prop) {
           </Avatar>
         </HoverCardContent>
       </HoverCard> */}
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button
-            variant="outline"
-            className="text-sm w-16 px-2"
-            disabled={!floor || !date || !selectedDesk}
-            onClick={() => {
-              setBook(selectedDesk!);
-              setDate(date!);
-            }}
-          >
-            Book
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Are you sure absolutely sure?</DialogTitle>
-            <DialogDescription>
-              <div className="flex flex-col gap-2 py-4">
-                <p>Desk Name: {selectedDesk?.name}</p>
-                <p>Status: {selectedDesk?.status}</p>
-                <p>
-                  {moment(date) > moment() ? "Starts" : "Started"}{" "}
-                  {moment(date).fromNow()}
-                </p>
-                <p>
-                  {moment(date) < moment() ? "Ends" : "Ended"}{" "}
-                  {moment(date).add(1, "day").fromNow()}{" "}
-                </p>
-              </div>
-              <Separator />
-              <p className="py-4">
-                This action cannot be undone. If you want to cancel your
-                reservation, please go to the bookings page.
-              </p>
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button variant={"secondary"} className="text-sm">
-                Cancel
-              </Button>
-            </DialogClose>
-            <DialogClose asChild>
-              <Button onClick={book} variant="success" className="text-sm">
-                Continue
-              </Button>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }

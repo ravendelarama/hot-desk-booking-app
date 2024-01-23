@@ -13,7 +13,7 @@ function Faq() {
       <h1 className="text-3xl font-bold font-sans">FAQs</h1>
       <Accordion type="single" collapsible>
         {faq.map((item, idx) => (
-          <AccordionItem value={idx.toString()}>
+          <AccordionItem value={idx.toString()} key={idx}>
             <AccordionTrigger>{item.q}</AccordionTrigger>
             <AccordionContent className="text-slate-700 font-semibold dark:text-slate-500 text-sm">
               {item.a}

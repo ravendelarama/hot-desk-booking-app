@@ -28,6 +28,7 @@ import { Input } from "@/components/ui/input";
 import { DialogClose } from "@/components/ui/dialog";
 import {
   addFloor,
+  deleteImageByUrl,
   mutateDesk,
   mutateFloor,
   mutateUser,
@@ -37,6 +38,8 @@ import { DeskStatus } from "@prisma/client";
 import { useState } from "react";
 import { FileUploader } from "react-drag-drop-files";
 import ImageUploader from "./ImageUploader";
+import { useDropzone } from "react-dropzone";
+import { UploadDropzone } from "@/utils/uploadthing";
 
 export const formSchema = z.object({
   name: z.string(),
@@ -59,10 +62,11 @@ function UpdateRow({
     },
   });
 
-  const [file, setFile] = useState<any>(null);
+  const [file, setFile] = useState<any>();
+  const [selected, setSelected] = useState<boolean>(false);
   const { toast } = useToast();
 
-  function handleChange(image: any) {
+  function handleChange(image: File) {
     setFile(file);
   }
 
@@ -77,7 +81,27 @@ function UpdateRow({
 
   return (
     <>
-      <ImageUploader handleChange={handleChange} />
+      <div>
+        <UploadDropzone
+          className="py-10 px-20 rounded border border-slate-600"
+          content={{
+            button: "Select",
+            allowedContent: selected ? file[0].name : "Floor map",
+          }}
+          endpoint="imageUploader"
+          onClientUploadComplete={(res) => {
+            // Do something with the response
+            setFile(res);
+            setSelected(true);
+          }}
+          onUploadError={(error: Error) => {
+            // Do something with the error.
+            toast({
+              title: "Uploading Failed!",
+            });
+          }}
+        />
+      </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
@@ -96,10 +120,25 @@ function UpdateRow({
 
           <div className="flex flex-col md:flex-row justify-end gap-5 item-center">
             <DialogClose asChild>
-              <Button variant={"secondary"}>Cancel</Button>
+              <Button
+                variant={"secondary"}
+                onClick={async () => {
+                  if (file) {
+                    const res = await deleteImageByUrl(file[0].key);
+
+                    if (res.success) {
+                      toast({
+                        description: "Canceled",
+                      });
+                    }
+                  }
+                }}
+              >
+                Cancel
+              </Button>
             </DialogClose>
             <DialogClose asChild>
-              <Button variant={"success"} type="submit" disabled={!file}>
+              <Button variant={"success"} type="submit">
                 Save
               </Button>
             </DialogClose>

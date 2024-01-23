@@ -18,6 +18,7 @@ import { Suspense } from "react";
 import { logoutUser } from "@/actions/actions";
 import { Link } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Role } from "@prisma/client";
 
 function AvatarMenu() {
   const { data: session } = useSession();
@@ -51,21 +52,25 @@ function AvatarMenu() {
               Settings
             </DropdownMenuItem>
           </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem className="p-0"></DropdownMenuItem>
-            <DropdownMenuItem className="flex justify-start" asChild>
-              <Button
-                variant={null}
-                className="w-full h-8 cursor-pointer"
-                onClick={() => {
-                  router.push("/activity-logs");
-                }}
-              >
-                Activity logs
-              </Button>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
+          {session?.user?.role === Role.admin && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <DropdownMenuItem className="p-0"></DropdownMenuItem>
+                <DropdownMenuItem className="flex justify-start" asChild>
+                  <Button
+                    variant={null}
+                    className="w-full h-8 cursor-pointer"
+                    onClick={() => {
+                      router.push("/activity-logs");
+                    }}
+                  >
+                    Activity logs
+                  </Button>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </>
+          )}
           <DropdownMenuSeparator />
           <DropdownMenuItem className="flex justify-start" asChild>
             <Button

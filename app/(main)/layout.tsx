@@ -17,7 +17,7 @@ function layout({ children }: Prop) {
       <div className="relative flex flex-col sm:ml-56 w-full">
         <Header />
         <div className="h-full w-full overflow-auto flex flex-col justify-between">
-          <div className="sm:pr-6 pt-10">{children}</div>
+          <div className="sm:pr-6 pt-20 lg:pt-10">{children}</div>
 
           <Footer />
         </div>

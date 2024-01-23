@@ -22,5 +22,5 @@ export const eventLogFormats = {
     promoted: (user: string, role: Role) => `${user} has been promoted to ${role}`,
     delete_user: (userId: string) => `${userId} has been deleted.`,
     reset_password: (userId: string) => `password reset by ${userId}.`,
-    update_user: () => "User updated successfully."
+    update_user: () => "User updated successfully.",
 }

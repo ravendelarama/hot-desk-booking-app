@@ -45,14 +45,17 @@ export const columns: ColumnDef<Floors>[] = [
     header: "Image",
     cell: (props) => {
       const data = props.getValue();
-      // @ts-ignore
-      let arr = data.split("/");
-      return (
+      if (data) {
         // @ts-ignore
-        <Link href={data} target="_" className="text-ellipsis overlow-hiden">
-          {arr[arr.length - 1]}
-        </Link>
-      );
+        let arr = data.split("/");
+        return (
+          // @ts-ignore
+          <Link href={data} target="_" className="text-ellipsis overlow-hiden">
+            {arr[arr.length - 1]}
+          </Link>
+        );
+      }
+      return null;
     },
   },
   {

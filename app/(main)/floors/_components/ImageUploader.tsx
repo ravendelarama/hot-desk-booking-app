@@ -8,7 +8,7 @@ const fileTypes = ["JPG", "PNG", "GIF"];
 function ImageUploader({
   handleChange,
 }: {
-  handleChange: (file: any) => void;
+  handleChange: (file: File) => void;
 }) {
   return (
     <div className="space-y-3">

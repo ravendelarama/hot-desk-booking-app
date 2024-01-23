@@ -121,32 +121,11 @@ export function DataTable<TData, TValue>({
             <DialogContent>
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
-                  <IoIosWarning className="h-7 w-7 inline" />
-                  Are you sure you want to delete all the activities?
+                  Create a floor
                 </DialogTitle>
                 {/** @ts-ignore */}
-                <DialogDescription>
-                  This action cannot be undone. Once you delete all activities,
-                  all of the data will be completely removed from the database.
-                </DialogDescription>
               </DialogHeader>
               <AddFloor />
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button variant={"secondary"}>Cancel</Button>
-                </DialogClose>
-                <DialogClose asChild>
-                  <Button
-                    variant={"destructive"}
-                    onClick={async () => {
-                      // @ts-ignore
-                      //   await deleteAllActivityLogs(data as string);
-                    }}
-                  >
-                    Continue
-                  </Button>
-                </DialogClose>
-              </DialogFooter>
             </DialogContent>
           </Dialog>
           <DropdownMenu>

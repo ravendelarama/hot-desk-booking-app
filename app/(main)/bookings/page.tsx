@@ -36,7 +36,7 @@ async function Bookings() {
           : "My Bookings"}
       </h1>
       <h2 className="text-slate-500 text-sm">
-        {session?.user?.role == Role.admin
+        {session?.user?.role == Role.admin || session?.user.role == Role.manager
           ? `There ${totalBookings == 1 ? "is " : "are "} ${totalBookings} `
           : `You have ${totalUserBookings} `}{" "}
         total of reservation.

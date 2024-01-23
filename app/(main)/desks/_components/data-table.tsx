@@ -24,6 +24,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+import {
   Table,
   TableBody,
   TableCell,
@@ -34,6 +45,9 @@ import {
 import { useRouter } from "next/navigation";
 import { LuRefreshCcw } from "react-icons/lu";
 import { cn } from "@/lib/utils";
+import { MdAdd } from "react-icons/md";
+import { IoIosWarning } from "react-icons/io";
+import AddDesk from "./AddDesk";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -98,6 +112,22 @@ export function DataTable<TData, TValue>({
               )}
             />
           </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant={"warning"} size={"icon"}>
+                <MdAdd className="h-4 w-4" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  Create a desk
+                </DialogTitle>
+                {/** @ts-ignore */}
+                <AddDesk />
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon" className="ml-auto">

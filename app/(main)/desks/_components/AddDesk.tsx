@@ -13,8 +13,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-
+import { DesksFormSchema } from "./UpdateRow";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+
 import {
   Form,
   FormControl,
@@ -24,62 +26,82 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { DialogClose } from "@/components/ui/dialog";
-import { mutateDesk, mutateUser } from "@/actions/actions";
+import { addDesk } from "@/actions/actions";
 import { useToast } from "@/components/ui/use-toast";
-import { DeskStatus } from "@prisma/client";
+import { DialogClose } from "@/components/ui/dialog";
+import useFloors from "@/hooks/useFloors";
 
-export const DesksFormSchema = z.object({
+export const NewDeskSchema = z.object({
+  floor: z.string(),
   name: z.string(),
   coord1: z.string(),
   coord2: z.string(),
   coord3: z.string(),
-  status: z.string(),
 });
 
-function UpdateRow({
-  data,
-}: {
-  data: {
-    id: string;
-    name: string;
-    coordinates: string[];
-    status: DeskStatus;
-  };
-}) {
-  const form = useForm<z.infer<typeof DesksFormSchema>>({
-    resolver: zodResolver(DesksFormSchema),
+function AddDesk() {
+  const { floors } = useFloors();
+
+  const form = useForm<z.infer<typeof NewDeskSchema>>({
+    resolver: zodResolver(NewDeskSchema),
     defaultValues: {
-      name: data?.name,
-      coord1: data?.coordinates[0].toString(),
-      coord2: data?.coordinates[1].toString(),
-      coord3: data?.coordinates[2].toString(),
-      status: data?.status,
+      floor: "",
+      name: "",
+      coord1: "",
+      coord2: "",
+      coord3: "",
     },
   });
 
   const { toast } = useToast();
 
-  async function onSubmit(values: z.infer<typeof DesksFormSchema>) {
-    console.log(values.coord1);
-    await mutateDesk(
-      data?.id!,
+  async function onSubmit(values: z.infer<typeof NewDeskSchema>) {
+    const response = await addDesk(
+      values.floor,
       values.name,
-      Number(values.coord1),
-      Number(values.coord2),
-      Number(values.coord3),
-      values.status as DeskStatus
+      values.coord1,
+      values.coord2,
+      values.coord3
     );
-
     toast({
-      title: "Updated Desk",
-      description: "Desk updated successfully.",
+      title: "Created Desk",
+      description: "Desk created successfully.",
     });
   }
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <FormField
+          control={form.control}
+          name="floor"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Choose Floor</FormLabel>
+              <FormControl>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="floors" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Floors</SelectLabel>
+                      {floors.map((item) => (
+                        <SelectItem key={item.id!} value={item.id!}>
+                          {item.floor}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="name"
@@ -95,12 +117,12 @@ function UpdateRow({
         />
 
         <div className="flex justify-around items-center gap-4">
-          <p>Coordinates</p>
           <FormField
             control={form.control}
             name="coord1"
             render={({ field }) => (
               <FormItem>
+                <FormLabel>x</FormLabel>
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>
@@ -113,6 +135,7 @@ function UpdateRow({
             name="coord2"
             render={({ field }) => (
               <FormItem>
+                <FormLabel>y</FormLabel>
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>
@@ -125,6 +148,7 @@ function UpdateRow({
             name="coord3"
             render={({ field }) => (
               <FormItem>
+                <FormLabel>scale</FormLabel>
                 <FormControl>
                   <Input placeholder="" {...field} />
                 </FormControl>
@@ -133,48 +157,13 @@ function UpdateRow({
             )}
           />
         </div>
-
-        <FormField
-          control={form.control}
-          name="status"
-          render={({ field }) => (
-            <FormItem>
-              <div className="space-y-1">
-                <FormLabel>Desk Status</FormLabel>
-              </div>
-              <FormControl>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Desk Status</SelectLabel>
-                      <SelectItem value={DeskStatus.available}>
-                        Available
-                      </SelectItem>
-                      <SelectItem value={DeskStatus.unavailable}>
-                        Unavailable
-                      </SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         <div className="flex flex-col md:flex-row justify-end gap-5 item-center">
           <DialogClose asChild>
             <Button variant={"secondary"}>Cancel</Button>
           </DialogClose>
           <DialogClose asChild>
             <Button variant={"success"} type="submit">
-              Save
+              Create
             </Button>
           </DialogClose>
         </div>
@@ -183,4 +172,4 @@ function UpdateRow({
   );
 }
 
-export default UpdateRow;
+export default AddDesk;
