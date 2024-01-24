@@ -7,7 +7,7 @@ async function App() {
   const session = await getSession();
 
   if (session) {
-    permanentRedirect("/home", RedirectType.replace);
+    permanentRedirect("/", RedirectType.replace);
   }
 
   return (

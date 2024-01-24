@@ -30,8 +30,8 @@ import { mutateUser } from "@/actions/actions";
 import { useToast } from "@/components/ui/use-toast";
 
 const formSchema = z.object({
-  firstName: z.string(),
-  lastName: z.string(),
+  // firstName: z.string(),
+  // lastName: z.string(),
   role: z.string().default("user"),
   isBanned: z.boolean().default(false),
 });
@@ -40,8 +40,8 @@ function UpdateRow({ data }: { data: any }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      firstName: data?.firstName,
-      lastName: data?.lastName,
+      // firstName: data?.firstName,
+      // lastName: data?.lastName,
       role: data?.role,
       isBanned: data?.isBanned,
     },
@@ -60,7 +60,7 @@ function UpdateRow({ data }: { data: any }) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
+        {/* <FormField
           control={form.control}
           name="firstName"
           render={({ field }) => (
@@ -86,7 +86,7 @@ function UpdateRow({ data }: { data: any }) {
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
 
         <FormField
           control={form.control}

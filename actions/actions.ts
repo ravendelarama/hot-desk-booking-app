@@ -304,7 +304,7 @@ async function addFloor(name: string, image: any) {
         // @ts-ignore
         data: {
             floor: name!,
-            image: image[0].url
+            image: image[0].url!
         }
     })
 
@@ -594,8 +594,8 @@ async function mutateUser(userId: string, credentials: any) {
             id: userId
         },
         data: {
-            firstName: credentials.firstName,
-            lastName: credentials.lastName,
+            // firstName: credentials.firstName,
+            // lastName: credentials.lastName,
             isBanned: credentials.isBanned,
             Log: {
                 create: {

@@ -6,7 +6,7 @@ async function App() {
   const session = await getSession();
 
   if (session?.user && !session.user.isBanned)
-    redirect("/home", RedirectType.replace);
+    redirect("/", RedirectType.replace);
 
   return (
     <>
