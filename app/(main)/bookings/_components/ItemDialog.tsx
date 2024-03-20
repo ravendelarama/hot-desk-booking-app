@@ -1,5 +1,11 @@
 "use client";
 
+import moment from "moment";
+
+import { cancelBooking, checkIn, checkOut } from "@/actions/booking";
+
+import { useRef } from "react";
+
 import {
   Dialog,
   DialogClose,
@@ -10,27 +16,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import moment from "moment";
-import { Role } from "@prisma/client";
 import { MdCancel } from "react-icons/md";
 import { FaCircleCheck, FaRegCircleCheck } from "react-icons/fa6";
-
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
-import { cancelBooking, checkIn, checkOut } from "@/actions/actions";
 import { Calendar } from "@/components/ui/calendar";
-import { useLayoutEffect, useRef, useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 function ItemDialog({ item }: any) {
-  const [calendarWidth, setCalendarWidth] = useState<number>(0);
   const ref = useRef(null);
-
-  useLayoutEffect(() => {
-    // @ts-ignore
-    // setCalendarWidth(ref?.current?.value.offsetWidth!);
-  }, []);
 
   return (
     <div ref={ref} className="w-full">

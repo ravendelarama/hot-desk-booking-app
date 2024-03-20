@@ -1,6 +1,7 @@
 import { RedirectType, redirect } from "next/navigation";
-import Desk from "./_components";
 import { getSession } from "@/lib/next-auth";
+
+import Desk from "./_components";
 
 async function App() {
   const session = await getSession();

@@ -33,7 +33,6 @@ import {
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { CiViewColumn } from "react-icons/ci";

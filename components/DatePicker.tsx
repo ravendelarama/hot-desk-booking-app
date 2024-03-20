@@ -4,6 +4,11 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import * as z from "zod";
 import { cn } from "@/lib/utils";
+import moment from "moment";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { useForm } from "react-hook-form";
+
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -15,28 +20,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import moment from "moment";
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { UseFormReturn } from "react-hook-form";
-import { useFormStatus } from "react-dom";
-import useFloors from "@/hooks/useFloors";
-import { Suspense } from "react";
 
 const FormSchema = z.object({
   dob: z.date({
@@ -53,17 +41,6 @@ export function DatePicker({ onSubmit, floor }: Prop) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
-
-  const currentDate = new Date();
-  const prevDate = {
-    year: currentDate.getFullYear(),
-    month: currentDate.getMonth(),
-    day: currentDate.getDate() - 1,
-    hours: currentDate.getHours(),
-    minutes: currentDate.getMinutes(),
-  };
-
-  function onChange() {}
 
   return (
     <Form {...form}>

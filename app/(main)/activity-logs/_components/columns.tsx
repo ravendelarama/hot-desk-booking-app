@@ -1,17 +1,17 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Button } from "@/components/ui/button";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { User } from "@prisma/client";
-import { IoIosRemoveCircle, IoIosWarning } from "react-icons/io";
+
+import { Button } from "@/components/ui/button";
+import { ArrowUpDown } from "lucide-react";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MdDelete, MdManageAccounts } from "react-icons/md";
+import { MdManageAccounts } from "react-icons/md";
 import { FaUserCheck, FaUserEdit } from "react-icons/fa";
 import {
   Tooltip,
@@ -19,17 +19,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { deleteActivityLogById } from "@/actions/actions";
 
 type Logs = {
   id: string;

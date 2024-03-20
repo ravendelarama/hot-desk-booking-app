@@ -1,5 +1,3 @@
-import { getSession } from "@/lib/next-auth";
-import prisma from "@/lib/db";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
  
 const f = createUploadthing();

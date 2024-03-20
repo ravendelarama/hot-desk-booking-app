@@ -1,14 +1,15 @@
 "use client";
 
-import { DatePicker } from "@/components/DatePicker";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { getDesks } from "@/actions/desk";
 
+import { useForm } from "react-hook-form";
 import { useFormStatus } from "react-dom";
-import { getDesks } from "@/actions/actions";
+import { useState, Suspense } from "react";
+import useDesks from "@/hooks/useDesks";
+import useFloors from "@/hooks/useFloors";
 
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -18,7 +19,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-
 import {
   Select,
   SelectContent,
@@ -26,13 +26,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-import { useState, Suspense } from "react";
 import DeskMap from "../_components/DeskMap";
-import useDesks from "@/hooks/useDesks";
-import useFloors from "@/hooks/useFloors";
 import { Skeleton } from "@/components/ui/skeleton";
-// import TimeStampPicker from "@/components/TimeStampPicker";
+import { DatePicker } from "@/components/DatePicker";
+import { Button } from "@/components/ui/button";
 
 const FloorSchema = z.object({
   floor: z.string(),
@@ -43,17 +40,13 @@ const DateSchema = z.object({
 });
 
 function Desk() {
+  const { desks, setDesks } = useDesks();
   const form = useForm<z.infer<typeof FloorSchema>>({
     resolver: zodResolver(FloorSchema),
   });
-
-  const { desks, setDesks } = useDesks();
-
   const { activeFloor, setActiveFloor, activeImage, floors } = useFloors();
-  const { pending } = useFormStatus();
-
   const [date, setDate] = useState<Date>(new Date());
-  // const [timeRange, setTimeRange] = useState<Date[]>(["00:00:00", "00:00:00"]);
+  const { pending } = useFormStatus();
 
   async function onSubmitFloorPicker(data: z.infer<typeof FloorSchema>) {
     const result = await getDesks(data);
@@ -64,8 +57,6 @@ function Desk() {
   async function onSubmitDatePicker(data: z.infer<typeof DateSchema>) {
     setDate(data.dob);
   }
-
-  function onChange() {}
 
   return (
     <div className="p-3 sm:pt-10 sm:pl-10 flex flex-col space-y-5 w-full">

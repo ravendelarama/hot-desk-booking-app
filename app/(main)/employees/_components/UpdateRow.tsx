@@ -1,8 +1,11 @@
-"use client";
-
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+
+import { mutateUser } from "@/actions/user";
+
+import { useToast } from "@/components/ui/use-toast";
+
 import {
   Select,
   SelectContent,
@@ -13,8 +16,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -24,14 +27,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { DialogClose } from "@/components/ui/dialog";
-import { mutateUser } from "@/actions/actions";
-import { useToast } from "@/components/ui/use-toast";
 
 const formSchema = z.object({
-  // firstName: z.string(),
-  // lastName: z.string(),
+  firstName: z.string(),
+  lastName: z.string(),
   role: z.string().default("user"),
   isBanned: z.boolean().default(false),
 });
@@ -40,8 +40,8 @@ function UpdateRow({ data }: { data: any }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      // firstName: data?.firstName,
-      // lastName: data?.lastName,
+      firstName: data?.firstName,
+      lastName: data?.lastName,
       role: data?.role,
       isBanned: data?.isBanned,
     },
@@ -60,7 +60,7 @@ function UpdateRow({ data }: { data: any }) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        {/* <FormField
+        <FormField
           control={form.control}
           name="firstName"
           render={({ field }) => (
@@ -86,7 +86,7 @@ function UpdateRow({ data }: { data: any }) {
               <FormMessage />
             </FormItem>
           )}
-        /> */}
+        />
 
         <FormField
           control={form.control}

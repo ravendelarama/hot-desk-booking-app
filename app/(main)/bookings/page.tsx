@@ -1,21 +1,17 @@
 import { getSession } from "@/lib/next-auth";
-
-// import { formatRelative } from "date-fns";
-import { columns } from "./_components/columns";
-import { DataTable } from "./_components/data-table";
+import { RedirectType, redirect } from "next/navigation";
 import { Role } from "@prisma/client";
-// import { Separator } from "@/components/ui/separator";
+
 import {
   getBookings,
   getUserBookingCount,
   getAllBookings,
   getAllBookingCount,
-} from "@/actions/actions";
+} from "@/actions/booking";
+
+import { columns } from "./_components/columns";
+import { DataTable } from "./_components/data-table";
 import ItemDialog from "./_components/ItemDialog";
-import { Calendar } from "@/components/ui/calendar";
-import { RedirectType, redirect } from "next/navigation";
-// import Image from "next/image";
-// import { Calendar } from "@/components/ui/calendar";
 
 async function Bookings() {
   const session = await getSession();
@@ -26,7 +22,6 @@ async function Bookings() {
 
   if (session?.user.isBanned) redirect("/signin", RedirectType.replace);
 
-  // ui to be modified
   return (
     <div className="p-3 sm:pt-10 sm:pl-10 flex flex-col space-y-5">
       <h1 className="text-3xl font-bold font-sans">
@@ -44,6 +39,7 @@ async function Bookings() {
       {session?.user?.role === Role.user ||
       session?.user.role === Role.manager ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {/* @ts-ignore */}
           {bookings.map((item) => (
             <ItemDialog key={item.id} item={item} />
           ))}

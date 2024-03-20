@@ -1,4 +1,5 @@
-import { getActivityLogs } from "@/actions/actions";
+import { getActivityLogs } from "@/actions/log";
+
 import { columns } from "./_components/columns";
 import { DataTable } from "./_components/data-table";
 

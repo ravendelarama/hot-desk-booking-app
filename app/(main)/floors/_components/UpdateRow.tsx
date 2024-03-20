@@ -2,23 +2,20 @@
 
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { generateClientDropzoneAccept } from "uploadthing/client";
+
+import { mutateFloor } from "@/actions/floor";
+
 import { useForm } from "react-hook-form";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
+import { useToast } from "@/components/ui/use-toast";
+import { useCallback, useState } from "react";
+import { useDropzone } from "react-dropzone";
+import { useUploadThing } from "@/utils/uploadthing";
 
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -26,19 +23,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { DialogClose } from "@/components/ui/dialog";
-import {
-  addFloor,
-  deleteImageByUrl,
-  mutateDesk,
-  mutateFloor,
-  mutateUser,
-} from "@/actions/actions";
-import { useToast } from "@/components/ui/use-toast";
-import { DeskStatus } from "@prisma/client";
-import { useCallback, useState } from "react";
-import { useDropzone } from "react-dropzone";
-import { generateClientDropzoneAccept } from "uploadthing/client";
-import { useUploadThing } from "@/utils/uploadthing";
 import { HiOutlineUpload } from "react-icons/hi";
 
 export const formSchema = z.object({

@@ -3,12 +3,7 @@
 import SideBarSheet from "../SideBarSheet";
 import { Button } from "../ui/button";
 import Link from "next/link";
-import {
-  MdOutlineDesk,
-  MdOutlineManageAccounts,
-  MdOutlineMapsHomeWork,
-} from "react-icons/md";
-import { BiBookBookmark } from "react-icons/bi";
+import { MdOutlineMapsHomeWork } from "react-icons/md";
 import AvatarMenu from "../AvatarMenu";
 import { ModeToggle } from "../ModeToggler";
 
@@ -17,10 +12,8 @@ import { GiDesk } from "react-icons/gi";
 import { GoHome } from "react-icons/go";
 import { useSession } from "next-auth/react";
 import { Role } from "@prisma/client";
-import { RxActivityLog } from "react-icons/rx";
 import { FiUserCheck } from "react-icons/fi";
 import { PiUsersThree } from "react-icons/pi";
-import { FaQ } from "react-icons/fa6";
 import { BsFillJournalBookmarkFill } from "react-icons/bs";
 
 const Routes = [

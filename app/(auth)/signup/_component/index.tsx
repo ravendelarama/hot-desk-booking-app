@@ -1,5 +1,10 @@
 "use client";
 
+import { signIn } from "next-auth/react";
+import Link from "next/link";
+
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,15 +16,9 @@ import {
 } from "@/components/ui/card";
 import Form from "../../_components/SignUpForm";
 import { Separator } from "@/components/ui/separator";
-import { signIn } from "next-auth/react";
-import Link from "next/link";
-import { useToast } from "@/components/ui/use-toast";
-import { useSession } from "next-auth/react";
-import { useState } from "react";
 
 function SignUp() {
-  const { toast } = useToast();
-  const [image, setImage] = useState<string | null>(null);
+  const [image] = useState<string | null>(null);
 
   return (
     <div className="min-h-screen py-5 flex justify-center items-center">
@@ -31,30 +30,6 @@ function SignUp() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {/* <UploadDropzone
-            endpoint="imageUploader"
-            onClientUploadComplete={async (res) => {
-              // Do something with the response
-              setImage(res[0].url);
-
-              toast({
-                title: "User Profile",
-                description: (
-                  <p>
-                    Image Uploaded,{" "}
-                    <Link href={res[0].url} target="_">
-                      click here!
-                    </Link>
-                  </p>
-                ),
-              });
-            }}
-            onUploadError={(error: Error) => {
-              // Do something with the error.
-              alert(`ERROR! ${error.message}`);
-            }}
-            className="p-10 border-none hover:border-slate-800 ut-label:text-lg ut-allowed-content:ut-uploading:text-red-300"
-          /> */}
           <Form image={image!} />
         </CardContent>
         <CardFooter className="flex flex-col items-center space-y-4">

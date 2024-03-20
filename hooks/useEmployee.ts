@@ -1,8 +1,7 @@
 "use client";
-import { useEffect, useState } from "react";
-import { getOtherUsers } from "@/actions/actions";
-import { string } from "zod";
+import { getOtherUsers } from "@/actions/user";
 
+import { useEffect, useState } from "react";
 
 type User = {
     image: string | null;

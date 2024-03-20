@@ -1,22 +1,20 @@
-import SideBarSheet from "../SideBarSheet";
-import { Button } from "../ui/button";
 import Link from "next/link";
-import { MdOutlineDesk, MdOutlineMapsHomeWork } from "react-icons/md";
-import { BiBookBookmark } from "react-icons/bi";
+import textPicDark from "@/public/text-dark.png";
+import textPicLight from "@/public/text-light.png";
+import Image from "next/image";
+import { Role } from "@prisma/client";
+
+import { useTheme } from "next-themes";
+import { useSession } from "next-auth/react";
+
+import { Button } from "../ui/button";
+import { MdOutlineMapsHomeWork } from "react-icons/md";
 import { GrScheduleNew } from "react-icons/gr";
 import { GiDesk } from "react-icons/gi";
 import { GoHome } from "react-icons/go";
-import { useSession } from "next-auth/react";
-import { Role } from "@prisma/client";
-import { RxActivityLog } from "react-icons/rx";
 import { FiUserCheck } from "react-icons/fi";
 import { PiUsersThree } from "react-icons/pi";
-import { FaQ } from "react-icons/fa6";
 import { BsFillJournalBookmarkFill } from "react-icons/bs";
-import Image from "next/image";
-import textPicDark from "@/public/text-dark.png";
-import textPicLight from "@/public/text-light.png";
-import { useTheme } from "next-themes";
 
 const Routes = [
   {

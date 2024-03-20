@@ -23,7 +23,7 @@ export async function GET() {
 
         const result = await transporter.sendMail(message);
         return NextResponse.json({
-            result
+            result: result.accepted
         })
     } catch (error) {
         return NextResponse.json({error})

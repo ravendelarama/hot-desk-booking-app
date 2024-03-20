@@ -1,7 +1,9 @@
 "use client";
 
-import { getFloors } from "@/actions/actions";
 import { Floor } from "@prisma/client";
+
+import { getFloors } from "@/actions/floor";
+
 import { useEffect, useState } from "react";
 
 function useFloors() {

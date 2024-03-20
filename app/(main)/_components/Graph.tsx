@@ -1,4 +1,5 @@
 "use client";
+
 import {
   ArcElement,
   BarElement,
@@ -14,7 +15,6 @@ import {
   Tooltip,
 } from "chart.js";
 import moment from "moment";
-
 import { Bar } from "react-chartjs-2";
 
 Chart.register(

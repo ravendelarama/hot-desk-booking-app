@@ -1,5 +1,15 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { signIn } from "next-auth/react";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+
+import { useToast } from "@/components/ui/use-toast";
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -11,19 +21,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Toggle } from "@/components/ui/toggle";
 import { BiSolidShow, BiSolidHide } from "react-icons/bi";
 import { MdErrorOutline } from "react-icons/md";
-
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { signIn } from "next-auth/react";
-import Link from "next/link";
-import { useToast } from "@/components/ui/use-toast";
-import { useState } from "react";
-import { cn } from "@/lib/utils";
-import { loginUser } from "@/actions/actions";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -38,8 +37,8 @@ function SignInForm() {
       password: "",
     },
   });
-
   const { toast } = useToast();
+  const [seePass, setSeePass] = useState<boolean>(false);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const res = await signIn("credential-login", {
@@ -76,8 +75,6 @@ function SignInForm() {
       });
     }
   }
-
-  const [seePass, setSeePass] = useState<boolean>(false);
 
   return (
     <div>

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Desk } from "@prisma/client";
-import { getDesks } from "@/actions/actions";
+import { getDesks } from "@/actions/desk";
+
+import { useState, useEffect } from "react";
 
 type D = Pick<Desk, "id" | "name" | "coordinates" | "status">;
 type Desks = D[];

@@ -1,7 +1,7 @@
 import { getSession } from "@/lib/next-auth";
-import SignIn from "./_component";
 import { RedirectType, permanentRedirect } from "next/navigation";
-import moment from "moment";
+
+import SignIn from "./_component";
 
 async function App() {
   const session = await getSession();

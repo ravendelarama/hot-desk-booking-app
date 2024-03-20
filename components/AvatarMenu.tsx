@@ -1,7 +1,12 @@
 "use client";
 
+import { Role } from "@prisma/client";
+import { logoutUser } from "@/actions/user";
+
+import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,14 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "./ui/button";
-import { useSession, signOut } from "next-auth/react";
 import { DropdownMenuGroup } from "@radix-ui/react-dropdown-menu";
-import { ModeToggle } from "./ModeToggler";
-import { Suspense } from "react";
-import { logoutUser } from "@/actions/actions";
-import { Link } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { Role } from "@prisma/client";
 
 function AvatarMenu() {
   const { data: session } = useSession();

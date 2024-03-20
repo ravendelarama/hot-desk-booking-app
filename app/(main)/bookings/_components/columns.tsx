@@ -1,11 +1,10 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
-import { useState } from "react";
-import { MdDelete, MdEdit } from "react-icons/md";
-
+import { Desk, User } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
+
+import { deleteBookingById } from "@/actions/booking";
+
 import {
   Dialog,
   DialogClose,
@@ -23,8 +22,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
-import { Desk, User } from "@prisma/client";
+import { Button } from "@/components/ui/button";
+import { ArrowUpDown } from "lucide-react";
+import { MdDelete, MdEdit } from "react-icons/md";
 import {
   HoverCard,
   HoverCardContent,
@@ -33,7 +33,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { MdManageAccounts } from "react-icons/md";
 import { FaUserCheck, FaUserEdit } from "react-icons/fa";
-import { deleteBookingById } from "@/actions/actions";
 import UpdateRow from "./UpdateRow";
 
 type Bookings = {

@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
 import { Desk } from "@prisma/client";
-import { addBooking } from "@/actions/actions";
+
+import { useState } from "react";
+
+import { addBooking } from "@/actions/booking";
 
 type Book = Pick<Desk, "id" | "name" | "coordinates" | "status">;
 

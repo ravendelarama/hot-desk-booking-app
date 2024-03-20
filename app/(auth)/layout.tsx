@@ -1,5 +1,6 @@
-import PublicFooter from "@/components/layouts/PublicFooter";
 import { ReactNode } from "react";
+
+import PublicFooter from "@/components/layouts/PublicFooter";
 
 interface Prop {
   children?: ReactNode;

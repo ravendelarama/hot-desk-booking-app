@@ -1,14 +1,14 @@
-"use client";
+import { generateClientDropzoneAccept } from "uploadthing/client";
+
+import { addFloor } from "@/actions/floor";
 
 import { useCallback, useState } from "react";
+import { useUploadThing } from "@/utils/uploadthing";
+import { useDropzone } from "@uploadthing/react/hooks";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { addFloor } from "@/actions/actions";
-import { toast } from "@/components/ui/use-toast";
 import { DialogClose, DialogFooter } from "@/components/ui/dialog";
-import { useDropzone } from "@uploadthing/react/hooks";
-import { generateClientDropzoneAccept } from "uploadthing/client";
-import { useUploadThing } from "@/utils/uploadthing";
 import { HiOutlineUpload } from "react-icons/hi";
 
 function AddFloor() {
@@ -17,7 +17,6 @@ function AddFloor() {
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setFiles(acceptedFiles);
   }, []);
-
   const { startUpload, permittedFileInfo } = useUploadThing("imageUploader", {
     onClientUploadComplete: () => {
       alert("uploaded successfully!");

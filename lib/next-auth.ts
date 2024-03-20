@@ -1,3 +1,6 @@
+import { randomUUID } from "crypto";
+import moment from "moment";
+import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth/next";
 import prisma, {eventLogFormats} from "@/lib/db";
 import { PrismaAdapter } from "@auth/prisma-adapter";
@@ -5,14 +8,9 @@ import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { NextAuthOptions } from "next-auth";
 import bcrypt from "bcrypt";
-import { EventType, Role, User } from "@prisma/client";
+import { EventType } from "@prisma/client";
 import z from "zod";
-import { loginUser } from "@/actions/actions";
-import { randomUUID } from "crypto";
-import moment from "moment";
-import { NextRequest } from "next/server";
-// import jwt from "jsonwebtoken";
-// import { verifyEmail } from "./email";
+
 
 
 const credentialSchema = z.object({

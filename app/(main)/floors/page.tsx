@@ -1,5 +1,6 @@
+import { getAllFloors } from "@/actions/floor";
+
 import { DataTable } from "./_components/data-table";
-import { getAllFloors } from "@/actions/actions";
 import { columns } from "./_components/columns";
 
 async function Floors() {

@@ -1,10 +1,14 @@
 "use client";
+
+import { Suspense } from "react";
+import { Role } from "@prisma/client";
+import { ColumnDef } from "@tanstack/react-table";
+
+import { deleteUserById } from "@/actions/user";
+
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
-import { Role } from "@prisma/client";
-import { Suspense } from "react";
 import { MdEdit, MdDelete } from "react-icons/md";
 import {
   Dialog,
@@ -16,12 +20,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { deleteUserById } from "@/actions/actions";
 import UpdateRow from "./UpdateRow";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
 export type Employee = {
   image: string | null;
   name: string;

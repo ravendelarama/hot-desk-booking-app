@@ -1,8 +1,12 @@
-"use client";
-
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { BookingStatus } from "@prisma/client";
+
+import { mutateBooking } from "@/actions/booking";
+
 import { useForm } from "react-hook-form";
+import { useToast } from "@/components/ui/use-toast";
+
 import {
   Select,
   SelectContent,
@@ -12,23 +16,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { DialogClose } from "@/components/ui/dialog";
-import { mutateBooking } from "@/actions/actions";
-import { useToast } from "@/components/ui/use-toast";
-import { BookingStatus } from "@prisma/client";
 
 const formSchema = z.object({
   status: z.string(),
@@ -41,7 +38,6 @@ function UpdateRow({ data }: { data: any }) {
       status: data?.status!,
     },
   });
-
   const { toast } = useToast();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {

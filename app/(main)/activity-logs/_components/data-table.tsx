@@ -45,9 +45,6 @@ import {
 import { useRouter } from "next/navigation";
 import { LuRefreshCcw } from "react-icons/lu";
 import { cn } from "@/lib/utils";
-import { MdDelete } from "react-icons/md";
-import { deleteAllActivityLogs } from "@/actions/actions";
-import { IoIosRemoveCircle, IoIosWarning } from "react-icons/io";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];

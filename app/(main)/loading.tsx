@@ -7,11 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Role } from "@prisma/client";
 import { getSession } from "next-auth/react";
-import { BsFillJournalBookmarkFill } from "react-icons/bs";
-import { GiDesk } from "react-icons/gi";
-import { PiUsersThreeFill } from "react-icons/pi";
 
 async function HomeLoadingPage() {
   const session = await getSession();

@@ -1,10 +1,10 @@
 "use client";
 
+import { ReactNode } from "react";
+
 import Footer from "@/components/layouts/Footer";
 import Header from "@/components/layouts/Header";
 import SideBar from "@/components/layouts/SideBar";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { ReactNode } from "react";
 
 interface Prop {
   children?: ReactNode;

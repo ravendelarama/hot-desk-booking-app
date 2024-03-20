@@ -17,7 +17,7 @@ import {
 
 import { DeskStatus } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
-import { deleteDeskById } from "@/actions/actions";
+import { deleteDeskById } from "@/actions/desk";
 import { IoIosWarning } from "react-icons/io";
 import UpdateRow from "./UpdateRow";
 // import UpdateRow from "./UpdateRow";

@@ -1,9 +1,10 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { MdDelete, MdEdit } from "react-icons/md";
-
 import { ColumnDef } from "@tanstack/react-table";
+import Link from "next/link";
+
+import { deleteFloorById } from "@/actions/floor";
+
 import {
   Dialog,
   DialogClose,
@@ -14,12 +15,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-
-import { deleteDeskById, deleteFloorById } from "@/actions/actions";
+import { Button } from "@/components/ui/button";
+import { MdDelete, MdEdit } from "react-icons/md";
 import { IoIosWarning } from "react-icons/io";
 import UpdateRow from "./UpdateRow";
-import Link from "next/link";
-import { FileUploader } from "react-drag-drop-files";
 import { ArrowUpDown } from "lucide-react";
 
 type Floors = {

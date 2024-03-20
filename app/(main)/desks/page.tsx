@@ -1,5 +1,5 @@
 import { DataTable } from "./_components/data-table";
-import { getAllDesks, getFloors } from "@/actions/actions";
+import { getAllDesks } from "@/actions/desk";
 import { columns } from "./_components/columns";
 
 async function Desks() {

@@ -1,15 +1,19 @@
+import { getSession } from "@/lib/next-auth";
+import moment from "moment";
+import { RedirectType, redirect } from "next/navigation";
+import { Role } from "@prisma/client";
+
 import {
   getAllBookingCount,
-  getAllUserCount,
-  getAvailableDesksCount,
-  getDesks,
   getMonthlyBookings,
-  getOtherUsers,
   getUserBookingCount,
   getUserCheckInCount,
   getUserUpcomingReservation,
-  recentActivityLogs,
-} from "@/actions/actions";
+} from "@/actions/booking";
+import { getAllUserCount } from "@/actions/user";
+import { getAvailableDesksCount } from "@/actions/desk";
+import { recentActivityLogs } from "@/actions/log";
+
 import {
   Card,
   CardContent,
@@ -19,14 +23,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { BsFillJournalBookmarkFill } from "react-icons/bs";
-
-import { getSession } from "@/lib/next-auth";
-import moment from "moment";
-import { RedirectType, redirect } from "next/navigation";
-import { PiUsersThree, PiUsersThreeFill } from "react-icons/pi";
+import { PiUsersThreeFill } from "react-icons/pi";
 import { GiDesk } from "react-icons/gi";
 import BookingGraph from "./_components/Graph";
-import { Role } from "@prisma/client";
 
 async function Home() {
   const totalEmployees = await getAllUserCount();
@@ -34,7 +33,6 @@ async function Home() {
   const totalUserBookings = await getUserBookingCount();
   const totalAvailableDesks = await getAvailableDesksCount();
   const recentLogs = await recentActivityLogs();
-  const upcomingReservations = await getUserUpcomingReservation();
   const userCheckins = await getUserCheckInCount();
   const session = await getSession();
   const monthlyBookings = await getMonthlyBookings();

@@ -1,5 +1,3 @@
-"use client";
-
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -12,13 +10,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -26,7 +22,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { DialogClose } from "@/components/ui/dialog";
-import { mutateDesk, mutateUser } from "@/actions/actions";
+import { mutateDesk } from "@/actions/desk";
 import { useToast } from "@/components/ui/use-toast";
 import { DeskStatus } from "@prisma/client";
 

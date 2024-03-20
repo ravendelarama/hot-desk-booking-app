@@ -1,6 +1,12 @@
-"use client";
+import { Desk, DeskStatus } from "@prisma/client";
+import ImageMapper, { MapAreas } from "react-img-mapper";
+import moment from "moment";
 
-// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Suspense, useState, useRef, useLayoutEffect } from "react";
+import useDesks from "@/hooks/useDesks";
+import useBook from "@/hooks/useBook";
+import { useRouter } from "next/navigation";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,26 +17,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-
-import ImageMapper, { MapAreas } from "react-img-mapper";
-import { cn } from "@/lib/utils";
-import { Suspense, useState, useRef, useLayoutEffect } from "react";
-import { Desk, DeskStatus } from "@prisma/client";
-import { Separator } from "@/components/ui/separator";
-import useDesks from "@/hooks/useDesks";
-import useBook from "@/hooks/useBook";
-import Loading from "./Loading";
-import moment from "moment";
-
 import { toast } from "@/components/ui/use-toast";
 import { DialogClose } from "@radix-ui/react-dialog";
-import { LuRefreshCcw } from "react-icons/lu";
-import { useRouter } from "next/navigation";
-// import {
-//   HoverCard,
-//   HoverCardContent,
-//   HoverCardTrigger,
-// } from "@/components/ui/hover-card";
+import Loading from "./Loading";
+import { Separator } from "@/components/ui/separator";
 
 type Prop = {
   floor: String | null;
@@ -42,14 +32,8 @@ type Prop = {
 function DeskMap({ floor, desks, image, date }: Prop) {
   const { selectedDesk, setSelectedDesk } = useDesks();
   const { setBook, setDate, handleBooking } = useBook();
-  const [prevDesk, setPrevDesk] = useState<any>(null);
-  const [isRotated, setRotate] = useState<boolean>(false);
-  const router = useRouter();
   const [width, setWidth] = useState<number>(0);
   const ref = useRef(null);
-  // const hoverRef = useRef(null);
-
-  const list: MapAreas[] = [];
 
   useLayoutEffect(() => {
     // @ts-ignore
@@ -61,6 +45,8 @@ function DeskMap({ floor, desks, image, date }: Prop) {
       setWidth(ref?.current?.offsetWidth);
     });
   }, []);
+
+  const list: MapAreas[] = [];
 
   desks.forEach((item, index) => {
     list[index] = {
@@ -84,8 +70,7 @@ function DeskMap({ floor, desks, image, date }: Prop) {
       ),
     });
   }
-  // show status if reserved
-  // dialog to be modified
+
   return (
     <>
       <div className="flex justify-between items-center">
@@ -185,17 +170,6 @@ function DeskMap({ floor, desks, image, date }: Prop) {
           )}
         </Suspense>
       </div>
-      {/* <HoverCard>
-        <HoverCardTrigger asChild>
-          <Button ref={hoverRef}>Click</Button>
-        </HoverCardTrigger>
-        <HoverCardContent>
-          <Avatar>
-            <AvatarImage src="https://github.com/vercel.png" />
-            <AvatarFallback>VC</AvatarFallback>
-          </Avatar>
-        </HoverCardContent>
-      </HoverCard> */}
     </>
   );
 }

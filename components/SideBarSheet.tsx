@@ -1,5 +1,7 @@
 "use client";
 
+import { ReactNode } from "react";
+
 import { Button } from "./ui/button";
 import {
   Sheet,
@@ -12,8 +14,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { FiMenu } from "react-icons/fi";
-
-import { ReactNode } from "react";
 
 interface Prop {
   children?: ReactNode;

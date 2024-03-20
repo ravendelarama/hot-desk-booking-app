@@ -1,8 +1,10 @@
-import { DataTable } from "./_components/data-table";
-import { columns } from "./_components/columns";
-import { getOtherUsers } from "@/actions/actions";
 import { getSession } from "@/lib/next-auth";
 import { RedirectType, redirect } from "next/navigation";
+
+import { getOtherUsers } from "@/actions/user";
+
+import { DataTable } from "./_components/data-table";
+import { columns } from "./_components/columns";
 
 async function Employees() {
   const employees = await getOtherUsers();

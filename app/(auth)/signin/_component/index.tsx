@@ -1,5 +1,8 @@
 "use client";
 
+import { signIn } from "next-auth/react";
+import Link from "next/link";
+
 import Form from "../../_components/SignInForm";
 import {
   Card,
@@ -11,9 +14,6 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-
-import { signIn } from "next-auth/react";
-import Link from "next/link";
 
 function SignIn() {
   return (
