@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
-export async function GET() {
+export async function GET(request: Request) {
+    const { email } = await request.json();
+
     const config = {
         service: "gmail",
         auth: {
@@ -9,19 +11,25 @@ export async function GET() {
             pass: process.env.NODEMAILER_PASSWORD
         }
     }
-    const transporter = nodemailer.createTransport(config)
+    const transporter = nodemailer.createTransport(config);
+
+    const token = await prisma?.verificationToken.findFirst({
+        where: {
+            email
+        }
+    });
 
     const message = {
         from: process.env.NODEMAILER_EMAIL,
-        to: "official.ravendelarama@gmail.com",
-        subject: "Email Testing",
-        html: "<h1>Hello world!</h1>"
+        to: email,
+        subject: "Verification Email",
+        html: `<a href="https://spot-desk.vercel.app/verify?token=${token?.token}">Confirm here</a>`
     }
-
 
     try {
 
         const result = await transporter.sendMail(message);
+        
         return NextResponse.json({
             result: result.accepted
         })
