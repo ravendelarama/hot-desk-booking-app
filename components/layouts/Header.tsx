@@ -21,7 +21,7 @@ const Routes = [
     name: "Home",
     role: "user",
     alternative: "Home",
-    path: "/home",
+    path: "/",
     icon: (options: string) => <GoHome className={options} />,
   },
   {
