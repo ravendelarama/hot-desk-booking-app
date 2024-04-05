@@ -34,7 +34,7 @@ export async function recentActivityLogs() {
         }
     });
 
-    revalidatePath("/home");
+    revalidatePath("/");
     
     return logs;
 }
