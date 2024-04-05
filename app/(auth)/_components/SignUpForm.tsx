@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
+import { Mail } from "lucide-react";
 
 import {
   Form,
@@ -70,17 +71,29 @@ function SignUpForm({ image }: { image: string | null }) {
       ...values,
     });
 
+    // if (res?.error) {
+    //   toast({
+    //     // @ts-ignore
+    //     title: (
+    //       <p className="flex items-center gap-2">
+    //         <MdErrorOutline className="h-7 w-7" />
+    //         Warning
+    //       </p>
+    //     ),
+    //     description: res.error,
+    //     variant: "destructive",
+    //   });
+    // }
+
     if (res?.error) {
       toast({
         // @ts-ignore
         title: (
           <p className="flex items-center gap-2">
-            <MdErrorOutline className="h-7 w-7" />
-            Warning
+            <Mail className="h-6 w-6 text-foreground" />
+            Verification email has been sent.
           </p>
         ),
-        description: res.error,
-        variant: "destructive",
       });
     }
   }

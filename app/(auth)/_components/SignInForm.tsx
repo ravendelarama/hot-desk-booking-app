@@ -23,6 +23,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { BiSolidShow, BiSolidHide } from "react-icons/bi";
 import { MdErrorOutline } from "react-icons/md";
+import { Mail } from "lucide-react";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -47,18 +48,28 @@ function SignInForm() {
     });
 
     if (res?.error && res?.error == "Permission Denied") {
+      // toast({
+      //   // @ts-ignore
+      //   title: (
+      //     <p className="flex items-center gap-2">
+      //       <MdErrorOutline className="h-7 w-7" />
+      //       Permission Denied
+      //     </p>
+      //   ),
+      //   description:
+      //     "This account was forbidden from accessing the system. If you have any concerns please contact the administrator.",
+
+      //   variant: "destructive",
+      // });
       toast({
         // @ts-ignore
         title: (
           <p className="flex items-center gap-2">
-            <MdErrorOutline className="h-7 w-7" />
-            Permission Denied
+            <Mail className="h-6 w-6 text-foreground" />
+            Verification email has been sent.
           </p>
         ),
-        description:
-          "This account was forbidden from accessing the system. If you have any concerns please contact the administrator.",
-
-        variant: "destructive",
+        description: "verify your email.",
       });
     }
 

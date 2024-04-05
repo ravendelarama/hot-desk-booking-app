@@ -1,6 +1,6 @@
 import { getSession } from "@/lib/next-auth";
 import VerifyForm from "./_component";
-import prisma from "@/lib/db";
+import { RedirectType, permanentRedirect } from "next/navigation";
 
 async function Verify({
   searchParams: { token },
@@ -9,6 +9,10 @@ async function Verify({
     token: string;
   };
 }) {
+  const session = await getSession();
+  if (session) {
+    permanentRedirect("/", RedirectType.replace);
+  }
   return (
     <div>
       <VerifyForm token={token} />
