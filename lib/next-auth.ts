@@ -251,7 +251,7 @@ export const AuthOptions: NextAuthOptions = {
                     from: process.env.NODEMAILER_EMAIL,
                     to: user?.email!,
                     subject: "Verification Email",
-                    html: `<a href="http://localhost:3000/verify?token=${token?.token}">Click here to verify.</a>`
+                    html: `<a href="https://spot-desk.vercel.app/verify?token=${token?.token}">Click here to verify.</a>`
                 }
 
                 await transporter.sendMail(message);
