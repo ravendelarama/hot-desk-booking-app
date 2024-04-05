@@ -24,6 +24,7 @@ import { Input } from "@/components/ui/input";
 import { BiSolidShow, BiSolidHide } from "react-icons/bi";
 import { MdErrorOutline } from "react-icons/md";
 import { Mail } from "lucide-react";
+import { redirect } from "next/navigation";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -46,6 +47,10 @@ function SignInForm() {
       redirect: false,
       ...values,
     });
+
+    if (res?.ok) {
+      redirect("/");
+    }
 
     if (res?.error && res?.error == "Permission Denied") {
       // toast({
