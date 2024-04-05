@@ -170,7 +170,7 @@ export async function verifyEmail(token: string) {
         }
     }
 
-    if (new Date() < requestToken.expiredAt) {
+    if (new Date() >= requestToken.expiredAt) {
         return {
             message: "Token expired."
         }
