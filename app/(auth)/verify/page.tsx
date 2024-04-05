@@ -1,8 +1,19 @@
 import { getSession } from "@/lib/next-auth";
-import { RedirectType, redirect } from "next/navigation";
+import VerifyForm from "./_component";
+import prisma from "@/lib/db";
 
-async function Verify() {
-  return <div>Verification Token</div>;
+async function Verify({
+  searchParams: { token },
+}: {
+  searchParams: {
+    token: string;
+  };
+}) {
+  return (
+    <div>
+      <VerifyForm token={token} />
+    </div>
+  );
 }
 
 export default Verify;

@@ -6,6 +6,7 @@ import { getSession } from "@/lib/next-auth";
 import { eventLogFormats } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { utapi } from "@/server/uploadthing";
+import { redirect } from "next/navigation";
 
 
 export async function getOtherUsers() {
@@ -155,3 +156,40 @@ export async function mutateUser(userId: string, credentials: any) {
 // TODO: Reset Password
 
 // TODO: Email Verification
+
+export async function verifyEmail(token: string) {
+    const requestToken = await prisma.verificationToken.findFirst({
+        where: {
+            token
+        }
+    });
+
+    if (!requestToken || !requestToken.email) {
+        return {
+            message: "Invalid Token."
+        }
+    }
+
+    if (new Date() > requestToken.expiredAt) {
+        return {
+            message: "Token expired."
+        }
+    }
+
+    await prisma.verificationToken.delete({
+        where: {
+            id: requestToken.id
+        }
+    });
+
+    const user = await prisma.user.update({
+        where: {
+            email: requestToken.email
+        },
+        data: {
+            emailVerified: new Date()
+        }
+    });
+
+    redirect("/signin");
+}

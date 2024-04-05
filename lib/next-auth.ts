@@ -1,6 +1,4 @@
-import { randomUUID } from "crypto";
-import moment from "moment";
-import { NextRequest } from "next/server";
+import nodemailer from "nodemailer";
 import { getServerSession } from "next-auth/next";
 import prisma, {eventLogFormats} from "@/lib/db";
 import { PrismaAdapter } from "@auth/prisma-adapter";
@@ -10,6 +8,8 @@ import { NextAuthOptions } from "next-auth";
 import bcrypt from "bcrypt";
 import { EventType } from "@prisma/client";
 import z from "zod";
+import { generateVerificationToken } from "./token";
+import { redirect } from "next/navigation";
 
 
 
@@ -122,7 +122,8 @@ export const AuthOptions: NextAuthOptions = {
                     const isValid = credentialSchema.safeParse(credentials);
 
                     if (!isValid.success) throw new Error("Invalid Credentials");
-
+                
+                    console.log("input valid")
                     const user = credentials;
     
                     const newPass = await bcrypt.hash(user.password, 10);
@@ -146,7 +147,7 @@ export const AuthOptions: NextAuthOptions = {
                     });
 
                     if (!data) throw new Error("Invalid Credentials");
-
+                    console.log("email not exist")
                     const hash = await bcrypt.compare(user.password, data.password as string);
 
                     if (!hash) throw new Error("Invalid Credentials");
@@ -165,6 +166,7 @@ export const AuthOptions: NextAuthOptions = {
                         }
                     });
                 
+                    console.log("auth test.");
                     return {
                         id: data.id,
                         firstName: data.firstName,
@@ -182,8 +184,20 @@ export const AuthOptions: NextAuthOptions = {
     session: {
         strategy: "jwt"
     },
+    events: {
+        linkAccount: async ({user}) => {
+            await prisma.user.update({
+                where: {
+                    email: user.email!
+                },
+                data: {
+                    emailVerified: new Date()
+                }
+            })
+        }
+    },
     callbacks: {
-        async signIn({ account, profile }) {
+        async signIn({ account, profile, user }) {
             // return profile!.email!.endsWith("@student.laverdad.edu.ph");
             if (account?.provider === "google") {
                 const user = await prisma.user.findUnique({
@@ -205,9 +219,47 @@ export const AuthOptions: NextAuthOptions = {
                         }
                     });
                 }
+                return true
                 
             }
-            return true;
+
+            
+            if (user?.email) {
+                const verifyUser = await prisma.user.findFirst({
+                    where: {
+                        email: user?.email
+                    }
+                });
+
+                if (verifyUser?.emailVerified) {
+                    return true
+                }
+
+                const token = await generateVerificationToken(user?.email!);
+
+                //
+                const config = {
+                    service: "gmail",
+                    auth: {
+                        user: process.env.NODEMAILER_EMAIL,
+                        pass: process.env.NODEMAILER_PASSWORD
+                    }
+                }
+                const transporter = nodemailer.createTransport(config);
+            
+                const message = {
+                    from: process.env.NODEMAILER_EMAIL,
+                    to: user?.email!,
+                    subject: "Verification Email",
+                    html: `<a href="http://localhost:3000/verify?token=${token?.token}">Click here to verify.</a>`
+                }
+
+                await transporter.sendMail(message);
+                //
+
+                //MFA soon...
+            }
+            return false;
         },
         async jwt({ token, user }) {
             if (user) {

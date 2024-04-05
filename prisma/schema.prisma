@@ -60,6 +60,15 @@ model VerificationToken {
   token     String   @unique
   email     String
   createdAt DateTime @default(now())
+  expiredAt DateTime
+}
+
+model MFAVerificationCode {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  code      String   @unique
+  email     String
+  createdAt DateTime @default(now())
+  expiredAt DateTime
 }
 
 model ResetPasswordToken {
@@ -67,6 +76,7 @@ model ResetPasswordToken {
   token     String   @unique
   email     String
   createdAt DateTime @default(now())
+  expiredAt DateTime
 }
 
 model Floor {
@@ -117,6 +127,7 @@ model Log {
 }
 
 enum Role {
+  superadmin
   admin // can manage reservations, assign managers, desks, floors, etc.
   manager // can manage reservations and desks
   user // limited

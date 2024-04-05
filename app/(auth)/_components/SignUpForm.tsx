@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BiSolidShow, BiSolidHide } from "react-icons/bi";
 import { MdErrorOutline } from "react-icons/md";
+import { useRouter } from "next/navigation";
 
 const formSchema = z
   .object({
@@ -61,6 +62,7 @@ function SignUpForm({ image }: { image: string | null }) {
   const { toast } = useToast();
   const [seePass, setSeePass] = useState<boolean>(false);
   const [seeConfirmPass, setSeeConfirmPass] = useState<boolean>(false);
+  const router = useRouter();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const res = await signIn("credential-register", {

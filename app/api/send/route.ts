@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
 export async function GET(request: Request) {
-    const { email } = await request.json();
+    const { email, token } = await request.json();
 
     const config = {
         service: "gmail",
@@ -12,12 +12,6 @@ export async function GET(request: Request) {
         }
     }
     const transporter = nodemailer.createTransport(config);
-
-    const token = await prisma?.verificationToken.findFirst({
-        where: {
-            email
-        }
-    });
 
     const message = {
         from: process.env.NODEMAILER_EMAIL,
