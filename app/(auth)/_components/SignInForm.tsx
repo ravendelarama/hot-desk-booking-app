@@ -137,7 +137,9 @@ function SignInForm() {
                   </div>
                 </FormControl>
 
-                <FormDescription>Please enter your password.</FormDescription>
+                <FormDescription>
+                  <Link href="/reset/send">Forgot password?</Link>
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -149,8 +151,11 @@ function SignInForm() {
                 Sign up
               </Link>
             </p>
-            <Button type="submit" className="text-xs sm:text-sm items-end">
-              Submit
+            <Button
+              type="submit"
+              className="text-xs font-semibold sm:text-sm items-center"
+            >
+              Sign in
             </Button>
           </div>
         </form>

@@ -196,7 +196,7 @@ export async function sendResetToken(email: string) {
         from: process.env.NODEMAILER_EMAIL,
         to: email!,
         subject: "Reset Password",
-        html: `<a href="http://localhost:3000/reset?token=${token?.token}">Click here to reset your password.</a>`
+        html: `<a href="https://spot-desk.vercel.app/reset?token=${token?.token}">Click here to reset your password.</a>`
     }
 
     await transporter.sendMail(message);

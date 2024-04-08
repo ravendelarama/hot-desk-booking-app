@@ -222,7 +222,12 @@ function SignUpForm({ image }: { image: string | null }) {
                 Sign in
               </Link>
             </p>
-            <Button type="submit">Submit</Button>
+            <Button
+              type="submit"
+              className="text-xs font-semibold sm:text-sm items-center"
+            >
+              Sign up
+            </Button>
           </div>
         </form>
       </Form>
