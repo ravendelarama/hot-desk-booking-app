@@ -48,10 +48,6 @@ function SignInForm() {
       ...values,
     });
 
-    if (res?.ok) {
-      redirect("/");
-    }
-
     if (res?.error && res?.error == "Permission Denied") {
       // toast({
       //   // @ts-ignore

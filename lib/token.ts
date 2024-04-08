@@ -5,7 +5,12 @@ import prisma from "@/lib/db";
  * @param email 
  * @returns {type VerificationToken}
  */
-export async function generateVerificationToken(email: string) {
+export async function generateVerificationToken(email: string | null | undefined) {
+    
+    if (!email) {
+        return null;
+    }
+    
     const token = uuidv4();
     const expires = new Date(new Date().getTime() + 3600 * 1000);
 
@@ -32,4 +37,38 @@ export async function generateVerificationToken(email: string) {
     });
     
     return verificationToken;
+}
+
+export async function generateResetPasswordToken(email: string | null | undefined) {
+
+    if (!email) {
+        return null;
+    }
+
+    const token = uuidv4();
+    const expires = new Date(new Date().getTime() + 3600 * 1000);
+
+    const existingToken = await prisma.resetPasswordToken.findFirst({
+        where: {
+            email
+        }
+    });
+
+    if (existingToken) {
+        await prisma.resetPasswordToken.delete({
+            where: {
+                id: existingToken.id
+            }
+        });
+    }
+
+    const resetPasswordToken = await prisma.resetPasswordToken.create({
+        data: {
+            email,
+            token,
+            expiredAt: expires
+        }
+    });
+    
+    return resetPasswordToken;
 }

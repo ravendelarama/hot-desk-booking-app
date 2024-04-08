@@ -7,7 +7,9 @@ import { eventLogFormats } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { utapi } from "@/server/uploadthing";
 import { redirect } from "next/navigation";
-
+import { generateResetPasswordToken } from "@/lib/token";
+import nodemailer from "nodemailer";
+import bcrypt from "bcrypt";
 
 export async function getOtherUsers() {
     const session = await getSession();
@@ -153,9 +155,121 @@ export async function mutateUser(userId: string, credentials: any) {
     revalidatePath("/employees");
 }
 
-// TODO: Reset Password
+export async function sendResetToken(email: string) {
+    const isOAuth = await prisma.user.findUnique({
+        where: {
+            email
+        },
+        include: {
+            _count: {
+                select: {
+                    accounts: true
+                }
+            }
+        }
+    });
 
-// TODO: Email Verification
+    if (isOAuth?._count.accounts! > 0 || !email) {
+        return {
+            message: "Invalid email."
+        }
+    }
+
+    const token = await generateResetPasswordToken(email!);
+    
+    if (!token) {
+        return {
+            message: "Invalid email."
+        }
+    }
+
+    const config = {
+        service: "gmail",
+        auth: {
+            user: process.env.NODEMAILER_EMAIL,
+            pass: process.env.NODEMAILER_PASSWORD
+        }
+    }
+    const transporter = nodemailer.createTransport(config);
+
+    const message = {
+        from: process.env.NODEMAILER_EMAIL,
+        to: email!,
+        subject: "Reset Password",
+        html: `<a href="http://localhost:3000/reset?token=${token?.token}">Click here to reset your password.</a>`
+    }
+
+    await transporter.sendMail(message);
+
+    revalidatePath("/signin");
+    redirect("/signin");
+}
+
+export async function resetPassword(token: string, newPassword: string) {
+    const resetToken = await prisma.resetPasswordToken.findFirst({
+        where: {
+            token
+        }
+    });
+
+    if (!resetToken || !resetToken?.email) {
+        return {
+            message: "Invalid Token."
+        }
+    }
+
+    const isOAuth = await prisma.user.findUnique({
+        where: {
+            email: resetToken.email!
+        },
+        include: {
+            _count: {
+                select: {
+                    accounts: true
+                }
+            }
+        }
+    });
+
+    if (isOAuth?._count.accounts! > 0) {
+        return {
+            message: "Invalid email."
+        }
+    }
+
+
+    if (new Date() >= resetToken.expiredAt) {
+        return {
+            message: "Token expired."
+        }
+    }
+
+    await prisma.resetPasswordToken.delete({
+        where: {
+            id: resetToken.id
+        }
+    });
+
+    const hash = await bcrypt.hash(newPassword, 10);
+    
+    if (!hash) {
+        return {
+            message: "Invalid credentials."
+        }
+    }
+
+    await prisma.user.update({
+        where: {
+            email: resetToken.email!
+        },
+        data: {
+            password: hash
+        }
+    });
+    
+    revalidatePath("/signin");
+    redirect("/signin");
+}
 
 export async function verifyEmail(token: string) {
     const requestToken = await prisma.verificationToken.findFirst({
@@ -182,7 +296,7 @@ export async function verifyEmail(token: string) {
         }
     });
 
-    const user = await prisma.user.update({
+    await prisma.user.update({
         where: {
             email: requestToken.email
         },
