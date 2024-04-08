@@ -26,6 +26,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useFormStatus } from "react-dom";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -38,6 +39,8 @@ function SendResetEmailForm() {
       email: "",
     },
   });
+
+  const status = useFormStatus();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const res = await sendResetToken(values.email!);
