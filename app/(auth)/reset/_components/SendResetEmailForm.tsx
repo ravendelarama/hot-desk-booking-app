@@ -52,8 +52,8 @@ function SendResetEmailForm() {
             Send Reset Password Email
           </CardTitle>
           <CardDescription>
-            Enter the email address associated with your account and we'll send
-            you a link to reset your password.
+            Enter the email address associated with your account and we&apos;ll
+            send you a link to reset your password.
           </CardDescription>
         </CardHeader>
         <CardContent>
