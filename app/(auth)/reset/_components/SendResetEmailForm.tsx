@@ -75,7 +75,11 @@ function SendResetEmailForm() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full">
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={status.pending}
+              >
                 Continue
               </Button>
             </form>

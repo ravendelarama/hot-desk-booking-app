@@ -4,12 +4,10 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
 
 import { useForm } from "react-hook-form";
-import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
-import { Mail } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 import {
   Form,
@@ -24,7 +22,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BiSolidShow, BiSolidHide } from "react-icons/bi";
 import { MdErrorOutline } from "react-icons/md";
+import { Mail } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useFormStatus } from "react-dom";
 
 const formSchema = z
   .object({
@@ -64,6 +65,7 @@ function SignUpForm({ image }: { image: string | null }) {
   const [seePass, setSeePass] = useState<boolean>(false);
   const [seeConfirmPass, setSeeConfirmPass] = useState<boolean>(false);
   const router = useRouter();
+  const status = useFormStatus();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const res = await signIn("credential-register", {
@@ -224,6 +226,7 @@ function SignUpForm({ image }: { image: string | null }) {
             </p>
             <Button
               type="submit"
+              disabled={status.pending}
               className="text-xs font-semibold sm:text-sm items-center"
             >
               Sign up

@@ -30,6 +30,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
 import { BiSolidHide, BiSolidShow } from "react-icons/bi";
 import { cn } from "@/lib/utils";
+import { useFormStatus } from "react-dom";
 
 const formSchema = z
   .object({
@@ -61,6 +62,7 @@ function ResetPasswordForm({ token }: { token: string }) {
   const { toast } = useToast();
   const [seePass, setSeePass] = useState<boolean>(false);
   const [seeConfirmPass, setSeeConfirmPass] = useState<boolean>(false);
+  const status = useFormStatus();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const res = await resetPassword(token!, values.password!);
@@ -155,7 +157,11 @@ function ResetPasswordForm({ token }: { token: string }) {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full">
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={status.pending}
+              >
                 Create new password
               </Button>
             </form>

@@ -24,7 +24,8 @@ import { Input } from "@/components/ui/input";
 import { BiSolidShow, BiSolidHide } from "react-icons/bi";
 import { MdErrorOutline } from "react-icons/md";
 import { Mail } from "lucide-react";
-import { redirect } from "next/navigation";
+import { useFormStatus } from "react-dom";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -39,6 +40,9 @@ function SignInForm() {
       password: "",
     },
   });
+  const status = useFormStatus();
+  const router = useRouter();
+
   const { toast } = useToast();
   const [seePass, setSeePass] = useState<boolean>(false);
 
@@ -86,6 +90,8 @@ function SignInForm() {
         description: res.error,
       });
     }
+
+    router.push("/");
   }
 
   return (
@@ -153,6 +159,7 @@ function SignInForm() {
             </p>
             <Button
               type="submit"
+              disabled={status.pending}
               className="text-xs font-semibold sm:text-sm items-center"
             >
               Sign in
