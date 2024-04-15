@@ -93,6 +93,7 @@ model Desk {
   floorId     String     @db.ObjectId
   name        String     @unique
   coordinates Int[]
+  amenities   String[]
   status      DeskStatus @default(available)
   createdAt   DateTime   @default(now()) @db.Timestamp
   updatedAt   DateTime   @updatedAt @db.Timestamp
@@ -162,3 +163,29 @@ enum EventType {
   reset_password // User Mutation
   update_user // User Mutation
 }
+
+// Amenities: (Personalized workspace)
+// Productivity
+// Comfort
+// Ambiance
+// Personalization
+// Dual monitors
+// Standing
+// Quiet
+// Plants
+// Whiteboard
+// Ergonomic chair
+// Office with a door
+// ADA adjustable
+// Desk lamp
+// Footstool
+// By window
+// Threadmill
+// Printer
+// Massager
+// Natural lighting
+// Modular wall
+// Work pod
+// Air filter
+// White noise
+// Aroma diffuser

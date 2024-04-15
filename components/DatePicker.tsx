@@ -94,7 +94,7 @@ export function DatePicker({ onSubmit, floor }: Prop) {
 
         <div className="h-full">
           <Button size="sm" className="w-full" type="submit" disabled={!floor}>
-            Set
+            Search
           </Button>
         </div>
       </form>

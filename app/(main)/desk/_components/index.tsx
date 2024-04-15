@@ -59,7 +59,7 @@ function Desk() {
   }
 
   return (
-    <div className="p-3 sm:pt-10 sm:pl-10 flex flex-col space-y-5 w-full">
+    <>
       <h1 className="text-3xl font-bold font-sans">Desk map</h1>
       <div>
         <Form {...form}>
@@ -118,11 +118,11 @@ function Desk() {
       <DatePicker onSubmit={onSubmitDatePicker} floor={activeFloor} />
       <DeskMap
         desks={desks}
-        floor={activeFloor}
+        area={activeFloor}
         image={activeImage}
         date={date}
       />
-    </div>
+    </>
   );
 }
 

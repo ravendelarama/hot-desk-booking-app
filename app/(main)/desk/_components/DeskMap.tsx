@@ -23,13 +23,13 @@ import Loading from "./Loading";
 import { Separator } from "@/components/ui/separator";
 
 type Prop = {
-  floor: String | null;
+  area: String | null;
   desks: Pick<Desk, "id" | "name" | "coordinates" | "status">[];
   image: string | null;
   date: Date | null;
 };
 
-function DeskMap({ floor, desks, image, date }: Prop) {
+function DeskMap({ area, desks, image, date }: Prop) {
   const { selectedDesk, setSelectedDesk } = useDesks();
   const { setBook, setDate, handleBooking } = useBook();
   const [width, setWidth] = useState<number>(0);
@@ -78,7 +78,7 @@ function DeskMap({ floor, desks, image, date }: Prop) {
           {!selectedDesk
             ? "Please select your desired desk."
             : selectedDesk.status === DeskStatus.available
-            ? `You have selected desk ${selectedDesk.name} on floor ${floor}.`
+            ? `You have selected desk ${selectedDesk.name} on area ${area}.`
             : `Desk ${selectedDesk.name} is unavailable.`}
         </p>
         <Dialog>
@@ -86,7 +86,7 @@ function DeskMap({ floor, desks, image, date }: Prop) {
             <Button
               variant="outline"
               className="text-sm w-16 px-2"
-              disabled={!floor || !date || !selectedDesk}
+              disabled={!area || !date || !selectedDesk}
               onClick={() => {
                 setBook(selectedDesk!);
                 setDate(date!);

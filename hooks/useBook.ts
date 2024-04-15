@@ -15,7 +15,7 @@ function useBook() {
         setBook: (value: Book) => setBook(value),
         setDate: (value: Date) => setDate(value),
         handleBooking: async () => {
-            const createBooking = await addBooking(book!, date!);
+            await addBooking(book!, date!);
         }
     };
 }

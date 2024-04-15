@@ -16,7 +16,7 @@ function useDesks() {
     useEffect(() => {
         const initialDesks = async () => {
             const res = await getDesks({
-                floor: "F1D10"
+                floor: "F1"
             });
             setData([...res?.Desk!]);
         };
