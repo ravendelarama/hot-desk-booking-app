@@ -9,6 +9,13 @@ export async function getFloors() {
     const floors = await prisma.floor.findMany({
         orderBy: {
             floor: "asc"
+        },
+        include: {
+            _count: {
+                select: {
+                    Desk: true
+                }
+            }
         }
     });
 
@@ -16,6 +23,8 @@ export async function getFloors() {
     return floors;
 }
 
+
+// table
 export async function getAllFloors() {
     const data = await prisma.floor.findMany({
         orderBy: {
@@ -64,7 +73,7 @@ export async function addFloor(name: string, image: any) {
         // @ts-ignore
         data: {
             floor: name!,
-            image: image[0].url!
+            image: image!
         }
     })
 

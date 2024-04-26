@@ -24,6 +24,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
+import {
   Dialog,
   DialogClose,
   DialogContent,
@@ -63,6 +72,7 @@ export function DataTable<TData, TValue>({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [isRotated, setRotate] = useState<boolean>(false);
   const router = useRouter();
+  const [isAddDeskActive, setAddDeskActive] = useState<boolean>(false);
 
   const table = useReactTable({
     data,
@@ -112,22 +122,17 @@ export function DataTable<TData, TValue>({
               )}
             />
           </Button>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant={"warning"} size={"icon"}>
-                <MdAdd className="h-4 w-4" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
-                  Create a desk
-                </DialogTitle>
-                {/** @ts-ignore */}
-                <AddDesk />
-              </DialogHeader>
-            </DialogContent>
-          </Dialog>
+          <Button
+            variant={"warning"}
+            size={"icon"}
+            onClick={(e) => {
+              setAddDeskActive(true);
+            }}
+            disabled={isAddDeskActive}
+          >
+            <MdAdd className="h-4 w-4" />
+          </Button>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon" className="ml-auto">
@@ -156,78 +161,102 @@ export function DataTable<TData, TValue>({
           </DropdownMenu>
         </div>
       </div>
-      <div className="rounded-md border w-full overflow-x-auto">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
+      {isAddDeskActive ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Create a desk</CardTitle>
+            <CardDescription></CardDescription>
+          </CardHeader>
+          <CardContent>
+            {/** @ts-ignore */}
+            <AddDesk />
+          </CardContent>
+          <CardFooter>
+            <Button
+              onClick={() => {
+                setAddDeskActive(false);
+              }}
+            >
+              Cancel
+            </Button>
+          </CardFooter>
+        </Card>
+      ) : (
+        <>
+          <div className="rounded-md border w-full overflow-x-auto">
+            <Table>
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <TableHead key={header.id}>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                        </TableHead>
+                      );
+                    })}
+                  </TableRow>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                      onClick={() => {
+                        // edit dialog
+                        // can promote, delete, ban
+                      }}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
                           )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  onClick={() => {
-                    // edit dialog
-                    // can promote, delete, ban
-                  }}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      No results.
                     </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>{" "}
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
-      </div>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>{" "}
+          <div className="flex items-center justify-end space-x-2 py-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              Next
+            </Button>
+          </div>
+        </>
+      )}
     </div>
   );
 }

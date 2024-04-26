@@ -10,9 +10,9 @@ const FormSchema = z.object({
 });
 
 export async function getDesks(value: z.infer<typeof FormSchema>) {
-    const desks = await prisma.floor.findUnique({
+    const desks = await prisma.floor.findFirst({
         where: {
-            floor: value.floor
+            id: value.floor
         },
         select: {
             id: true,
@@ -34,8 +34,37 @@ export async function getDesks(value: z.infer<typeof FormSchema>) {
         }
     });
 
+    
+    console.log(desks);
+    console.log(desks?.Desk[0].coordinates!);
+
     return desks;
 }
+
+export async function checkIfOccupied(deskId: string, bookedAt: Date) {
+
+    const res = await prisma.booking.count({
+        where: {
+            id: deskId,
+            bookedAt
+        }
+    });
+
+    return res > 0;
+}
+
+export async function floorDeskCount(floorId: string) {
+    const res = await prisma.desk.count({
+        where: {
+            floorId
+        },
+
+    });
+
+    return res
+}
+
+async function occupiedDesks(floorId: string, bookedAt: Date) {}
 
 export async function getAllDesks() {
     const data = await prisma.desk.findMany({
@@ -120,7 +149,6 @@ export async function addDesk(
     name: string,
     coord1: string,
     coord2: string,
-    coord3: string,
 ) {
     
 
@@ -128,7 +156,7 @@ export async function addDesk(
         data: {
             floorId: floor,
             name,
-            coordinates: [Number(coord1), Number(coord2), Number(coord3)]
+            coordinates: [Number(coord1), Number(coord2), 10]
         }
     });
 

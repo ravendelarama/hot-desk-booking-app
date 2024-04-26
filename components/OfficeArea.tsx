@@ -4,26 +4,43 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Floor } from "@prisma/client";
 
-function OfficeArea() {
+function OfficeArea({
+  image,
+  floor,
+  onSelect,
+}: {
+  image: string;
+  floor: {
+    _count: {
+      Desk: number;
+    };
+  } & Floor;
+  onSelect: (area: { _count: { Desk: number } } & Floor) => Promise<void>;
+}) {
+  const imageUrl = `https://utfs.io/f/${image!}`;
   return (
     <>
       <Button
         variant={null}
         className="flex flex-col justify-center items-start w-full h-fit lg:w-64"
+        onClick={async () => {
+          await onSelect(floor);
+        }}
       >
         <div className="w-full">
           <AspectRatio ratio={16 / 9}>
             <Image
               fill
-              alt="Area"
-              src="https://utfs.io/f/c997ef4c-61f8-4e66-b3b2-7e0d218545f3-cb3i5r.jpg"
+              alt={floor.floor}
+              src={imageUrl!}
               className="rounded-md object-cover"
             />
           </AspectRatio>
         </div>
-        <p className="font-semibold">Office Area A1</p>
-        <p className="text-secondary text-xs">15 desks</p>
+        <p className="font-semibold">Office Area {floor.floor}</p>
+        <p className="text-secondary text-xs">{floor._count.Desk!} desks</p>
       </Button>
     </>
   );

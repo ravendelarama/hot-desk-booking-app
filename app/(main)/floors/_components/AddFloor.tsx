@@ -13,12 +13,17 @@ import { HiOutlineUpload } from "react-icons/hi";
 
 function AddFloor() {
   const [name, setName] = useState<string>("");
+  const [image, setImage] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setFiles(acceptedFiles);
   }, []);
   const { startUpload, permittedFileInfo } = useUploadThing("imageUploader", {
-    onClientUploadComplete: () => {
+    onClientUploadComplete: async (res) => {
+      const src = res[0].url.split("/");
+      setImage(src[src.length - 1]);
+
+      await addFloor(name, src[src.length - 1]);
       alert("uploaded successfully!");
     },
     onUploadError: () => {
@@ -63,19 +68,14 @@ function AddFloor() {
         <DialogClose asChild>
           <Button variant={"secondary"}>Cancel</Button>
         </DialogClose>
-        <DialogClose asChild>
-          <Button
-            variant={"success"}
-            onClick={async () => {
-              const image = startUpload(files);
-              if (image) {
-                await addFloor(name, image);
-              }
-            }}
-          >
-            Continue
-          </Button>
-        </DialogClose>
+        <Button
+          variant={"success"}
+          onClick={async () => {
+            startUpload(files);
+          }}
+        >
+          Continue
+        </Button>
       </DialogFooter>
     </div>
   );

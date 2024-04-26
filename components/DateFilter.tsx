@@ -3,6 +3,7 @@
 import * as React from "react";
 import { IoCalendarOutline } from "react-icons/io5";
 import { addDays, format } from "date-fns";
+import moment from "moment";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -21,7 +22,7 @@ import {
 } from "@/components/ui/select";
 
 export function TimestampPicker() {
-  const [date, setDate] = React.useState<Date>();
+  const [date, setDate] = React.useState<Date>(new Date());
 
   return (
     <Popover>
@@ -57,7 +58,17 @@ export function TimestampPicker() {
           </SelectContent>
         </Select>
         <div className="rounded-md border">
-          <Calendar mode="single" selected={date} onSelect={setDate} />
+          <Calendar
+            mode="single"
+            selected={date}
+            // @ts-ignore
+            onSelect={setDate}
+            disabled={(date) =>
+              moment(date) < moment().subtract(1, "day") ||
+              moment(date) > moment().add(14, "days")
+            }
+            initialFocus
+          />
         </div>
       </PopoverContent>
     </Popover>

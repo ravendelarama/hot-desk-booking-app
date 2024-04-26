@@ -9,6 +9,7 @@ import SessionProvider from "@/components/providers/session-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import TanstackQueryProvider from "@/components/providers/tanstack-query";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -34,7 +35,7 @@ export default async function RootLayout({
             enableSystem={false}
             storageKey="hot-desk"
           >
-            {children}
+            <TanstackQueryProvider>{children}</TanstackQueryProvider>
             <Toaster />
           </ThemeProvider>
         </body>

@@ -1,6 +1,7 @@
 import { DataTable } from "./_components/data-table";
 import { getAllDesks } from "@/actions/desk";
 import { columns } from "./_components/columns";
+import { getFloors } from "@/actions/floor";
 
 async function Desks() {
   const desks = await getAllDesks();

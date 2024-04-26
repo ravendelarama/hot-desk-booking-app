@@ -4,43 +4,23 @@ import { Desk } from "@prisma/client";
 import { getDesks } from "@/actions/desk";
 
 import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 type D = Pick<Desk, "id" | "name" | "coordinates" | "status">;
 type Desks = D[];
 
-function useDesks() {
-    const [data, setData] = useState<Desks>([]);
-    const [floor, setFloor] = useState<string | null>(null)
-    const [selectedDesk, setSelectedDesk] = useState<D | null>(null);
-
-    useEffect(() => {
-        const initialDesks = async () => {
-            const res = await getDesks({
-                floor: "F1"
-            });
-            setData([...res?.Desk!]);
-        };
-
-
-        // const resetDesks = () => setData([]);
-
-        // // initialDesks();
-
-        // return resetDesks();
-    }, []);
-
-    const setDesks = (desks: Desks, flr: string): void => {
-        setData(desks);
-        setFloor(flr);
-    };
-
-    const desks = data;
+function useDesks({ floorId: floor }: { floorId: string; }) {
+    // const [desks, setDesks] = useState<Desks>([]);
+    // const [floor, setFloor] = useState<string | null>(null)
+    const { data: desks } = useQuery({
+        queryKey: ["desks"],
+        queryFn: async () => await getDesks({ floor }),
+        staleTime: 5 * 1000,
+        refetchInterval: 5 * 1000,
+    });
 
     return {
-        desks,
-        setDesks,
-        selectedDesk,
-        setSelectedDesk: (value: D | null) => setSelectedDesk(value)
+        desks
     };
 }
 

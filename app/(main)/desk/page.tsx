@@ -1,7 +1,9 @@
 import { RedirectType, redirect } from "next/navigation";
 import { getSession } from "@/lib/next-auth";
 
-import Desk from "./_components";
+import { getFloors } from "@/actions/floor";
+
+// import Desk from "./_components";
 import BookTabs from "./_components/BookTabs";
 
 async function App() {
