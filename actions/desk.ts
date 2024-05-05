@@ -12,7 +12,16 @@ const FormSchema = z.object({
 export async function getDesks(value: z.infer<typeof FormSchema>) {
     const desks = await prisma.floor.findFirst({
         where: {
-            id: value.floor
+            id: value.floor,
+            // Desk: {
+            //     every: {
+            //         Booking: {
+            //             some: {
+            //                 startedAt: new Date()
+            //             }
+            //         }
+            //     }
+            // }
         },
         select: {
             id: true,
@@ -35,8 +44,8 @@ export async function getDesks(value: z.infer<typeof FormSchema>) {
     });
 
     
-    console.log(desks);
-    console.log(desks?.Desk[0].coordinates!);
+    // console.log(desks);
+    // console.log(desks?.Desk[0].coordinates!);
 
     return desks;
 }
@@ -165,4 +174,30 @@ export async function addDesk(
     revalidatePath("/desks");
     revalidatePath("/home");
     revalidatePath("/desk");
+}
+
+export async function getDeskById(id: string, date: Date) {
+    const data = await prisma.desk.findFirst({
+        where: {
+            id
+        },
+        include: {
+            Booking: {
+                select: {
+                    startedAt: true,
+                    bookedAt: true,
+                    user: {
+                        select: {
+                            image: true,
+                            email: true,
+                            firstName: true,
+                            lastName: true
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    return data;
 }

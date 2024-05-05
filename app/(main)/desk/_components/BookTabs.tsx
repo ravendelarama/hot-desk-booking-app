@@ -19,18 +19,35 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 
 import { TimestampPicker } from "@/components/DateFilter";
-import { getDesks } from "@/actions/desk";
+import { getDeskById } from "@/actions/desk";
 import { toast } from "@/components/ui/use-toast";
-import useDesks from "@/hooks/useDesks";
+import { addBooking } from "@/actions/booking";
 
 function BookTabs() {
   const [workspace, setWorkspace] = useState<null | Floor>(null);
+  const [date, setDate] = useState<Date>(new Date());
+  const [selectedDesk, setSelectedDesk] = useState<
+    | (Desk & {
+        Booking: {
+          user: {
+            firstName: string;
+            lastName: string;
+            email: string | null;
+            image: string | null;
+          };
+          startedAt: Date;
+          bookedAt: Date;
+        }[];
+      })
+    | null
+  >(null);
 
   async function onSelect(area: { _count: { Desk: number } } & Floor) {
     // soon be officeArea
@@ -42,11 +59,17 @@ function BookTabs() {
     }
   }
 
-  async function onSelectDesk(x: string, y: string) {
-    toast({
-      title: "Selected Desk",
-      description: `${x} ${y}`,
-    });
+  async function onSelectDesk(id: string) {
+    if (selectedDesk?.id! != id) {
+      const data = await getDeskById(id, date);
+
+      setSelectedDesk(data);
+
+      toast({
+        title: "Selected Desk",
+        description: `DeskId: ${id}`,
+      });
+    }
   }
 
   return (
@@ -80,7 +103,7 @@ function BookTabs() {
         <TabsContent value="map" className="w-full mt-10 border rounded-lg">
           {/*  */}
           <div className="flex justify-between border-b w-full p-4">
-            <TimestampPicker />{" "}
+            <TimestampPicker date={date} setDate={(date) => setDate(date)} />
             <Dialog>
               <DialogTrigger asChild>
                 <Button className="flex gap-1">
@@ -92,10 +115,40 @@ function BookTabs() {
                 <DialogHeader>
                   <DialogTitle>Are you absolutely sure?</DialogTitle>
                   <DialogDescription>
-                    This action cannot be undone. This will permanently delete
-                    your account and remove your data from our servers.
+                    This action cannot be undone. This will be saved into the
+                    system.
                   </DialogDescription>
                 </DialogHeader>
+                <DialogFooter>
+                  <Button
+                    variant={"success"}
+                    // @ts-ignore
+                    disabled={() =>
+                      selectedDesk?.Booking[0]?.startedAt.getDate() ==
+                      date.getDate()
+                    } // to be fix
+                    onClick={async () => {
+                      // @ts-ignore
+                      if (selectedDesk) {
+                        const res = await addBooking(
+                          {
+                            id: selectedDesk?.id,
+                            floorId: selectedDesk?.floorId,
+                            name: selectedDesk?.name,
+                            coordinates: selectedDesk?.coordinates,
+                            amenities: selectedDesk?.amenities,
+                            status: selectedDesk?.status,
+                            createdAt: selectedDesk?.createdAt,
+                            updatedAt: selectedDesk?.updatedAt,
+                          },
+                          date
+                        );
+                      }
+                    }}
+                  >
+                    Continue
+                  </Button>
+                </DialogFooter>
               </DialogContent>
             </Dialog>
           </div>
@@ -105,9 +158,19 @@ function BookTabs() {
                 floorId={workspace?.id!}
                 image={`https://utfs.io/f/${workspace.image!}`}
                 onSelect={onSelectDesk}
+                date={date}
               />
             )}
-            <DeskInfo />
+            {!!selectedDesk && (
+              <DeskInfo
+                name={selectedDesk.name!}
+                status={selectedDesk?.status!}
+                area={workspace?.floor!}
+                booking={selectedDesk.Booking!}
+                amenities={selectedDesk.amenities}
+                startedAt={date}
+              />
+            )}
           </div>
         </TabsContent>
       </Tabs>

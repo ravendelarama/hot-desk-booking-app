@@ -23,6 +23,19 @@ export async function getFloors() {
     return floors;
 }
 
+export async function getFloorImage(id: string) {
+    const data = await prisma.floor.findFirst({
+        where: {
+            id
+        },
+        select: {
+            image: true
+        }
+    });
+
+    return data?.image!;
+}
+
 
 // table
 export async function getAllFloors() {

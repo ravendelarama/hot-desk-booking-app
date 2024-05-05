@@ -81,7 +81,7 @@ export async function getAllBookingCount() {
     return await prisma.booking.count()
 }
 
-export async function addBooking(book: Book, date: Date) {
+export async function addBooking(desk: Desk, date: Date) {
     const session = await getSession();
 
     if (!session?.user) {
@@ -101,7 +101,7 @@ export async function addBooking(book: Book, date: Date) {
         data: {
             Booking: {
                 create: {
-                    deskId: book?.id!,
+                    deskId: desk?.id!,
                     startedAt: date,
                     endedAt: date,
                     bookedAt: current
@@ -110,7 +110,7 @@ export async function addBooking(book: Book, date: Date) {
             Log: {
                 create: {
                     activity: EventType.booked,
-                    message: eventLogFormats.booked(`${session?.user?.firstName} ${session?.user?.lastName}`, book?.name!)
+                    message: eventLogFormats.booked(`${session?.user?.firstName} ${session?.user?.lastName}`, desk?.name!)
                 }
             }
         },
@@ -118,6 +118,8 @@ export async function addBooking(book: Book, date: Date) {
             Booking: true
         }
     })
+
+    console.log("created!")
 
     revalidatePath("/bookings")
 }

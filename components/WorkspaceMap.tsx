@@ -14,13 +14,16 @@ function WorkspaceMap({
   floor,
   image,
   onSelect,
+  date,
 }: {
   floorId: string;
   floor?: string;
   image: string;
-  onSelect?: (x: string, y: string) => Promise<void>;
+  onSelect?: (id: string) => Promise<void>;
+  date: Date;
 }) {
   const [width, setWidth] = useState<number>(0);
+  const [height, setHeight] = useState<number>(0);
   const ref = useRef(null);
   const { desks: data } = useDesks({ floorId });
 
@@ -32,6 +35,10 @@ function WorkspaceMap({
 
       // @ts-ignore
       setWidth(ref?.current?.offsetWidth);
+
+      // @ts-ignore
+      setWidth(ref?.current?.offsetHeight);
+      console.log(data);
     });
   }, []);
 
@@ -40,50 +47,54 @@ function WorkspaceMap({
     const list: MapAreas[] = [];
 
     if (data) {
-      data?.Desk?.forEach((item) => {
-        const isOccupied = async () =>
-          await checkIfOccupied(item.id, new Date()); // to be search by date
+      for (let idx = 0; idx < data?.Desk.length; idx++) {
+        var i = data?.Desk[idx];
+        // const isOccupied = async () => await checkIfOccupied(i.id!, new Date()); // to be search by date
+        // var val = false;
+
+        // isOccupied().then((result) => {
+        //   val = result;
+        // });
 
         list.push({
-          id: String(item.id),
-          coords: [item.coordinates[0], item.coordinates[1], 10],
+          id: String(i?.id),
+          coords: [i?.coordinates[0]! - 420, i?.coordinates[1]! - 290, 10],
           shape: "circle",
           preFillColor:
-            item.status === "available"
-              ? "#00ff194c"
-              : !!isOccupied
-              ? "#FFA349dd"
-              : "#e62012aa", //
+            i?.status! === "available"
+              ? i?.Booking.includes({ bookedAt: date })
+                ? "#ed6e07"
+                : "#338c17"
+              : "#c61d1d",
         });
-      });
+      }
     }
+
+    console.log(list);
     return list;
   }
 
   return (
-    <div ref={ref} className={cn("w-full border-red-500 border")}>
+    <div ref={ref} className={cn("w-full lg:w-1/2")}>
       <ImageMapper
         responsive={true}
         parentWidth={width!}
         src={image!}
         onImageClick={async (e) => {
-          // @ts-ignore
-          await onSelect(String(e.clientX), String(e.clientY));
-
           toast({
             description: `${e.clientX} ${e.clientY}`,
           });
         }}
         onClick={async (e) => {
           // @ts-ignore
-          await onSelect(String(e.coords[0]), String(e.coords[1]));
+          await onSelect(e.id);
 
           toast({
             description: `${e.coords[0]} ${e.coords[1]}`,
           });
         }}
         map={{
-          name: "desk-map",
+          name: "workspace-map",
           areas: hydrateDesks(),
         }}
       />

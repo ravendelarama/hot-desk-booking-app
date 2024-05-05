@@ -57,6 +57,7 @@ import { cn } from "@/lib/utils";
 import { MdAdd } from "react-icons/md";
 import { IoIosWarning } from "react-icons/io";
 import AddDesk from "./AddDesk";
+import { unstable_noStore } from "next/cache";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -105,12 +106,12 @@ export function DataTable<TData, TValue>({
           />
         </div>
         <div className="flex justify-around items-center space-x-4">
-          <Button
+          {/* <Button
             className="rounded-md"
             size={"icon"}
             variant={"success"}
             onClick={() => {
-              router.refresh();
+              unstable_noStore();
               setRotate(!isRotated);
             }}
           >
@@ -121,17 +122,34 @@ export function DataTable<TData, TValue>({
                   "transition-transform rotate-[180deg] duration-300 ease-linear"
               )}
             />
-          </Button>
-          <Button
-            variant={"warning"}
-            size={"icon"}
-            onClick={(e) => {
-              setAddDeskActive(true);
-            }}
-            disabled={isAddDeskActive}
-          >
-            <MdAdd className="h-4 w-4" />
-          </Button>
+          </Button> */}
+
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                variant={"warning"}
+                size={"icon"}
+                // onClick={(e) => {
+                //   setAddDeskActive(true);
+                // }}
+                // disabled={isAddDeskActive}
+              >
+                <MdAdd className="h-4 w-4" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Are you absolutely sure?</DialogTitle>
+                <DialogDescription>
+                  This action cannot be undone. This will permanently delete
+                  your account and remove your data from our servers.
+                </DialogDescription>
+              </DialogHeader>
+
+              {/** @ts-ignore */}
+              <AddDesk setAddDeskActive={setAddDeskActive} />
+            </DialogContent>
+          </Dialog>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -167,19 +185,7 @@ export function DataTable<TData, TValue>({
             <CardTitle>Create a desk</CardTitle>
             <CardDescription></CardDescription>
           </CardHeader>
-          <CardContent>
-            {/** @ts-ignore */}
-            <AddDesk />
-          </CardContent>
-          <CardFooter>
-            <Button
-              onClick={() => {
-                setAddDeskActive(false);
-              }}
-            >
-              Cancel
-            </Button>
-          </CardFooter>
+          <CardContent></CardContent>
         </Card>
       ) : (
         <>

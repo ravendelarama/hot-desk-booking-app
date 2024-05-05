@@ -21,9 +21,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export function TimestampPicker() {
-  const [date, setDate] = React.useState<Date>(new Date());
-
+export function TimestampPicker({
+  date,
+  setDate,
+}: {
+    date: Date;
+  setDate: (date: Date) => void;
+}) {
   return (
     <Popover>
       <PopoverTrigger asChild>

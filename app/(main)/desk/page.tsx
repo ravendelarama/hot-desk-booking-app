@@ -5,6 +5,8 @@ import { getFloors } from "@/actions/floor";
 
 // import Desk from "./_components";
 import BookTabs from "./_components/BookTabs";
+import WorkspaceMap from "@/components/WorkspaceMap";
+import { toast } from "@/components/ui/use-toast";
 
 async function App() {
   const session = await getSession();
@@ -16,6 +18,8 @@ async function App() {
       {/* <Desk /> */}
 
       <BookTabs />
+
+      {/* <SampleComponent /> */}
     </div>
   );
 }

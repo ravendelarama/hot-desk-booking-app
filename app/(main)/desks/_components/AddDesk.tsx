@@ -2,7 +2,7 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-import { useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 import {
   Select,
@@ -24,14 +24,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { addDesk, getDesks } from "@/actions/desk";
+import { addDesk } from "@/actions/desk";
 import { useToast } from "@/components/ui/use-toast";
-import { DialogClose } from "@/components/ui/dialog";
 import useFloors from "@/hooks/useFloors";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-import { Floor } from "@prisma/client";
 import CreateDeskMap from "@/components/CreateDeskMap";
 
 export const NewDeskSchema = z.object({
@@ -39,10 +36,15 @@ export const NewDeskSchema = z.object({
   name: z.string(),
 });
 
-function AddDesk() {
+function AddDesk({
+  setAddDeskActive,
+}: {
+  setAddDeskActive: Dispatch<SetStateAction<boolean>>;
+}) {
   const { floors } = useFloors();
   const [coordinates, setCoordinates] = useState<string[]>([]);
   const [areaIndex, setAreaIndex] = useState<number>(0);
+  const [selectedFloor, setSelectedFloor] = useState<string>("");
 
   const form = useForm<z.infer<typeof NewDeskSchema>>({
     resolver: zodResolver(NewDeskSchema),
@@ -51,6 +53,10 @@ function AddDesk() {
       name: "",
     },
   });
+
+  useEffect(() => {
+    setSelectedFloor(form.getValues("floor"));
+  }, [form.getValues("floor")]);
 
   const { toast } = useToast();
 
@@ -66,7 +72,7 @@ function AddDesk() {
 
   async function onSubmit(values: z.infer<typeof NewDeskSchema>) {
     if (coordinates.length > 0) {
-      const response = await addDesk(
+      await addDesk(
         values.floor, //
         values.name,
         coordinates[0]!,
@@ -94,7 +100,7 @@ function AddDesk() {
               name="floor"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Choose Floorss</FormLabel>
+                  <FormLabel>Choose Floors</FormLabel>
                   <FormControl>
                     <Select
                       onValueChange={field.onChange}
@@ -140,22 +146,31 @@ function AddDesk() {
             />
           </TabsContent>
           <TabsContent value="password" className="w-full">
-            {floors && form.getValues("floor") ? (
-              <div className="w-full">
-                <CreateDeskMap
-                  key={floors[areaIndex]?.id}
-                  floorId={form.getValues("floor")}
-                  floor={floors[areaIndex]?.floor}
-                  image={`https://utfs.io/f/${floors[areaIndex]?.image}`}
-                  onSelect={onSelect}
-                />
-              </div>
+            {floors ? (
+              <CreateDeskMap
+                key={selectedFloor!}
+                floorId={selectedFloor!}
+                floor={floors[areaIndex!].floor!}
+                onSelect={onSelect}
+              />
             ) : null}
           </TabsContent>
         </Tabs>
 
         <div className="flex flex-col md:flex-row justify-end gap-5 item-center">
-          <Button variant={"success"} type="submit">
+          <Button
+            onClick={() => {
+              setAddDeskActive(false);
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant={"success"}
+            type="submit"
+            // @ts-ignore
+            disabled={coordinates.length == 0}
+          >
             Create
           </Button>
         </div>
