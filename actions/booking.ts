@@ -121,7 +121,7 @@ export async function addBooking(desk: Desk, date: Date) {
 
     console.log("created!")
 
-    revalidatePath("/bookings")
+    revalidatePath("/bookings");
 }
 
 

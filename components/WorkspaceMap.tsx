@@ -75,23 +75,15 @@ function WorkspaceMap({
   }
 
   return (
-    <div ref={ref} className={cn("w-full lg:w-1/2")}>
+    <div ref={ref} className={cn("w-full lg:w-[60%]")}>
       <ImageMapper
         responsive={true}
         parentWidth={width!}
         src={image!}
-        onImageClick={async (e) => {
-          toast({
-            description: `${e.clientX} ${e.clientY}`,
-          });
-        }}
+        onImageClick={async (e) => {}}
         onClick={async (e) => {
           // @ts-ignore
           await onSelect(e.id);
-
-          toast({
-            description: `${e.coords[0]} ${e.coords[1]}`,
-          });
         }}
         map={{
           name: "workspace-map",

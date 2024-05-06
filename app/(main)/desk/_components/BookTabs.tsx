@@ -1,7 +1,7 @@
 "use client";
 
 import { Desk, DeskStatus, Floor } from "@prisma/client";
-
+import moment from "moment";
 import { useState } from "react";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -85,14 +85,14 @@ function BookTabs() {
               className={cn("w-full md:w-fit flex items-center gap-2")}
             >
               <GrMap className="hidden h-5 w-5 md:block" />
-              Office Area
+              Workspace
             </TabsTrigger>
             <TabsTrigger
               value="map"
               className="w-full md:w-fit flex items-center gap-2"
             >
               <PiOfficeChair className="hidden h-5 w-5 md:block" />
-              Workspace
+              Desk
             </TabsTrigger>
           </TabsList>
         </div>
@@ -113,36 +113,58 @@ function BookTabs() {
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Are you absolutely sure?</DialogTitle>
+                  <DialogTitle>
+                    {moment(selectedDesk?.Booking[0]?.startedAt)
+                      .date()
+                      .toLocaleString() == moment(date).date().toLocaleString()
+                      ? "Desk has been reserved"
+                      : "Confirm your reservation"}
+                  </DialogTitle>
                   <DialogDescription>
-                    This action cannot be undone. This will be saved into the
-                    system.
+                    {moment(selectedDesk?.Booking[0]?.startedAt)
+                      .date()
+                      .toLocaleString() == moment(date).date().toLocaleString()
+                      ? `Sorry, this desk has been reserved to ${selectedDesk?.Booking[0]?.user?.firstName} ${selectedDesk?.Booking[0]?.user?.lastName}.`
+                      : "This action cannot be undone. This will be saved into the system."}
                   </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
                   <Button
-                    variant={"success"}
+                    variant={
+                      moment(selectedDesk?.Booking[0]?.startedAt)
+                        .date()
+                        .toLocaleString() ==
+                      moment(date).date().toLocaleString()
+                        ? "secondary"
+                        : "success"
+                    }
                     // @ts-ignore
-                    disabled={() =>
-                      selectedDesk?.Booking[0]?.startedAt.getDate() ==
-                      date.getDate()
+                    disabled={
+                      moment(selectedDesk?.Booking[0]?.startedAt)
+                        .date()
+                        .toLocaleString() ==
+                      moment(date).date().toLocaleString()
                     } // to be fix
                     onClick={async () => {
-                      // @ts-ignore
                       if (selectedDesk) {
-                        const res = await addBooking(
+                        await addBooking(
                           {
-                            id: selectedDesk?.id,
-                            floorId: selectedDesk?.floorId,
-                            name: selectedDesk?.name,
-                            coordinates: selectedDesk?.coordinates,
-                            amenities: selectedDesk?.amenities,
-                            status: selectedDesk?.status,
-                            createdAt: selectedDesk?.createdAt,
-                            updatedAt: selectedDesk?.updatedAt,
+                            id: selectedDesk?.id!,
+                            floorId: selectedDesk?.floorId!,
+                            name: selectedDesk?.name!,
+                            coordinates: selectedDesk?.coordinates!,
+                            amenities: selectedDesk?.amenities!,
+                            status: selectedDesk?.status!,
+                            createdAt: selectedDesk?.createdAt!,
+                            updatedAt: selectedDesk?.updatedAt!,
                           },
                           date
                         );
+
+                        toast({
+                          title: "Reservation Successful!",
+                          description: `${selectedDesk?.name} has been booked!`,
+                        });
                       }
                     }}
                   >
@@ -152,7 +174,7 @@ function BookTabs() {
               </DialogContent>
             </Dialog>
           </div>
-          <div className="w-full p-4 flex flex-col justify-center md:flex-row md:justify-start gap-2">
+          <div className="w-full p-4 flex flex-col justify-center md:flex-row md:justify-between gap-2">
             {workspace && workspace.image && (
               <WorkspaceMap
                 floorId={workspace?.id!}

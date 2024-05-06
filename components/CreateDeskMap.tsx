@@ -64,10 +64,6 @@ function CreateDeskMap({
           onImageClick={async (e) => {
             // @ts-ignore
             await onSelect(String(e.screenX), String(e.screenY));
-
-            toast({
-              description: `${e.clientX} ${e.clientY}`,
-            });
           }}
           // onClick={async (e) => {
           //     // @ts-ignore
