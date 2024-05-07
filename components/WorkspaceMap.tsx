@@ -8,6 +8,7 @@ import ImageMapper, { MapAreas } from "react-img-mapper";
 import { toast } from "./ui/use-toast";
 import { cn } from "@/lib/utils";
 import useDesks from "@/hooks/useDesks";
+import moment from "moment";
 
 function WorkspaceMap({
   floorId,
@@ -56,13 +57,24 @@ function WorkspaceMap({
         //   val = result;
         // });
 
+        var flag = false;
+
+        for (var j = 0; j < i.Booking.length; j++) {
+          if (
+            moment(i.Booking[j].startedAt).date().toLocaleString() ==
+            moment(date).date().toLocaleString()
+          ) {
+            flag = true;
+          }
+        }
+
         list.push({
           id: String(i?.id),
           coords: [i?.coordinates[0]! - 420, i?.coordinates[1]! - 290, 10],
           shape: "circle",
           preFillColor:
             i?.status! === "available"
-              ? i?.Booking.includes({ bookedAt: date })
+              ? flag
                 ? "#ed6e07"
                 : "#338c17"
               : "#c61d1d",

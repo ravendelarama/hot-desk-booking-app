@@ -121,14 +121,17 @@ function DeskInfo({
         </CardHeader>
         <CardContent>
           <div className="flex justify-start items-center gap-2 flex-wrap">
-            {amenities?.length > 0 &&
+            {amenities?.length > 0 ? (
               amenities?.map((item, index) => {
                 return (
                   <Badge key={index} variant={"secondary"}>
                     {item}
                   </Badge>
                 );
-              })}
+              })
+            ) : (
+              <p className="text-2xl text-gray-400">Select a desk</p>
+            )}
             <Badge variant={"secondary"}>Desk Lamp</Badge>
 
             <Badge variant={"secondary"}>Dual Monitors</Badge>

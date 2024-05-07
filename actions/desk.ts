@@ -35,7 +35,8 @@ export async function getDesks(value: z.infer<typeof FormSchema>) {
                     status: true,
                     Booking: {
                         select: {
-                            bookedAt: true
+                            bookedAt: true,
+                            startedAt: true
                         }
                     }
                 }
