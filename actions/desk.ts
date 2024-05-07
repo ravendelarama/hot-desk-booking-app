@@ -158,6 +158,7 @@ export async function addDesk(
     name: string,
     coord1: string,
     coord2: string,
+    // amenities: string[]
 ) {
     
 
@@ -165,7 +166,8 @@ export async function addDesk(
         data: {
             floorId: floor,
             name,
-            coordinates: [Number(coord1), Number(coord2), 10]
+            coordinates: [Number(coord1), Number(coord2), 10],
+            // amenities
         }
     });
 

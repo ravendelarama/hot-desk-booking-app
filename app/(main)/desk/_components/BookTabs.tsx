@@ -183,7 +183,7 @@ function BookTabs() {
                 date={date}
               />
             )}
-            {!!selectedDesk && (
+            {!!selectedDesk && date && (
               <DeskInfo
                 name={selectedDesk.name!}
                 status={selectedDesk?.status!}

@@ -129,7 +129,11 @@ function DeskInfo({
                   </Badge>
                 );
               })}
-            <Badge variant={"secondary"}>Sample</Badge>
+            <Badge variant={"secondary"}>Desk Lamp</Badge>
+
+            <Badge variant={"secondary"}>Dual Monitors</Badge>
+
+            <Badge variant={"secondary"}>Ergonomic Chair</Badge>
           </div>
         </CardContent>
       </Card>

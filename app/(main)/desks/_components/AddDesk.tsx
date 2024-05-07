@@ -77,6 +77,7 @@ function AddDesk({
         values.name,
         coordinates[0]!,
         coordinates[1]!
+        // amenities: [""]
       );
     }
     toast({
@@ -144,6 +145,19 @@ function AddDesk({
                 </FormItem>
               )}
             />
+            {/* <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Amenities</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Desk" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            /> */}
           </TabsContent>
           <TabsContent value="password" className="w-full">
             {floors ? (
