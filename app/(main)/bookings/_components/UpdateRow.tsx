@@ -1,6 +1,5 @@
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { BookingStatus } from "@prisma/client";
 
 import { mutateBooking } from "@/actions/booking";
 
@@ -16,10 +15,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -28,20 +30,20 @@ import {
 import { DialogClose } from "@/components/ui/dialog";
 
 const formSchema = z.object({
-  status: z.string(),
+  reminders: z.boolean(),
 });
 
 function UpdateRow({ data }: { data: any }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      status: data?.status!,
+      reminders: data?.notifyReminders,
     },
   });
   const { toast } = useToast();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await mutateBooking(data?.id, values.status);
+    await mutateBooking(data?.id, values.reminders);
 
     toast({
       title: "Booking Updated",
@@ -53,41 +55,20 @@ function UpdateRow({ data }: { data: any }) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
-          name="status"
+          name="reminders"
           render={({ field }) => (
-            <FormItem>
-              <div className="space-y-1">
-                <FormLabel>Change Status</FormLabel>
+            <FormItem className="p-3 rounded-lg border flex flex-row items-center justify-between shadow-sm">
+              <div className="space-y- 5">
+                <FormLabel>Reservation Reminders</FormLabel>
+                <FormDescription>
+                  Receive emails about your desk reservations.
+                </FormDescription>
               </div>
               <FormControl>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Roles</SelectLabel>
-                      <SelectItem value={BookingStatus.waiting}>
-                        Pending
-                      </SelectItem>
-                      <SelectItem value={BookingStatus.checked_in}>
-                        Check in
-                      </SelectItem>
-                      <SelectItem value={BookingStatus.checked_out}>
-                        Check out
-                      </SelectItem>
-                      <SelectItem value={BookingStatus.no_show}>
-                        No Show
-                      </SelectItem>
-                      <SelectItem value={BookingStatus.canceled}>
-                        Cancel
-                      </SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
               </FormControl>
 
               <FormMessage />

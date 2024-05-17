@@ -71,16 +71,16 @@ export function DataTable<TData, TValue>({
     <div className="">
       <div className="flex justify-between items-center">
         <div className="flex items-center py-4">
-          <Input
+          {/* <Input
             placeholder="Filter Status..."
             value={
-              (table.getColumn("status")?.getFilterValue() as string) ?? ""
+              (table.getColumn("n")?.getFilterValue() as string) ?? ""
             }
             onChange={(event) =>
               table.getColumn("status")?.setFilterValue(event.target.value)
             }
             className="max-w-sm"
-          />
+          /> */}
         </div>
         <div className="flex justify-around items-center space-x-4">
           <Button

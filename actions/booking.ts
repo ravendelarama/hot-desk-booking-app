@@ -1,14 +1,14 @@
 "use server";
 
 import prisma from "@/lib/db";
-import { BookingStatus, EventType, Desk } from "@prisma/client";
+import { EventType, Desk } from "@prisma/client";
 import { getSession } from "@/lib/next-auth";
 import { eventLogFormats } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import moment from "moment";
 
 
-type Book = Pick<Desk, "id" | "name" | "coordinates" | "status">;
+type Book = Pick<Desk, "id" | "name" | "coordinates">;
 
 
 export async function getBookings() {
@@ -30,7 +30,6 @@ export async function getBookings() {
             id: item.id,
             user: item.user,
             desk: item.desk,
-            status: item.status,
             occuredAt: item.startedAt,
             bookedAt: item.bookedAt
         }
@@ -52,12 +51,11 @@ export async function getAllBookings() {
             id: item.id,
             user: item.user,
             desk: item.desk,
-            status: item.status,
             occuredAt: item.startedAt,
             bookedAt: item.bookedAt,
             edit: {
                 id: item.id,
-                status: item.status
+                notifyReminders: item.user.notifyReminders
             },
             delete: item.id
         }
@@ -125,31 +123,30 @@ export async function addBooking(desk: Desk, date: Date) {
 }
 
 
-export async function cancelBooking(bookId: string) {
-    const session = await getSession();
+// export async function cancelBooking(bookId: string) {
+//     const session = await getSession();
 
-    await prisma.booking.update({
-        where: {
-            userId: session?.user?.id,
-            id: bookId
-        },
-        data: {
-            status: BookingStatus.canceled,
-            user: {
-                update: {
-                    Log: {
-                        create: {
-                            activity: EventType.canceled,
-                            message: eventLogFormats.canceled(`${session?.user.firstName} ${session?.user?.lastName}`, bookId)
-                        }
-                    }
-                }
-            }
-        }
-    });
+//     await prisma.booking.update({
+//         where: {
+//             userId: session?.user?.id,
+//             id: bookId
+//         },
+//         data: {
+//             user: {
+//                 update: {
+//                     Log: {
+//                         create: {
+//                             activity: EventType.canceled,
+//                             message: eventLogFormats.canceled(`${session?.user.firstName} ${session?.user?.lastName}`, bookId)
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+//     });
 
-    revalidatePath("/bookings");
-}
+//     revalidatePath("/bookings");
+// }
 
 
 export async function getMonthlyBookings() {
@@ -208,46 +205,19 @@ export async function getMonthlyBookings() {
 }
 
 
-export async function mutateBooking(id: string, status: string) {
+export async function mutateBooking(id: string, reminders: boolean) {
     await prisma.booking.update({
         where: {
             id
         },
         data: {
             // @ts-ignore
-            status,
+            notifyReminders: reminders,
         }
     });
 
     revalidatePath("/bookings");
     revalidatePath("/home");
-}
-
-
-/**
- * An action that returns the upcoming bookings
- * @returns {type Booking}
- */
-export async function upcomingBookings() {
-    const bookings = await prisma.booking.findMany({
-        where: {
-            status: BookingStatus.checked_in
-        },
-        include: {
-            desk: {
-                select: {
-                    name: true
-                }
-            },
-        },
-        orderBy: {
-            startedAt: "asc"
-        }
-    });
-
-    revalidatePath("/home");
-
-    return bookings;
 }
 
 
@@ -262,100 +232,22 @@ export async function deleteBookingById(id: string) {
 
 }
 
-export async function getUserUpcomingReservation() {
-    const session = await getSession();
+// export async function getUserUpcomingReservation() {
+//     const session = await getSession();
 
-    const upReservation = await prisma.booking.findMany({
-        where: {
-            userId: session?.user.id,
-            status: BookingStatus.waiting,
-        },
-        include: {
-            desk: {
-                select: {
-                    name: true
-                }
-            }
-        }
-    });
+//     const upReservation = await prisma.booking.findMany({
+//         where: {
+//             userId: session?.user.id,
+//         },
+//         include: {
+//             desk: {
+//                 select: {
+//                     name: true
+//                 }
+//             }
+//         }
+//     });
 
-    revalidatePath("/home");
-    return upReservation;
-}
-
-
-export async function checkIn(bookId: string) {
-    const session = await getSession();
-
-    await prisma.booking.update({
-        where: {
-            id: bookId
-        },
-        data: {
-            status: BookingStatus.checked_in,
-            user: {
-                update: {
-                    Log: {
-                        create: {
-                            activity: EventType.checked_in,
-                            message: eventLogFormats.checked_in(
-                                `${session?.user?.firstName} ${session?.user?.lastName}`,
-                                bookId
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    });
-    
-    revalidatePath("/bookings");
-}
-
-export async function checkOut(bookId: string) {
-    const session = await getSession();
-
-    await prisma.booking.update({
-        where: {
-            id: bookId
-        },
-        data: {
-            status: BookingStatus.checked_out,
-            user: {
-                update: {
-                    Log: {
-                        create: {
-                            activity: EventType.checked_in,
-                            message: eventLogFormats.checked_out(
-                                `${session?.user?.firstName} ${session?.user?.lastName}`,
-                                bookId
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    });
-    
-    revalidatePath("/bookings");
-}
-
-
-export async function getUserCheckInCount() {
-    const checkins = await prisma.booking.count({
-        where: {
-            OR: [
-                {
-                    status: BookingStatus.checked_in
-                },
-                {
-                    status: BookingStatus.checked_out
-                }
-            ]
-        }
-    });
-
-    revalidatePath("/home");
-    
-    return checkins;
-}
+//     revalidatePath("/home");
+//     return upReservation;
+// }

@@ -39,7 +39,6 @@ type Bookings = {
   id: string;
   user: User;
   desk: Desk;
-  status: string;
   occuredAt: Date;
   bookedAt: Date;
   edit?: object;
@@ -127,33 +126,6 @@ export const columns: ColumnDef<Bookings>[] = [
       const data = props.getValue();
       // @ts-ignore
       return data.name;
-    },
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: (props) => {
-      const data = props.getValue();
-
-      return (
-        <Badge
-          className="w-fit"
-          variant={
-            data === "no_show"
-              ? "default"
-              : data === "canceled"
-              ? "destructive"
-              : data === "checked_out"
-              ? "secondary"
-              : data === "checked_in"
-              ? "success"
-              : "warning"
-          }
-        >
-          {/* @ts-ignore */}
-          {data}
-        </Badge>
-      );
     },
   },
   {

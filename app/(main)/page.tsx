@@ -7,8 +7,6 @@ import {
   getAllBookingCount,
   getMonthlyBookings,
   getUserBookingCount,
-  getUserCheckInCount,
-  getUserUpcomingReservation,
 } from "@/actions/booking";
 import { getAllUserCount } from "@/actions/user";
 import { getAvailableDesksCount } from "@/actions/desk";
@@ -33,7 +31,6 @@ async function Home() {
   const totalUserBookings = await getUserBookingCount();
   const totalAvailableDesks = await getAvailableDesksCount();
   const recentLogs = await recentActivityLogs();
-  const userCheckins = await getUserCheckInCount();
   const session = await getSession();
   const monthlyBookings = await getMonthlyBookings();
 
@@ -157,52 +154,6 @@ async function Home() {
                 </p>
               </CardFooter>
             </Card>
-            <Card className="grow">
-              <CardHeader>
-                <CardTitle className="flex justify-between items-center w-full">
-                  <p className="text-sm text-left">Total check-ins</p>
-                  <PiUsersThreeFill className="h-5 w-5 text-slate-600" />
-                </CardTitle>
-                <CardDescription></CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="pl-3 text-4xl font-bold">+{userCheckins}</p>
-              </CardContent>
-              <CardFooter>
-                <p className="text-xs text-slate-400">
-                  Total amount of your checked ins.
-                </p>
-              </CardFooter>
-            </Card>
-            {/* <Card className="w-full lg:w-1/2">
-              <CardHeader>
-                <CardTitle>
-                  <p className="text-[16px]">Upcoming Reservation</p>
-                </CardTitle>
-                <CardDescription>As of {moment().calendar()}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {upcomingReservations.length > 0 ? (
-                  upcomingReservations.map((item) => (
-                    <div
-                      className="w-full rounded-md p-1 space-y-1"
-                      key={item.id}
-                    >
-                      {moment(item.startedAt) > moment() ? (
-                        <p className="py-2 text-sm">
-                          <span className="text-sm font-bold">
-                            {item.desk.name}
-                          </span>{" "}
-                          will be available {moment(item.startedAt).fromNow()}
-                        </p>
-                      ) : null}
-                    </div>
-                  ))
-                ) : (
-                  <div>No upcoming reservation.</div>
-                )}
-              </CardContent>
-            </Card> */}
           </div>
         </>
       )}

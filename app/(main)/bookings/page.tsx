@@ -3,7 +3,6 @@ import { RedirectType, redirect } from "next/navigation";
 import { Role } from "@prisma/client";
 
 import {
-  getBookings,
   getUserBookingCount,
   getAllBookings,
   getAllBookingCount,
@@ -11,11 +10,9 @@ import {
 
 import { columns } from "./_components/columns";
 import { DataTable } from "./_components/data-table";
-import ItemDialog from "./_components/ItemDialog";
 
 async function Bookings() {
   const session = await getSession();
-  const bookings = await getBookings();
   const allBookings = await getAllBookings();
   const totalUserBookings = await getUserBookingCount();
   const totalBookings = await getAllBookingCount();
@@ -40,9 +37,7 @@ async function Bookings() {
       session?.user.role === Role.manager ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {/* @ts-ignore */}
-          {bookings.map((item) => (
-            <ItemDialog key={item.id} item={item} />
-          ))}
+          {/* TODO: {bookings.map((item) => null)}   */}
         </div>
       ) : (
         <DataTable columns={columns} data={allBookings} />

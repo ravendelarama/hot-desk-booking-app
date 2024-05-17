@@ -38,21 +38,23 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  firstName     String    @db.String
-  lastName      String    @db.String
-  email         String?   @unique
-  emailVerified DateTime?
-  password      String?   @db.String
-  image         String?
-  role          Role      @default(user)
-  createdAt     DateTime  @default(now()) @db.Timestamp
-  updatedAt     DateTime  @updatedAt @db.Timestamp
-  isBanned      Boolean   @default(false)
-  accounts      Account[]
-  sessions      Session[]
-  Booking       Booking[]
-  Log           Log[]
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  firstName       String    @db.String
+  lastName        String    @db.String
+  email           String?   @unique
+  emailVerified   DateTime?
+  password        String?   @db.String
+  image           String?
+  role            Role      @default(user)
+  createdAt       DateTime  @default(now()) @db.Timestamp
+  updatedAt       DateTime  @updatedAt @db.Timestamp
+  isBanned        Boolean   @default(false)
+  notifyReminders Boolean   @default(false)
+
+  accounts Account[]
+  sessions Session[]
+  Booking  Booking[]
+  Log      Log[]
 }
 
 model VerificationToken {
@@ -105,14 +107,14 @@ model Desk {
 }
 
 model Booking {
-  id        String        @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String        @db.ObjectId
-  deskId    String        @db.ObjectId
-  status    BookingStatus @default(waiting)
-  startedAt DateTime      @db.Timestamp
-  endedAt   DateTime      @db.Timestamp
-  bookedAt  DateTime      @db.Timestamp
-  updatedAt DateTime      @updatedAt @db.Timestamp
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  deskId    String   @db.ObjectId
+  startedAt DateTime @db.Timestamp
+  endedAt   DateTime @db.Timestamp
+  bookedAt  DateTime @db.Timestamp
+  updatedAt DateTime @updatedAt @db.Timestamp
+  approved  Boolean  @default(true)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   desk Desk @relation(fields: [deskId], references: [id], onDelete: Cascade)
@@ -138,14 +140,6 @@ enum Role {
 enum DeskStatus {
   available
   unavailable
-}
-
-enum BookingStatus {
-  canceled // booking canceled
-  waiting // waiting for reservation date or the user to check in
-  checked_in // checked in
-  checked_out // checked out
-  no_show // abandoned
 }
 
 // Booking Date Status
