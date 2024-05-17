@@ -90,6 +90,8 @@ export async function getAllDesks() {
     const desks = data.map((item) => {
         return {
             id: item.id,
+            image: item.image,
+            amenities: item.amenities,
             floor: item.Floor.floor,
             name: item.name,
             coordinates: item.coordinates.map((i) => i.toString()),
@@ -110,24 +112,58 @@ export async function getAllDesks() {
 
 export async function mutateDesk(
     id: string,
+    image: string,
     name: string,
+    amenities: string[],
     coord1: number,
     coord2: number,
-    coord3: number,
     status: DeskStatus
 ) {
 
-
-    await prisma.desk.update({
+    const desk = await prisma.desk.findFirst({
         where: {
             id
-        },
-        data: {
-            name,
-            coordinates: [Number(coord1),Number(coord2),Number(coord3)],
-            status: status
         }
     });
+
+    if (desk) {
+        if (image && desk?.image && desk?.image.includes("https://utfs.io/f/")) {
+
+            const newimage = desk?.image?.split("/")!;
+            console.log(image);
+            await utapi.deleteFiles(newimage[newimage?.length - 1]!);
+
+            await prisma.desk.update({
+                where: {
+                    id
+                },
+                data: {
+                    image,
+                    name,
+                    amenities,
+                    coordinates: [Number(coord1),Number(coord2), 10],
+                    status: status
+                }
+            });
+        }
+
+        if (image.length == 0) {
+
+            await prisma.desk.update({
+                where: {
+                    id
+                },
+                data: {
+                    name,
+                    amenities,
+                    coordinates: [Number(coord1), Number(coord2), 10],
+                    status: status
+                }
+            });
+        }
+    }
+
+
 
     revalidatePath("/desks");
     revalidatePath("/desk");
