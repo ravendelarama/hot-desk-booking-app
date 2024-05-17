@@ -36,13 +36,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             pass: process.env.NODEMAILER_PASSWORD
         }
     }
+    
+    const transporter = nodemailer.createTransport(config);
 
     for (var i = 0; i < tomorrowsReservations.length; i++) {
-        const transporter = nodemailer.createTransport(config);
 
         const message = {
             from: process.env.NODEMAILER_EMAIL,
-            to: process.env.NODEMAILER_EMAIL,
+            to: tomorrowsReservations[i].user.email!,
             subject: "Spot Desk Booking Reminder",
             html: `Hi ${tomorrowsReservations[i].user.firstName!}! You reservation on ${tomorrowsReservations[i].desk.name} will be available tomorrow!`
         }
@@ -74,11 +75,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     for (var i = 0; i < todaysReservations.length; i++) {
-        const transporter = nodemailer.createTransport(config);
 
         const message = {
             from: process.env.NODEMAILER_EMAIL,
-            to: process.env.NODEMAILER_EMAIL,
+            to: todaysReservations[i].user.email!,
             subject: "Spot Desk Booking Reminder",
             html: `Hi ${todaysReservations[i].user.firstName!}! You reservation on ${todaysReservations[i].desk.name} is now available!`
         }
@@ -89,12 +89,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     res.status(200).json({
         message: "Sent Reminders",
-        // data: {
-        //     reminders: {
-        //         todayReservations,
-        //         tomorrowsReservations
-        //     }
-        // },
+        data: {
+            reminders: {
+                todaysReservations,
+                tomorrowsReservations
+            }
+        },
         occuredAt: new Date().toLocaleString()
     });
 }
