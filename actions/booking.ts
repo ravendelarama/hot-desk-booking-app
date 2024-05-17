@@ -6,6 +6,7 @@ import { getSession } from "@/lib/next-auth";
 import { eventLogFormats } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import moment from "moment";
+import nodemailer from "nodemailer"
 
 
 type Book = Pick<Desk, "id" | "name" | "coordinates">;
@@ -230,6 +231,42 @@ export async function deleteBookingById(id: string) {
 
     revalidatePath("/bookings");
 
+}
+
+export async function approveBooking(id: string) {
+    const book = await prisma.booking.update({
+        where: {
+            id
+        },
+        data: {
+            approved: true
+        },
+        include: {
+            user: true,
+            desk: true
+        }
+    });
+
+    const config = {
+        service: "gmail",
+        auth: {
+            user: process.env.NODEMAILER_EMAIL,
+            pass: process.env.NODEMAILER_PASSWORD
+        }
+    }
+
+    const transporter = nodemailer.createTransport(config);
+
+    const message = {
+        from: process.env.NODEMAILER_EMAIL,
+        to: book.user.email!,
+        subject: "Spot Desk Booking Reminder",
+        html: `Your reservation at ${book.desk.name} on ${book.startedAt.toLocaleDateString()} has been approved!`
+    }
+
+    await transporter.sendMail(message);
+
+    revalidatePath("/bookings");
 }
 
 // export async function getUserUpcomingReservation() {

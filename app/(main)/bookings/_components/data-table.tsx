@@ -34,6 +34,7 @@ import { LuRefreshCcw } from "react-icons/lu";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { CiViewColumn } from "react-icons/ci";
+import { Switch } from "@/components/ui/switch";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -83,23 +84,14 @@ export function DataTable<TData, TValue>({
           /> */}
         </div>
         <div className="flex justify-around items-center space-x-4">
-          <Button
-            className="rounded-md"
-            size={"icon"}
-            variant={"success"}
-            onClick={() => {
-              setRotate(!isRotated);
-              router.refresh();
+          <p className="font-semibold text-sm">Auto Approval</p>
+          <Switch
+            checked={false}
+            onCheckedChange={() => {
+              // TODO: toggle auto approval of reservations
             }}
-          >
-            <LuRefreshCcw
-              className={cn(
-                "h-4 w-4",
-                isRotated &&
-                  "transition-transform rotate-[180deg] duration-300 ease-linear"
-              )}
-            />
-          </Button>
+          />
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
