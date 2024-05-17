@@ -8,26 +8,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // TODO: send email reservation reminder on the occuring day /
     // TODO: send email reservation approval when admin approves the booking
 
-    // const tomorrowsReservations = await prisma.booking.findMany({
-    //     where: {
-    //         startedAt: new Date(moment().add(1, "day").toLocaleString())
-    //     },
-    //     select: {
-    //         user: {
-    //             select: {
-    //                 firstName: true,
-    //                 email: true
-    //             }
-    //         },
-    //         desk: {
-    //             select: {
-    //                 name: true
-    //             }
-    //         },
-    //         startedAt: true,
-    //         bookedAt: true
-    //     }
-    // })
+    const tomorrowsReservations = await prisma.booking.findMany({
+        where: {
+            startedAt: moment().add(1, "day").toDate()
+        },
+        select: {
+            user: {
+                select: {
+                    firstName: true,
+                    email: true
+                }
+            },
+            desk: {
+                select: {
+                    name: true
+                }
+            },
+            startedAt: true,
+            bookedAt: true
+        }
+    });
+
     const config = {
         service: "gmail",
         auth: {
@@ -36,66 +37,55 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
     }
 
-    
-    
-    // tomorrowsReservations.map(async (item) => {
-    //     const transporter = nodemailer.createTransport(config);
+    for (var i = 0; i < tomorrowsReservations.length; i++) {
+        const transporter = nodemailer.createTransport(config);
 
-    //     const message = {
-    //         from: process.env.NODEMAILER_EMAIL,
-    //         to: item.user.email!,
-    //         subject: "Hot Desk Booking Reminder",
-    //         html: `Hi ${item.user.firstName!}! You reservation on ${item.desk.name} will be available tomorrow!`
-    //     }
+        const message = {
+            from: process.env.NODEMAILER_EMAIL,
+            to: process.env.NODEMAILER_EMAIL,
+            subject: "Spot Desk Booking Reminder",
+            html: `Hi ${tomorrowsReservations[i].user.firstName!}! You reservation on ${tomorrowsReservations[i].desk.name} will be available tomorrow!`
+        }
 
-    //     await transporter.sendMail(message);
-    // });
 
-    // const todayReservations = await prisma.booking.findMany({
-    //     where: {
-    //         startedAt: new Date()
-    //     },
-    //     select: {
-    //         user: {
-    //             select: {
-    //                 firstName: true,
-    //                 email: true
-    //             }
-    //         },
-    //         desk: {
-    //             select: {
-    //                 name: true
-    //             }
-    //         },
-    //         startedAt: true,
-    //         bookedAt: true
-    //     }
-    // });
-
-    // todayReservations.map(async (item) => {
-    //     const transporter = nodemailer.createTransport(config);
-
-    //     const message = {
-    //         from: process.env.NODEMAILER_EMAIL,
-    //         to: item.user.email!,
-    //         subject: "Hot Desk Booking Reminder",
-    //         html: `Hi ${item.user.firstName!}! You reservation on ${item.desk.name} is now available! Use is now!`
-    //     }
-
-    //     await transporter.sendMail(message);
-    // });
-
-    const transporter = nodemailer.createTransport(config);
-
-    const message = {
-        from: process.env.NODEMAILER_EMAIL,
-        to: process.env.NODEMAILER_EMAIL,
-        subject: "Spot Desk Reminder",
-        html: "Reminders Testing"
+        await transporter.sendMail(message);
     }
 
 
-    await transporter.sendMail(message);
+    const todaysReservations = await prisma.booking.findMany({
+        where: {
+            startedAt: moment().toDate()
+        },
+        select: {
+            user: {
+                select: {
+                    firstName: true,
+                    email: true
+                }
+            },
+            desk: {
+                select: {
+                    name: true
+                }
+            },
+            startedAt: true,
+            bookedAt: true
+        }
+    });
+
+    for (var i = 0; i < todaysReservations.length; i++) {
+        const transporter = nodemailer.createTransport(config);
+
+        const message = {
+            from: process.env.NODEMAILER_EMAIL,
+            to: process.env.NODEMAILER_EMAIL,
+            subject: "Spot Desk Booking Reminder",
+            html: `Hi ${todaysReservations[i].user.firstName!}! You reservation on ${todaysReservations[i].desk.name} is now available!`
+        }
+
+
+        await transporter.sendMail(message);
+    }
 
     res.status(200).json({
         message: "Sent Reminders",
