@@ -6,6 +6,7 @@ import nodemailer from "nodemailer"
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     // TODO: send email reservation reminder before the occuring day /
     // TODO: send email reservation reminder on the occuring day /
+    // TODO: send email reservation approval when admin approves the booking
 
     const beforereservations = await prisma.booking.findMany({
         where: {
