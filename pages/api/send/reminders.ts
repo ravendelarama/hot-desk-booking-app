@@ -8,7 +8,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // TODO: send email reservation reminder on the occuring day /
     // TODO: send email reservation approval when admin approves the booking
 
-    const beforereservations = await prisma.booking.findMany({
+    const tomorrowsReservations = await prisma.booking.findMany({
         where: {
             startedAt: new Date(moment().add(1, "day").toLocaleString())
         },
@@ -38,7 +38,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     
     
-    beforereservations.map(async (item) => {
+    tomorrowsReservations.map(async (item) => {
         const transporter = nodemailer.createTransport(config);
 
         const message = {
@@ -87,6 +87,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     res.status(200).json({
         message: "Sent Reminders",
+        data: {
+            reminders: {
+                todayReservations,
+                tomorrowsReservations
+            }
+        },
         occuredAt: new Date().toLocaleString()
     });
 }
