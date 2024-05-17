@@ -38,7 +38,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     for (var i = 0; i < reservations.length; i++) {
 
-        if (moment().subtract(1, "day").date() == reservations[i].startedAt.getDate()) {
+        if (moment().date() + 1 == reservations[i].startedAt.getDate()) {
             const message = {
                 from: process.env.NODEMAILER_EMAIL,
                 to: reservations[i].user.email!,
