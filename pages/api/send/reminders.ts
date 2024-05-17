@@ -37,9 +37,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     
-    const transporter = nodemailer.createTransport(config);
     
     beforereservations.map(async (item) => {
+        const transporter = nodemailer.createTransport(config);
 
         const message = {
             from: process.env.NODEMAILER_EMAIL,
@@ -73,6 +73,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     todayReservations.map(async (item) => {
+        const transporter = nodemailer.createTransport(config);
+
         const message = {
             from: process.env.NODEMAILER_EMAIL,
             to: item.user.email!,

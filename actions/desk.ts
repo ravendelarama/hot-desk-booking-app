@@ -127,7 +127,7 @@ export async function mutateDesk(
     });
 
     if (desk) {
-        if (image && desk?.image && desk?.image.includes("https://utfs.io/f/")) {
+        if (image.length > 0 && desk?.image && desk?.image.includes("https://utfs.io/f/")) {
 
             const newimage = desk?.image?.split("/")!;
             console.log(image);
