@@ -7,6 +7,10 @@ export default withAuth(
         const { pathname } = req.nextUrl;
         const { token } = req.nextauth;
 
+        if (pathname?.split("/")?.includes("api")!) {
+            return NextResponse.redirect(new URL("/", req.url));
+        }
+
         if (
             token?.role == Role.user && 
             [
@@ -17,7 +21,7 @@ export default withAuth(
                 "/activity-logs"
             ].includes(pathname)
         ) {
-            return NextResponse.redirect(new URL("/home", req.url))
+            return NextResponse.redirect(new URL("/", req.url))
         }
 
         if (

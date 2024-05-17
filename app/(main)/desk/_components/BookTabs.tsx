@@ -65,10 +65,10 @@ function BookTabs() {
 
       setSelectedDesk(data);
 
-      toast({
-        title: "Selected Desk",
-        description: `DeskId: ${id}`,
-      });
+      // toast({
+      //   title: "Selected Desk",
+      //   description: `DeskId: ${id}`,
+      // });
     }
   }
 
@@ -100,7 +100,10 @@ function BookTabs() {
           <Input className="w-full lg:w-72" placeholder="Search an area" />
           <OfficeAreaList onSelect={onSelect} />
         </TabsContent>
-        <TabsContent value="map" className="w-full mt-10 border rounded-lg">
+        <TabsContent
+          value="map"
+          className="w-full mt-10 border-none rounded-lg"
+        >
           {/*  */}
           <div className="flex justify-between border-b w-full p-4">
             <TimestampPicker date={date} setDate={(date) => setDate(date)} />
@@ -114,42 +117,49 @@ function BookTabs() {
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>
-                    {moment(selectedDesk?.Booking[0]?.startedAt)
+                    {selectedDesk?.Booking[0]! &&
+                    moment(selectedDesk?.Booking[0]?.startedAt)
                       .date()
                       .toLocaleString() == moment(date).date().toLocaleString()
                       ? "Desk has been reserved"
                       : "Confirm your reservation"}
                   </DialogTitle>
                   <DialogDescription>
-                    {moment(selectedDesk?.Booking[0]?.startedAt)
+                    {selectedDesk?.Booking[0]! &&
+                    moment(selectedDesk?.Booking[0]?.startedAt!)
                       .date()
                       .toLocaleString() == moment(date).date().toLocaleString()
-                      ? `Sorry, this desk has been reserved to ${selectedDesk?.Booking[0]?.user?.firstName} ${selectedDesk?.Booking[0]?.user?.lastName}.`
+                      ? `Sorry, this desk has been reserved to ${selectedDesk
+                          ?.Booking[0]?.user?.firstName!} ${selectedDesk
+                          ?.Booking[0]?.user?.lastName!}.`
                       : "This action cannot be undone. This will be saved into the system."}
                   </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
                   <Button
                     variant={
+                      selectedDesk?.Booking[0]! &&
                       moment(selectedDesk?.Booking[0]?.startedAt)
                         .date()
                         .toLocaleString() ==
-                      moment(date).date().toLocaleString()
+                        moment(date).date().toLocaleString()
                         ? "secondary"
                         : "success"
                     }
                     // @ts-ignore
                     disabled={
+                      selectedDesk?.Booking[0]! &&
                       moment(selectedDesk?.Booking[0]?.startedAt)
                         .date()
                         .toLocaleString() ==
-                      moment(date).date().toLocaleString()
+                        moment(date).date().toLocaleString()
                     } // to be fix
                     onClick={async () => {
                       if (selectedDesk) {
                         await addBooking(
                           {
                             id: selectedDesk?.id!,
+                            image: selectedDesk?.image,
                             floorId: selectedDesk?.floorId!,
                             name: selectedDesk?.name!,
                             coordinates: selectedDesk?.coordinates!,
@@ -186,6 +196,7 @@ function BookTabs() {
             {!!selectedDesk && date && (
               <DeskInfo
                 name={selectedDesk.name!}
+                image={`https://utfs.io/f/${selectedDesk?.image}`}
                 status={selectedDesk?.status!}
                 area={workspace?.floor!}
                 booking={selectedDesk.Booking!}

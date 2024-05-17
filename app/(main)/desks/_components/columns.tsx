@@ -117,7 +117,7 @@ export const columns: ColumnDef<Desks>[] = [
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <IoIosWarning className="h-7 w-7 inline" />
-                Are you sure you want to delete all the activities?
+                Add new desk
               </DialogTitle>
               {/** @ts-ignore */}
               <DialogDescription>

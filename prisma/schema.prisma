@@ -91,6 +91,7 @@ model Floor {
 model Desk {
   id          String     @id @default(auto()) @map("_id") @db.ObjectId
   floorId     String     @db.ObjectId
+  image       String?
   name        String     @unique
   coordinates Int[]
   amenities   String[]

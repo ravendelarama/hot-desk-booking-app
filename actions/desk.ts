@@ -4,6 +4,7 @@ import prisma from "@/lib/db";
 import { DeskStatus } from "@prisma/client";
 import z from "zod";
 import { revalidatePath } from "next/cache";
+import { utapi } from "@/server/uploadthing";
 
 const FormSchema = z.object({
     floor: z.string()
@@ -133,11 +134,18 @@ export async function mutateDesk(
 }
 
 export async function deleteDeskById(id: string) {
-    await prisma.desk.delete({
+    const data = await prisma.desk.delete({
         where: {
             id
         }
     });
+
+    if (data?.image && data?.image.includes("https://utfs.io/f/")) {
+
+        const image = data?.image?.split("/")!;
+        console.log(image);
+        await utapi.deleteFiles(image[image?.length - 1]!);
+    }
 
     revalidatePath("/desks");
 }
@@ -155,20 +163,22 @@ export async function getAvailableDesksCount() {
 
 
 export async function addDesk(
+    image: string,
     floor: string,
     name: string,
     coord1: string,
     coord2: string,
-    // amenities: string[]
+    amenities: string[]
 ) {
     
 
     const desk = await prisma.desk.create({
         data: {
+            image,
             floorId: floor,
             name,
             coordinates: [Number(coord1), Number(coord2), 10],
-            // amenities
+            amenities
         }
     });
 

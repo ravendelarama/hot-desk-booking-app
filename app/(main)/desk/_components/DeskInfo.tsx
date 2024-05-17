@@ -15,9 +15,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { GrMap, GrScheduleNew } from "react-icons/gr";
 import { PiOfficeChair } from "react-icons/pi";
 import { BsFillJournalBookmarkFill } from "react-icons/bs";
+import Image from "next/image";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 function DeskInfo({
   name,
+  image,
   status,
   area,
   booking,
@@ -25,6 +28,7 @@ function DeskInfo({
   startedAt,
 }: {
   name: string;
+  image: string;
   status: DeskStatus;
   area: string | undefined;
   booking: {
@@ -91,8 +95,18 @@ function DeskInfo({
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          <Image
+            src={
+              image ||
+              "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.pexels.com%2Fsearch%2Foffice%2520desk%2F&psig=AOvVaw38RzYrDt5v41RDtQWDrACB&ust=1716043040431000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCOjlh9L0lIYDFQAAAAAdAAAAABA-"
+            }
+            alt="Image"
+            className="rounded-md object-cover"
+            width={500}
+            height={500}
+          />
           <div className="space-y-1">
-            <div className="flex flex-col items-start gap-1">
+            <div className="flex justify-between">
               <p className="text-sm text-gray-400 flex items-center gap-1">
                 <GrMap className="h-4 w-4 " />
                 {area}
@@ -112,15 +126,7 @@ function DeskInfo({
                 )}
             </div>
           </div>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>Amentities</CardTitle>
-          <CardDescription></CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex justify-start items-center gap-2 flex-wrap">
+          <div className="flex justify-start items-center gap-2 flex-wrap w-full">
             {amenities?.length > 0 ? (
               amenities?.map((item, index) => {
                 return (
@@ -132,14 +138,18 @@ function DeskInfo({
             ) : (
               <p className="text-2xl text-gray-400">Select a desk</p>
             )}
-            <Badge variant={"secondary"}>Desk Lamp</Badge>
-
-            <Badge variant={"secondary"}>Dual Monitors</Badge>
-
-            <Badge variant={"secondary"}>Ergonomic Chair</Badge>
           </div>
         </CardContent>
       </Card>
+      {/* <Card>
+        <CardHeader>
+          <CardTitle>Amentities</CardTitle>
+          <CardDescription></CardDescription>
+        </CardHeader>
+        <CardContent className="overflow-x-auto w-full flex justify-start items-center">
+          
+        </CardContent>
+      </Card> */}
     </div>
   );
 }

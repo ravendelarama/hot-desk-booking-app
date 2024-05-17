@@ -1,8 +1,16 @@
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { generateClientDropzoneAccept } from "uploadthing/client";
 
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
+import { useDropzone } from "@uploadthing/react/hooks";
 
 import {
   Select,
@@ -30,6 +38,8 @@ import useFloors from "@/hooks/useFloors";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CreateDeskMap from "@/components/CreateDeskMap";
+import { useUploadThing } from "@/utils/uploadthing";
+import { HiOutlineUpload } from "react-icons/hi";
 
 export const NewDeskSchema = z.object({
   floor: z.string(),
@@ -45,6 +55,38 @@ function AddDesk({
   const [coordinates, setCoordinates] = useState<string[]>([]);
   const [areaIndex, setAreaIndex] = useState<number>(0);
   const [selectedFloor, setSelectedFloor] = useState<string>("");
+  const [amenities, setAmenities] = useState<string[]>([]);
+
+  const [name, setName] = useState<string>("");
+  const [image, setImage] = useState("");
+  const [files, setFiles] = useState<File[]>([]);
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    setFiles(acceptedFiles);
+  }, []);
+  const { startUpload, permittedFileInfo } = useUploadThing("imageUploader", {
+    onClientUploadComplete: async (res) => {
+      const src = res[0].url.split("/");
+      setImage(src[src.length - 1]);
+
+      // await add(name, src[src.length - 1]);
+      alert("uploaded successfully!");
+    },
+    onUploadError: () => {
+      alert("error occurred while uploading");
+    },
+    onUploadBegin: () => {
+      alert("upload has begun");
+    },
+  });
+
+  const fileTypes = permittedFileInfo?.config
+    ? Object.keys(permittedFileInfo?.config)
+    : [];
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
+  });
 
   const form = useForm<z.infer<typeof NewDeskSchema>>({
     resolver: zodResolver(NewDeskSchema),
@@ -73,11 +115,12 @@ function AddDesk({
   async function onSubmit(values: z.infer<typeof NewDeskSchema>) {
     if (coordinates.length > 0) {
       await addDesk(
+        image,
         values.floor, //
         values.name,
         coordinates[0]!,
-        coordinates[1]!
-        // amenities: [""]
+        coordinates[1]!,
+        amenities!
       );
     }
     toast({
@@ -94,6 +137,7 @@ function AddDesk({
           <TabsList className="">
             <TabsTrigger value="account">Information</TabsTrigger>
             <TabsTrigger value="password">Office Area Map</TabsTrigger>
+            <TabsTrigger value="amenities">Amenities</TabsTrigger>
           </TabsList>
           <TabsContent value="account">
             <FormField
@@ -145,19 +189,32 @@ function AddDesk({
                 </FormItem>
               )}
             />
-            {/* <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Amenities</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Desk" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            /> */}
+            {files.length > 0 && files[0].name ? (
+              <div className="w-full py-10 flex justify-center items-center">
+                <Button
+                  variant={"default"}
+                  onClick={() => {
+                    startUpload(files);
+                  }}
+                >
+                  Upload {files[0].name}
+                </Button>
+              </div>
+            ) : (
+              <div
+                {...getRootProps()}
+                className="mt-2 flex justify-center items-center p-10 border border-dashed border-[#53BDFF] rounded-md w-full"
+              >
+                <input {...getInputProps()} />
+                <div className="w-full flex flex-col justify-center items-center gap-3">
+                  <h3 className="text-2xl font-bold">
+                    <HiOutlineUpload className="h-12 w-12 text-[#53BDFF] text-center" />
+                  </h3>
+                  <h4 className="text-center text-sm">Drop files here!</h4>
+                  <p>{files.length > 0 && files[0].name}</p>
+                </div>
+              </div>
+            )}
           </TabsContent>
           <TabsContent value="password" className="w-full">
             {floors ? (
@@ -168,6 +225,21 @@ function AddDesk({
                 onSelect={onSelect}
               />
             ) : null}
+          </TabsContent>
+          <TabsContent value="amenities" className="space-y-2">
+            <h3 className="text-lg font-semibold">Amenities</h3>
+            <p className="text-sm text-ghost">
+              Type the desk amenities separated by comma.
+            </p>
+
+            <Input
+              placeholder="item1, item2, item3..."
+              onChange={(e) => {
+                if (e.target.value.length > 0) {
+                  setAmenities(e.target.value.split(","));
+                }
+              }}
+            />
           </TabsContent>
         </Tabs>
 
