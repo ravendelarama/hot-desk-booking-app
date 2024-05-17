@@ -9,9 +9,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // TODO: send email reservation approval when admin approves the booking
 
     const reservations = await prisma.booking.findMany({
-        where: {
-            startedAt: moment().add(1, "day").toDate()
-        },
         select: {
             user: {
                 select: {
