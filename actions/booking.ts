@@ -128,7 +128,7 @@ export async function addBooking(desk: Desk, date: Date) {
     console.log(approval);
 
     if (approval && approval.type == ApprovalType.auto) {
-        await prisma.booking.update({
+        const updated = await prisma.booking.update({
             where: {
                 id: result.Booking[0].id
             },
@@ -136,6 +136,8 @@ export async function addBooking(desk: Desk, date: Date) {
                 approved: true
             }
         });
+
+        console.log(updated);
 
         const config = {
             service: "gmail",
