@@ -157,6 +157,10 @@ export const columns: ColumnDef<Bookings>[] = [
     },
   },
   {
+    accessorKey: "approved",
+    header: "approved",
+  },
+  {
     accessorKey: "edit",
     header: "edit",
     cell: (props) => {

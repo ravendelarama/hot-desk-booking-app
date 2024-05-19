@@ -1,7 +1,7 @@
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { mutateBooking } from "@/actions/booking";
+import { approveBooking, mutateBooking } from "@/actions/booking";
 
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
@@ -28,6 +28,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { DialogClose } from "@/components/ui/dialog";
+import { ApprovalType } from "@prisma/client";
 
 const formSchema = z.object({
   reminders: z.boolean(),
@@ -37,13 +38,13 @@ function UpdateRow({ data }: { data: any }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      reminders: data?.notifyReminders,
+      reminders: data?.approved,
     },
   });
   const { toast } = useToast();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await mutateBooking(data?.id, values.reminders);
+    await approveBooking(data?.id);
 
     toast({
       title: "Booking Updated",
@@ -59,13 +60,15 @@ function UpdateRow({ data }: { data: any }) {
           render={({ field }) => (
             <FormItem className="p-3 rounded-lg border flex flex-row items-center justify-between shadow-sm">
               <div className="space-y- 5">
-                <FormLabel>Reservation Reminders</FormLabel>
+                <FormLabel>Approve Reservation</FormLabel>
                 <FormDescription>
-                  Receive emails about your desk reservations.
+                  The desk reservation will be used at the given time once this
+                  is approved.
                 </FormDescription>
               </div>
               <FormControl>
                 <Switch
+                  disabled={data?.approved}
                   checked={field.value}
                   onCheckedChange={field.onChange}
                 />

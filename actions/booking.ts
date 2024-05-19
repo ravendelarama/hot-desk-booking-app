@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "@/lib/db";
-import { EventType, Desk } from "@prisma/client";
+import { EventType, Desk, Role, ApprovalType } from "@prisma/client";
 import { getSession } from "@/lib/next-auth";
 import { eventLogFormats } from "@/lib/db";
 import { revalidatePath } from "next/cache";
@@ -54,9 +54,10 @@ export async function getAllBookings() {
             desk: item.desk,
             occuredAt: item.startedAt,
             bookedAt: item.bookedAt,
+            approved: item.approved,
             edit: {
                 id: item.id,
-                notifyReminders: item.user.notifyReminders
+                approved: item.approved
             },
             delete: item.id
         }
@@ -93,7 +94,7 @@ export async function addBooking(desk: Desk, date: Date) {
     let current = new Date((new Date()).toISOString());
 
 
-    await prisma.user.update({
+    const result = await prisma.user.update({
         where: {
             id: session?.user?.id
         },
@@ -104,7 +105,7 @@ export async function addBooking(desk: Desk, date: Date) {
                     startedAt: date,
                     endedAt: date,
                     bookedAt: current
-                }
+                },
             },
             Log: {
                 create: {
@@ -114,9 +115,47 @@ export async function addBooking(desk: Desk, date: Date) {
             }
         },
         include: {
-            Booking: true
+            Booking: {
+                include: {
+                    desk: true
+                }
+            }
         }
-    })
+    });
+
+    const approval = await prisma.approval.findFirst();
+
+    console.log(approval);
+
+    if (approval && approval.type == ApprovalType.auto) {
+        await prisma.booking.update({
+            where: {
+                id: result.Booking[0].id
+            },
+            data: {
+                approved: true
+            }
+        });
+
+        const config = {
+            service: "gmail",
+            auth: {
+                user: process.env.NODEMAILER_EMAIL,
+                pass: process.env.NODEMAILER_PASSWORD
+            }
+        }
+
+        const transporter = nodemailer.createTransport(config);
+
+        const message = {
+            from: process.env.NODEMAILER_EMAIL,
+            to: result.email!,
+            subject: "Spot Desk Booking Reminder",
+            html: `Your reservation at ${result.Booking[0]?.desk.name} on ${result.Booking[0]?.startedAt.toLocaleDateString()} has been approved!`
+        }
+
+        await transporter.sendMail(message);
+    }
 
     console.log("created!")
 
@@ -231,6 +270,45 @@ export async function deleteBookingById(id: string) {
 
     revalidatePath("/bookings");
 
+}
+
+export async function checkIfAutoApprove() {
+    const isAutoApproved = await prisma.approval.findFirst();
+    console.log(isAutoApproved);
+    return isAutoApproved?.type == ApprovalType.auto;
+}
+
+export async function autoApprove() {
+    const session = await getSession();
+
+    if (session?.user?.role == Role.user) {
+        return {
+            message: "Forbidden"
+        }
+    }
+
+    const approval = await prisma.approval.findFirst();
+
+    if (!approval) {
+        await prisma.approval.create({
+            data: {
+                type: ApprovalType.manual
+            }
+        })
+    }
+
+    if (approval) {
+        await prisma.approval.update({
+            where: {
+                id: approval.id
+            },
+            data: {
+                type: approval.type == ApprovalType.manual ? ApprovalType.auto: ApprovalType.manual
+            }
+        });
+    }
+
+    revalidatePath("/bookings");
 }
 
 export async function approveBooking(id: string) {

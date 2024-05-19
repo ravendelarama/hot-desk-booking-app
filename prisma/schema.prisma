@@ -29,6 +29,11 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
+model Approval {
+  id   String       @id @default(auto()) @map("_id") @db.ObjectId
+  type ApprovalType @default(manual)
+}
+
 model Session {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
   sessionToken String   @unique
@@ -114,7 +119,7 @@ model Booking {
   endedAt   DateTime @db.Timestamp
   bookedAt  DateTime @db.Timestamp
   updatedAt DateTime @updatedAt @db.Timestamp
-  approved  Boolean  @default(true)
+  approved  Boolean  @default(false)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   desk Desk @relation(fields: [deskId], references: [id], onDelete: Cascade)
@@ -157,6 +162,11 @@ enum EventType {
   delete_user // User Deletion
   reset_password // User Mutation
   update_user // User Mutation
+}
+
+enum ApprovalType {
+  auto
+  manual
 }
 
 // Amenities: (Personalized workspace)

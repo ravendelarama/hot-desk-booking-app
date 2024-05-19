@@ -35,6 +35,8 @@ import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { CiViewColumn } from "react-icons/ci";
 import { Switch } from "@/components/ui/switch";
+import { autoApprove, checkIfAutoApprove } from "@/actions/booking";
+import { useQuery } from "@tanstack/react-query";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -45,6 +47,13 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const { data: isAutoApproved } = useQuery({
+    queryKey: ["approval"],
+    queryFn: async () => {
+      return await checkIfAutoApprove();
+    },
+  });
+
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -86,9 +95,10 @@ export function DataTable<TData, TValue>({
         <div className="flex justify-around items-center space-x-4">
           <p className="font-semibold text-sm">Auto Approval</p>
           <Switch
-            checked={false}
-            onCheckedChange={() => {
+            defaultChecked={isAutoApproved}
+            onCheckedChange={async () => {
               // TODO: toggle auto approval of reservations
+              await autoApprove();
             }}
           />
 
