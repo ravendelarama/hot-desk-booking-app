@@ -1,9 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { ReactNode } from "react";
+import { useRouter } from "next/navigation";
+import { ReactNode, useState } from "react";
 
 export default function SettingsLayout({ children }: { children: ReactNode }) {
+  const router = useRouter();
+
   return (
     <div className="min-h-screen flex">
       {/* Sidebar */}
@@ -11,10 +14,22 @@ export default function SettingsLayout({ children }: { children: ReactNode }) {
         <h2 className="text-xl font-semibold mb-4">Settings</h2>
         <ul>
           <li className="text-black">
-            <Button onClick={() => {}}>Account</Button>
+            <Button
+              onClick={() => {
+                router.push("/settings/account");
+              }}
+            >
+              Account
+            </Button>
           </li>
           <li className="text-black">
-            <Button onClick={() => {}}>Notification</Button>
+            <Button
+              onClick={() => {
+                router.push("/settings/notification");
+              }}
+            >
+              Notification
+            </Button>
           </li>
         </ul>
       </div>
