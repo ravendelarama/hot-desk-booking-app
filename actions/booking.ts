@@ -130,7 +130,7 @@ export async function addBooking(desk: Desk, date: Date) {
     if (approval && approval.type == ApprovalType.auto) {
         const updated = await prisma.booking.update({
             where: {
-                id: result.Booking[0].id
+                id: result.Booking[result.Booking.length - 1].id
             },
             data: {
                 approved: true
@@ -153,7 +153,7 @@ export async function addBooking(desk: Desk, date: Date) {
             from: process.env.NODEMAILER_EMAIL,
             to: result.email!,
             subject: "Spot Desk Booking Reminder",
-            html: `Your reservation at ${result.Booking[0]?.desk.name} on ${result.Booking[0]?.startedAt.toLocaleDateString()} has been approved!`
+            html: `Your reservation at ${result.Booking[result.Booking.length - 1]?.desk.name} on ${result.Booking[result.Booking.length - 1]?.startedAt.toLocaleDateString()} has been approved!`
         }
 
         await transporter.sendMail(message);
