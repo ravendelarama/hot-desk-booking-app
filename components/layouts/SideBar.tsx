@@ -48,13 +48,6 @@ const Routes = [
     icon: (options: string) => <GrScheduleNew className={options} />,
   },
   {
-    name: "Verifications",
-    role: "admin",
-    alternative: "Verifications",
-    path: "/verification-requests",
-    icon: (options: string) => <FiUserCheck className={options} />,
-  },
-  {
     name: "Floors",
     role: "manager",
     alternative: "Floors",
