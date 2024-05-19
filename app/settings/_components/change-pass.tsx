@@ -55,7 +55,7 @@ export default function ChangePass() {
         </div>
         <div className="mb-4">
           <a href="#" className="text-black text-sm font-semibold">
-            Can't remember your current password?{" "}
+            Can&apos;t remember your current password?{" "}
             <span className="text-blue-500 hover:text-blue-800 font-semibold">
               Reset your password.
             </span>
