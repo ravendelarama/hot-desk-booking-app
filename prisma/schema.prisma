@@ -54,7 +54,7 @@ model User {
   createdAt       DateTime  @default(now()) @db.Timestamp
   updatedAt       DateTime  @updatedAt @db.Timestamp
   isBanned        Boolean   @default(false)
-  notifyReminders Boolean   @default(false)
+  notifyReminders Boolean   @default(true)
 
   accounts Account[]
   sessions Session[]

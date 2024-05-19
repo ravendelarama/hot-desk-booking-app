@@ -93,6 +93,12 @@ export async function addBooking(desk: Desk, date: Date) {
 
     let current = new Date((new Date()).toISOString());
 
+    const user = await prisma.user.findFirst({
+        where: {
+            id: session?.user?.id
+        }
+    });
+
 
     const result = await prisma.user.update({
         where: {
@@ -139,25 +145,29 @@ export async function addBooking(desk: Desk, date: Date) {
 
         console.log(updated);
 
-        const config = {
-            service: "gmail",
-            auth: {
-                user: process.env.NODEMAILER_EMAIL,
-                pass: process.env.NODEMAILER_PASSWORD
+        if (user && user.notifyReminders!) {
+            const config = {
+                service: "gmail",
+                auth: {
+                    user: process.env.NODEMAILER_EMAIL,
+                    pass: process.env.NODEMAILER_PASSWORD
+                }
             }
+    
+            const transporter = nodemailer.createTransport(config);
+    
+            const message = {
+                from: process.env.NODEMAILER_EMAIL,
+                to: result.email!,
+                subject: "Spot Desk Booking Reminder",
+                html: `Your reservation at ${result.Booking[result.Booking.length - 1]?.desk.name} on ${result.Booking[result.Booking.length - 1]?.startedAt.toLocaleDateString()} has been approved!`
+            }
+    
+            await transporter.sendMail(message);
         }
-
-        const transporter = nodemailer.createTransport(config);
-
-        const message = {
-            from: process.env.NODEMAILER_EMAIL,
-            to: result.email!,
-            subject: "Spot Desk Booking Reminder",
-            html: `Your reservation at ${result.Booking[result.Booking.length - 1]?.desk.name} on ${result.Booking[result.Booking.length - 1]?.startedAt.toLocaleDateString()} has been approved!`
-        }
-
-        await transporter.sendMail(message);
     }
+
+    
 
     console.log("created!")
 
@@ -314,6 +324,14 @@ export async function autoApprove(approved: ApprovalType) {
 }
 
 export async function approveBooking(id: string) {
+    const session = await getSession();
+
+    const user = await prisma.user.findFirst({
+        where: {
+            id: session?.user.id
+        }
+    });
+
     const book = await prisma.booking.update({
         where: {
             id
@@ -327,24 +345,26 @@ export async function approveBooking(id: string) {
         }
     });
 
-    const config = {
-        service: "gmail",
-        auth: {
-            user: process.env.NODEMAILER_EMAIL,
-            pass: process.env.NODEMAILER_PASSWORD
+    if (user && user.notifyReminders!) {
+        const config = {
+            service: "gmail",
+            auth: {
+                user: process.env.NODEMAILER_EMAIL,
+                pass: process.env.NODEMAILER_PASSWORD
+            }
         }
+
+        const transporter = nodemailer.createTransport(config);
+
+        const message = {
+            from: process.env.NODEMAILER_EMAIL,
+            to: book.user.email!,
+            subject: "Spot Desk Booking Reminder",
+            html: `Your reservation at ${book.desk.name} on ${book.startedAt.toLocaleDateString()} has been approved!`
+        }
+
+        await transporter.sendMail(message);
     }
-
-    const transporter = nodemailer.createTransport(config);
-
-    const message = {
-        from: process.env.NODEMAILER_EMAIL,
-        to: book.user.email!,
-        subject: "Spot Desk Booking Reminder",
-        html: `Your reservation at ${book.desk.name} on ${book.startedAt.toLocaleDateString()} has been approved!`
-    }
-
-    await transporter.sendMail(message);
 
     revalidatePath("/bookings");
 }
