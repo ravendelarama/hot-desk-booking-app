@@ -37,6 +37,7 @@ import { CiViewColumn } from "react-icons/ci";
 import { Switch } from "@/components/ui/switch";
 import { autoApprove, checkIfAutoApprove } from "@/actions/booking";
 import { useQuery } from "@tanstack/react-query";
+import { ApprovalType } from "@prisma/client";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -95,9 +96,12 @@ export function DataTable<TData, TValue>({
         <div className="flex justify-around items-center space-x-4">
           <p className="font-semibold text-sm">Auto Approval</p>
           <Switch
-            onCheckedChange={async () => {
+            defaultChecked={isAutoApproved}
+            onCheckedChange={async (e) => {
               // TODO: toggle auto approval of reservations
-              await autoApprove();
+              await autoApprove(
+                e.valueOf() ? ApprovalType.auto : ApprovalType.manual
+              );
             }}
           />
 

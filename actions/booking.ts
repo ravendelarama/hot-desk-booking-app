@@ -280,7 +280,7 @@ export async function checkIfAutoApprove() {
     return isAutoApproved?.type == ApprovalType.auto;
 }
 
-export async function autoApprove() {
+export async function autoApprove(approved: ApprovalType) {
     const session = await getSession();
 
     if (session?.user?.role == Role.user) {
@@ -294,9 +294,9 @@ export async function autoApprove() {
     if (!approval) {
         await prisma.approval.create({
             data: {
-                type: ApprovalType.manual
+                type: approved
             }
-        })
+        });
     }
 
     if (approval) {
@@ -305,7 +305,7 @@ export async function autoApprove() {
                 id: approval.id
             },
             data: {
-                type: approval.type == ApprovalType.manual ? ApprovalType.auto: ApprovalType.manual
+                type: approved
             }
         });
     }
