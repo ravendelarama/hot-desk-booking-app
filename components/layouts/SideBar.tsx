@@ -15,6 +15,7 @@ import { GoHome } from "react-icons/go";
 import { FiUserCheck } from "react-icons/fi";
 import { PiUsersThree } from "react-icons/pi";
 import { BsFillJournalBookmarkFill } from "react-icons/bs";
+import { LuSettings } from "react-icons/lu";
 
 const Routes = [
   {
@@ -61,6 +62,13 @@ const Routes = [
     path: "/desks",
     icon: (options: string) => <GiDesk className={options} />,
   },
+  {
+    name: "Settings",
+    role: "user",
+    alternative: "Settings",
+    path: "/settings",
+    icon: (options: string) => <LuSettings className={options} />,
+  },
 ];
 
 function SideBar() {
@@ -92,6 +100,10 @@ function SideBar() {
           ) {
             return null;
           }
+
+          // if (!(session?.user?.role == Role.user) && item.name == "Settings") {
+          //   return null;
+          // }
 
           return (
             <Button

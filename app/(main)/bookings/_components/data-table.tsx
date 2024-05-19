@@ -102,6 +102,8 @@ export function DataTable<TData, TValue>({
               await autoApprove(
                 e.valueOf() ? ApprovalType.auto : ApprovalType.manual
               );
+
+              router.refresh();
             }}
           />
 
