@@ -1,75 +1,112 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-export default function ChangePass() {
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+
+const formSchema = z.object({
+  oldPassword: z.string().min(8, {
+    message: "Password is required.",
+  }),
+  newPassword: z
+    .string()
+    .min(10)
+    .regex(
+      /^(?!.*\s)(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[~`!@#$%^&*()--+={}\[\]|\\:;"'<>,.?/_₹]).{10,16}$/,
+      {
+        message:
+          "Password must be eight characters including one uppercase letter, one special character and alphanumeric characters.",
+      }
+    ),
+});
+
+export default function ChangePassModal() {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      oldPassword: "",
+      newPassword: "",
+    },
+  });
+
+  function onSubmit(values: z.infer<typeof formSchema>) {}
+
   return (
-    <>
-      <h2 className="text-2xl font-semibold mb-4">Account Settings</h2>
-      <form>
-        <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="email"
-          >
-            Email Address
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            placeholder="Enter your email"
-          />
-        </div>
-        <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="new-password"
-          >
-            Password
-          </label>
-          <input
-            type="password"
-            id="new-password"
-            name="new-password"
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            placeholder="New Password"
-          />
-        </div>
-        <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="current-password"
-          >
-            Current Password
-          </label>
-          <input
-            type="password"
-            id="current-password"
-            name="current-password"
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            placeholder="Current Password"
-          />
-        </div>
-        <div className="mb-4">
-          <a href="#" className="text-black text-sm font-semibold">
-            Can&apos;t remember your current password?{" "}
-            <span className="text-blue-500 hover:text-blue-800 font-semibold">
-              Reset your password.
-            </span>
-          </a>
-        </div>
-        <div className="flex items-center justify-between">
-          <button
-            type="submit"
-            className="mt-4 px-4 py-2 bg-black text-white rounded-md"
-          >
-            Save password
-          </button>
-        </div>
-      </form>
-    </>
+    <div>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button>Change Password</Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Change Password</DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. This will permanently delete your
+              account and remove your data from our servers.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <FormField
+                control={form.control}
+                name="oldPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Current Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="Enter your current password"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="newPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>New Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="Enter your new password"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type="submit">Change Password</Button>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }

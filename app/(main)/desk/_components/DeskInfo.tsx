@@ -76,7 +76,7 @@ function DeskInfo({
               booking[0].startedAt.getDate() == startedAt.getDate() && (
                 <div className=" rounded-lg w-full flex justify-start items-center gap-2">
                   <Avatar>
-                    <AvatarImage src="https://github.com/shadcn.png" />
+                    <AvatarImage src={booking[0]?.user?.image!} />
                     <AvatarFallback>
                       {booking[0]?.user?.firstName.charAt(0)}
                       {booking[0]?.user?.lastName.charAt(0)}

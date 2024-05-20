@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ReactNode, useState } from "react";
 
@@ -10,25 +11,35 @@ export default function SettingsLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen flex">
       {/* Sidebar */}
-      <div className="bg-white w-1/4 border-r border-gray-300 p-6">
-        <h2 className="text-xl font-semibold mb-4">Settings</h2>
-        <ul>
-          <li className="text-black">
+      <div className=" w-64 border-r border-slate-800 py-6 px-4">
+        <h2 className="text-xl font-semibold mb-4 text-primary">Settings</h2>
+        <ul className="space-y-2">
+          <li>
             <Button
-              onClick={() => {
-                router.push("/settings/account");
-              }}
+              variant={null}
+              className="w-full flex justify-start px-4 py-2 gap-3 transition-colors duration ease-in hover:bg-slate-100 hover:dark:bg-slate-900"
+              asChild
             >
-              Account
+              <Link
+                href={"/settings/account"}
+                className="text-lg text-foreground"
+              >
+                Account
+              </Link>
             </Button>
           </li>
-          <li className="text-black">
+          <li>
             <Button
-              onClick={() => {
-                router.push("/settings/notification");
-              }}
+              variant={null}
+              className="w-full flex justify-start px-4 py-2 gap-3 transition-colors duration ease-in hover:bg-slate-100 hover:dark:bg-slate-900"
+              asChild
             >
-              Notification
+              <Link
+                href={"/settings/notification"}
+                className="text-lg text-foreground"
+              >
+                Notifications
+              </Link>
             </Button>
           </li>
         </ul>
@@ -36,7 +47,7 @@ export default function SettingsLayout({ children }: { children: ReactNode }) {
 
       {/* Main Content */}
       <div className="flex-1 p-7">
-        <div className="max-w-2xl mx-auto">{children}</div>
+        <div className="ml-10 mr-52">{children}</div>
       </div>
     </div>
   );

@@ -96,14 +96,12 @@ export function DataTable<TData, TValue>({
         <div className="flex justify-around items-center space-x-4">
           <p className="font-semibold text-sm">Auto Approval</p>
           <Switch
-            defaultChecked={isAutoApproved}
+            defaultChecked={isAutoApproved!}
             onCheckedChange={async (e) => {
               // TODO: toggle auto approval of reservations
               await autoApprove(
                 e.valueOf() ? ApprovalType.auto : ApprovalType.manual
               );
-
-              router.refresh();
             }}
           />
 

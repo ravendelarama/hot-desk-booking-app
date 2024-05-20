@@ -308,3 +308,91 @@ export async function verifyEmail(token: string) {
     revalidatePath("/signin");
     redirect("/signin");
 }
+
+export async function updateName(firstName: string, lastName:string) {
+    const session = await getSession();
+
+    await prisma.user.update({
+        where: {
+            id: session?.user?.id
+        },
+        data: {
+            firstName,
+            lastName,
+        }
+    });
+
+    revalidatePath("/settings/account");
+}
+
+export async function updateAvatar(image: string) {
+    const session = await getSession();
+
+
+    const user = await prisma.user.findFirst({
+        where: {
+            id: session?.user?.id
+        }
+    });
+
+    if(!user) {
+        return {
+            message: "Unauthorized"
+        }
+    }
+
+    if (user?.image && user?.image?.length > 0) {
+
+        if (user?.image.includes("https://utfs.io/f/")) {
+            const oldAvatar = user?.image?.split("/")!;
+            await utapi.deleteFiles(oldAvatar[oldAvatar?.length - 1]!);
+        }
+    }
+
+    await prisma.user.update({
+        where: {
+            id: session?.user?.id
+        },
+        data: {
+            image
+        }
+    });
+
+    revalidatePath("/settings/account");
+}
+
+export async function changePass(newPassword: string) {
+    const session = await getSession();
+
+    const user = await prisma.user.findFirst({
+        where: {
+            id: session?.user?.id
+        },
+        include: {
+            accounts: {
+                select: {
+                    type: true,
+                    provider: true
+                }
+            }
+        }
+    });
+
+    console.log(user?.accounts);
+
+    // TODO
+
+}
+
+export async function getAvatar() {
+    const session = await getSession();
+
+    return await prisma.user.findFirst({
+        where: {
+            id: session?.user?.id
+        },
+        select: {
+            image: true
+        }
+    });
+}
