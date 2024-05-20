@@ -72,6 +72,7 @@ export default function AvatarModal() {
     queryFn: async () => {
       return await getAvatar();
     },
+    refetchInterval: 1000 * 5,
   });
 
   return (
@@ -79,7 +80,7 @@ export default function AvatarModal() {
       <Dialog>
         <DialogTrigger>
           <Avatar>
-            <AvatarImage src={avatar?.image!} />
+            <AvatarImage src={`https://utfs.io/f/${avatar?.image!}`} />
             <AvatarFallback>
               {session?.user?.firstName.charAt(0)}
               {session?.user?.lastName.charAt(0)}

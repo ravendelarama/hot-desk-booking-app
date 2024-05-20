@@ -1,7 +1,7 @@
 "use client";
 
 import { Role } from "@prisma/client";
-import { logoutUser } from "@/actions/user";
+import { getAvatar, logoutUser } from "@/actions/user";
 
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -17,21 +17,25 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "./ui/button";
 import { DropdownMenuGroup } from "@radix-ui/react-dropdown-menu";
+import { useQuery } from "@tanstack/react-query";
 
 function AvatarMenu() {
   const { data: session } = useSession();
+  const { data: avatar } = useQuery({
+    queryKey: ["avatar"],
+    queryFn: async () => {
+      return await getAvatar();
+    },
+    refetchInterval: 1000 * 5,
+  });
+
   const router = useRouter();
   return (
     <div className="">
       <DropdownMenu>
         <DropdownMenuTrigger className="outline-none">
           <Avatar>
-            <AvatarImage
-              src={
-                session?.user.image ||
-                "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png"
-              }
-            />
+            <AvatarImage src={`https://utfs.io/f/${avatar?.image!}`} />
             <AvatarFallback>
               {session?.user?.firstName.charAt(0)}
               {session?.user?.lastName.charAt(0)}
