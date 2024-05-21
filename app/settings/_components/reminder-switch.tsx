@@ -62,6 +62,7 @@ export default function ReminderNotification() {
                 </div>
                 <FormControl>
                   <Switch
+                    type="submit"
                     checked={field.value}
                     onCheckedChange={field.onChange}
                   />

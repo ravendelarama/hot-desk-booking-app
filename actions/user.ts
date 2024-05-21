@@ -412,10 +412,10 @@ export async function setReservationReminders(isEnabled: boolean) {
 
     await prisma.user.update({
         where: {
-            id: session?.user?.id
+            id: session?.user?.id!
         },
         data: {
-            notifyReminders: isEnabled,
+            notifyReminders: isEnabled!,
         }
     });
 
