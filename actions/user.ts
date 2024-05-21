@@ -406,3 +406,18 @@ export async function getCurrentUser() {
         }
     })
 }
+
+export async function setReservationReminders(isEnabled: boolean) {
+    const session = await getSession();
+
+    await prisma.user.update({
+        where: {
+            id: session?.user?.id
+        },
+        data: {
+            notifyReminders: isEnabled,
+        }
+    });
+
+    revalidatePath("/settings/notification");
+}

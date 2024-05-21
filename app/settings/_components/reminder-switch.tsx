@@ -15,7 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { getCurrentUser } from "@/actions/user";
+import { getCurrentUser, setReservationReminders } from "@/actions/user";
 import { useQuery } from "@tanstack/react-query";
 import { Switch } from "@/components/ui/switch";
 
@@ -38,7 +38,8 @@ export default function ReminderNotification() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    await setReservationReminders(values.reminders);
     console.log(values);
   }
 
