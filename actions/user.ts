@@ -396,3 +396,13 @@ export async function getAvatar() {
         }
     });
 }
+
+export async function getCurrentUser() {
+    const session = await getSession();
+
+    return await prisma.user.findFirst({
+        where: {
+            id: session?.user?.id
+        }
+    })
+}

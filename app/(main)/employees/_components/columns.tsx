@@ -43,12 +43,14 @@ export const columns: ColumnDef<Employee>[] = [
           <AvatarImage
             // @ts-ignore
             src={
-              props.getValue() ||
-              "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png"
+              // @ts-ignore
+              !props.getValue()?.includes("https")
+                ? `https://utfs.io/f/${props.getValue()!}`
+                : props.getValue() ||
+                  "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png"
             }
           />
           <AvatarFallback>
-            {" "}
             <Skeleton className="w-10 h-10 rounded-full" />
           </AvatarFallback>
         </Avatar>

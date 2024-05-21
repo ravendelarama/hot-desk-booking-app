@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { updateName } from "@/actions/user";
+import { useSession } from "next-auth/react";
+import { useQuery } from "@tanstack/react-query";
 
 const formSchema = z.object({
   firstName: z.string().min(3, {
@@ -27,11 +29,12 @@ const formSchema = z.object({
 });
 
 export default function AccountSettings() {
+  const { data: session } = useSession();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
+      firstName: session?.user?.firstName,
+      lastName: session?.user?.lastName,
     },
   });
 

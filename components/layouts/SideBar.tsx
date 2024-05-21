@@ -62,13 +62,13 @@ const Routes = [
     path: "/desks",
     icon: (options: string) => <GiDesk className={options} />,
   },
-  {
-    name: "Settings",
-    role: "user",
-    alternative: "Settings",
-    path: "/settings",
-    icon: (options: string) => <LuSettings className={options} />,
-  },
+  // {
+  //   name: "Settings",
+  //   role: "user",
+  //   alternative: "Settings",
+  //   path: "/settings",
+  //   icon: (options: string) => <LuSettings className={options} />,
+  // },
 ];
 
 function SideBar() {

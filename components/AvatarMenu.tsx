@@ -18,6 +18,7 @@ import {
 import { Button } from "./ui/button";
 import { DropdownMenuGroup } from "@radix-ui/react-dropdown-menu";
 import { useQuery } from "@tanstack/react-query";
+import { LuSettings } from "react-icons/lu";
 
 function AvatarMenu() {
   const { data: session } = useSession();
@@ -35,7 +36,13 @@ function AvatarMenu() {
       <DropdownMenu>
         <DropdownMenuTrigger className="outline-none">
           <Avatar>
-            <AvatarImage src={`https://utfs.io/f/${avatar?.image!}`} />
+            <AvatarImage
+              src={
+                !avatar?.image?.includes("https")
+                  ? `https://utfs.io/f/${avatar?.image!}`
+                  : avatar?.image!
+              }
+            />
             <AvatarFallback>
               {session?.user?.firstName.charAt(0)}
               {session?.user?.lastName.charAt(0)}
@@ -52,9 +59,17 @@ function AvatarMenu() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem className="p-0"></DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer">
-              Settings
+            <DropdownMenuItem className="p-0">
+              <Button
+                variant={null}
+                onClick={() => {
+                  router.push("/settings/account");
+                }}
+                className="w-full cursor-pointer flex justify-start gap-1 p-2"
+              >
+                {/* <LuSettings className="h-4 w-4" /> */}
+                Settings
+              </Button>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           {session?.user?.role === Role.admin && (
