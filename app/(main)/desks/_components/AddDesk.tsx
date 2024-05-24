@@ -51,7 +51,7 @@ function AddDesk({
 }: {
   setAddDeskActive: Dispatch<SetStateAction<boolean>>;
 }) {
-  const { floors } = useFloors();
+  const { floors } = useFloors("");
   const [coordinates, setCoordinates] = useState<string[]>([]);
   const [areaIndex, setAreaIndex] = useState<number>(0);
   const [selectedFloor, setSelectedFloor] = useState<string>("");

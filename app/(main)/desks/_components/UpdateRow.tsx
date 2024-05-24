@@ -61,7 +61,7 @@ function AddDesk({
     status: DeskStatus;
   };
 }) {
-  const { floors } = useFloors();
+  const { floors } = useFloors("");
   const [coordinates, setCoordinates] = useState<number[]>(data.coordinates!);
   const [areaIndex, setAreaIndex] = useState<number>(0);
   const [selectedFloor, setSelectedFloor] = useState<string>("");
