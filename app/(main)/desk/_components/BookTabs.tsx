@@ -32,6 +32,8 @@ import { addBooking } from "@/actions/booking";
 
 function BookTabs() {
   const [workspace, setWorkspace] = useState<null | Floor>(null);
+
+  const [searchFloor, setSearchFloor] = useState<string>("");
   const [date, setDate] = useState<Date>(new Date());
   const [selectedDesk, setSelectedDesk] = useState<
     | (Desk & {
@@ -97,8 +99,14 @@ function BookTabs() {
           </TabsList>
         </div>
         <TabsContent value="areas" className="mt-4 space-y-2">
-          <Input className="w-full lg:w-72" placeholder="Search an area" />
-          <OfficeAreaList onSelect={onSelect} />
+          <Input
+            className="w-full lg:w-72"
+            placeholder="Search an area"
+            onChange={async (e) => {
+              setSearchFloor(e.target.value);
+            }}
+          />
+          <OfficeAreaList onSelect={onSelect} query={searchFloor} />
         </TabsContent>
         <TabsContent
           value="map"

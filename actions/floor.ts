@@ -5,7 +5,31 @@ import { revalidatePath } from "next/cache";
 import { utapi } from "@/server/uploadthing";
 
 
-export async function getFloors() {
+export async function getFloors(query: string) {
+
+    if (query && query?.length > 0) {
+        const floors = await prisma.floor.findMany({
+            where: {
+                floor: {
+                    contains: query!,
+                    mode: "insensitive"
+                }
+            },
+            orderBy: {
+                floor: "asc"
+            },
+            include: {
+                _count: {
+                    select: {
+                        Desk: true
+                    }
+                }
+            }
+        });
+
+        return floors;
+    }
+
     const floors = await prisma.floor.findMany({
         orderBy: {
             floor: "asc"

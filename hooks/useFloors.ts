@@ -7,13 +7,12 @@ import { getFloors } from "@/actions/floor";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
-function useFloors() {
+function useFloors(query: string
+) {
     // const [floors, setFloors] = useState<Floor[]>([]);
     const { data: floors, fetchStatus, isFetching, isPaused, isStale } = useQuery({
         queryKey: ["floors"],
-        queryFn: async () => await getFloors(),
-        staleTime: 60 * 1000,
-        refetchInterval: 60 * 1000,
+        queryFn: async () => await getFloors(query),
         refetchIntervalInBackground: true
     });
 
