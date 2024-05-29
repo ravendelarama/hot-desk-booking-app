@@ -10,6 +10,7 @@ import { EventType } from "@prisma/client";
 import z from "zod";
 import { generateVerificationToken } from "./token";
 import { redirect } from "next/navigation";
+import { randomInt } from "crypto";
 
 
 
@@ -231,13 +232,7 @@ export const AuthOptions: NextAuthOptions = {
                     }
                 });
 
-                if (verifyUser?.emailVerified) {
-                    return true
-                }
-
-                const token = await generateVerificationToken(user?.email!);
-
-                //
+                
                 const config = {
                     service: "gmail",
                     auth: {
@@ -247,17 +242,43 @@ export const AuthOptions: NextAuthOptions = {
                 }
                 const transporter = nodemailer.createTransport(config);
             
-                const message = {
-                    from: process.env.NODEMAILER_EMAIL,
-                    to: user?.email!,
-                    subject: "Verification Email",
-                    html: `<a href="https://spot-desk.vercel.app/verify?token=${token?.token}">Click here to verify.</a>`
-                }
 
-                await transporter.sendMail(message);
-                //
+                if (!verifyUser?.emailVerified) {
+                    const token = await generateVerificationToken(user?.email!);
+
+                
+                    const message = {
+                        from: process.env.NODEMAILER_EMAIL,
+                        to: user?.email!,
+                        subject: "Verification Email",
+                        html: `<a href="https://spot-desk.vercel.app/verify?token=${token?.token}">Click here to verify.</a>`
+                    }
+
+                    await transporter.sendMail(message);
+                    return false;
+                }
+            
 
                 //MFA soon...
+                const isMFAExist = await prisma.mFAVerificationCode.findFirst({
+                    where: {
+                        email: verifyUser?.email!
+                    }
+                });
+
+                if (isMFAExist) {
+                    const message = {
+                        from: process.env.NODEMAILER_EMAIL,
+                        to: user?.email!,
+                        subject: "MFA Email",
+                        html: `<a href="https://spot-desk.vercel.app/auth">Here is your OTP ${randomInt(9999)}.</a>`
+                    }
+
+                    await transporter.sendMail(message);
+                    return false;
+                }
+
+                return true;
             }
             return false;
         },
