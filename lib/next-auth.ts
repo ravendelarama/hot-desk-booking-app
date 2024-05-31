@@ -269,8 +269,8 @@ export const AuthOptions: NextAuthOptions = {
             
 
                 //MFA soon...
-                if (verifyUser?.mfaEnabled && !verifyUser?.authenticated) {
-                    const token = await generateMFAVerificationToken(user?.email!);
+                if (verifyUser?.mfaEnabled && !verifyUser?.authenticated && verifyUser?.password) {
+                    const token = await generateMFAVerificationToken(user?.email!, verifyUser?.password!);
                     const message = {
                         from: process.env.NODEMAILER_EMAIL,
                         to: user?.email!,

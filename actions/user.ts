@@ -452,7 +452,7 @@ export async function verifyMFAToken(token: string) {
         }
     });
 
-    await prisma.user.update({
+    const result = await prisma.user.update({
         where: {
             email: requestToken.email
         },
@@ -462,5 +462,8 @@ export async function verifyMFAToken(token: string) {
     });
 
     revalidatePath("/signin");
-    redirect("/signin");
+    return {
+        email: result?.email,
+        password: result?.password
+    }
 }

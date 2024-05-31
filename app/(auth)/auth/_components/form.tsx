@@ -6,8 +6,17 @@ import { Mail } from "lucide-react";
 import Image from "next/image";
 import logoHeader from "@/public/text-dark.png";
 import { toast } from "@/components/ui/use-toast";
+import { signIn } from "next-auth/react";
 
-function VerifyForm({ token }: { token: string }) {
+function VerifyForm({
+  token,
+  email,
+  password,
+}: {
+  token: string;
+  email: string;
+  password: string;
+}) {
   return (
     <div className="h-full">
       {token ? (
@@ -34,6 +43,14 @@ function VerifyForm({ token }: { token: string }) {
               className="w-200 h-10 text-sm bg-black"
               onClick={async () => {
                 const res = await verifyMFAToken(token! as string);
+
+                if (res.email) {
+                  const result = await signIn("credential-login", {
+                    redirect: false,
+                    emaiL: res?.email!,
+                    password: res?.password!,
+                  });
+                }
 
                 toast({
                   // @ts-ignore
