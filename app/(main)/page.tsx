@@ -60,26 +60,26 @@ async function Home() {
             </CardFooter>
           </Card>
         )}
-        {session?.user?.role === Role.admin ||
-          (session?.user?.role == Role.superadmin && (
-            <Card className="grow">
-              <CardHeader>
-                <CardTitle className="flex justify-between items-center w-full">
-                  <p className="text-sm text-left">Total employees</p>
-                  <PiUsersThreeFill className="h-5 w-5 text-slate-600" />
-                </CardTitle>
-                <CardDescription></CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="pl-3 text-4xl font-bold">+{totalEmployees}</p>
-              </CardContent>
-              <CardFooter>
-                <p className="text-xs text-slate-400">
-                  total amount of people in the company.
-                </p>
-              </CardFooter>
-            </Card>
-          ))}
+        {(session?.user?.role === Role.admin ||
+          session?.user?.role == Role.superadmin) && (
+          <Card className="grow">
+            <CardHeader>
+              <CardTitle className="flex justify-between items-center w-full">
+                <p className="text-sm text-left">Total employees</p>
+                <PiUsersThreeFill className="h-5 w-5 text-slate-600" />
+              </CardTitle>
+              <CardDescription></CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="pl-3 text-4xl font-bold">+{totalEmployees}</p>
+            </CardContent>
+            <CardFooter>
+              <p className="text-xs text-slate-400">
+                total amount of people in the company.
+              </p>
+            </CardFooter>
+          </Card>
+        )}
         {session?.user?.role != Role.user && (
           <Card className="grow">
             <CardHeader>
@@ -139,25 +139,27 @@ async function Home() {
           </Card>
         )}
       </div>
-      <div className="flex item-center flex-wrap gap-5">
-        <Card className="grow">
-          <CardHeader>
-            <CardTitle className="flex justify-between items-center w-full">
-              <p className="text-sm text-left">Your total bookings</p>
+      {session?.user?.role == Role.user && (
+        <div className="flex item-center flex-wrap gap-5">
+          <Card className="grow">
+            <CardHeader>
+              <CardTitle className="flex justify-between items-center w-full">
+                <p className="text-sm text-left">Your total bookings</p>
 
-              <BsFillJournalBookmarkFill className="text-slate-600 h-5 w-5" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="pl-3 text-4xl font-bold">+{totalUserBookings}</p>
-          </CardContent>
-          <CardFooter>
-            <p className="text-xs text-slate-400">
-              Total amount of reservation you made as of today.
-            </p>
-          </CardFooter>
-        </Card>
-      </div>
+                <BsFillJournalBookmarkFill className="text-slate-600 h-5 w-5" />
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="pl-3 text-4xl font-bold">+{totalUserBookings}</p>
+            </CardContent>
+            <CardFooter>
+              <p className="text-xs text-slate-400">
+                Total amount of reservation you made as of today.
+              </p>
+            </CardFooter>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }
