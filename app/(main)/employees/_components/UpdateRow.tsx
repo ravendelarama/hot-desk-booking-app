@@ -28,6 +28,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { DialogClose } from "@/components/ui/dialog";
+import { useSession } from "next-auth/react";
 
 const formSchema = z.object({
   firstName: z.string(),
@@ -57,6 +58,9 @@ function UpdateRow({ data }: { data: any }) {
       description: "User updated successfully.",
     });
   }
+
+  const { data: session } = useSession();
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -111,7 +115,9 @@ function UpdateRow({ data }: { data: any }) {
                   <SelectContent>
                     <SelectGroup>
                       <SelectLabel>Roles</SelectLabel>
-                      <SelectItem value="admin">Admin</SelectItem>
+                      {session?.user?.role == "superadmin" && (
+                        <SelectItem value="admin">Admin</SelectItem>
+                      )}
                       <SelectItem value="manager">Office Manager</SelectItem>
                       <SelectItem value="user">User</SelectItem>
                     </SelectGroup>

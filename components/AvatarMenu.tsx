@@ -72,25 +72,26 @@ function AvatarMenu() {
               </Button>
             </DropdownMenuItem>
           </DropdownMenuGroup>
-          {session?.user?.role === Role.admin && (
-            <>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <DropdownMenuItem className="p-0"></DropdownMenuItem>
-                <DropdownMenuItem className="flex justify-start" asChild>
-                  <Button
-                    variant={null}
-                    className="w-full h-8 cursor-pointer"
-                    onClick={() => {
-                      router.push("/activity-logs");
-                    }}
-                  >
-                    Activity logs
-                  </Button>
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-            </>
-          )}
+          {session?.user?.role === Role.admin ||
+            (session?.user?.role == Role.superadmin && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem className="p-0"></DropdownMenuItem>
+                  <DropdownMenuItem className="flex justify-start" asChild>
+                    <Button
+                      variant={null}
+                      className="w-full h-8 cursor-pointer"
+                      onClick={() => {
+                        router.push("/activity-logs");
+                      }}
+                    >
+                      Activity logs
+                    </Button>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+              </>
+            ))}
           <DropdownMenuSeparator />
           <DropdownMenuItem className="flex justify-start" asChild>
             <Button

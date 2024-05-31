@@ -81,7 +81,8 @@ function Header() {
             if (
               !(
                 session?.user.role == Role.manager ||
-                session?.user.role == Role.admin
+                session?.user.role == Role.admin ||
+                session?.user?.role == Role.superadmin
               ) &&
               (item.name == "Floors" || item.name == "Desks")
             ) {
@@ -89,7 +90,10 @@ function Header() {
             }
 
             if (
-              !(session?.user.role == Role.admin) &&
+              !(
+                session?.user.role == Role.admin ||
+                session?.user?.role == Role.superadmin
+              ) &&
               (item.name == "Colleagues" || item.name == "Verifications")
             ) {
               return null;
