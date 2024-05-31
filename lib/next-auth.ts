@@ -282,15 +282,6 @@ export const AuthOptions: NextAuthOptions = {
                     return false;
                 }
 
-                await prisma.user.update({
-                    where: {
-                        id: verifyUser?.id
-                    },
-                    data: {
-                        authenticated: true
-                    }
-                });
-
                 return true;
             }
         },

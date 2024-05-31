@@ -457,7 +457,7 @@ export async function verifyMFAToken(token: string) {
             email: requestToken.email
         },
         data: {
-            emailVerified: new Date()
+            authenticated: true,
         }
     });
 
