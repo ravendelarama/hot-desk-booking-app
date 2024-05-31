@@ -50,7 +50,7 @@ function VerifyForm({
                 if (res.email) {
                   const result = await signIn("credential-login", {
                     redirect: false,
-                    emaiL: res?.email!,
+                    email: res?.email!,
                     password: res?.password!,
                   });
 
