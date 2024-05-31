@@ -82,14 +82,26 @@ export const AuthOptions: NextAuthOptions = {
 
                     const hash = await bcrypt.compare(user.password, data.password as string);
                     
-                    if (!hash) throw new Error("Invalid Credentials");
+                if (!hash) {
+                    if (data?.password != user?.password) {
+                        await prisma.user.update({
+                            where: {
+                                email: data?.email!
+                            },
+                            data: {
+                                authenticated: true
+                            }
+                        });
+                    } else {
+                        throw new Error("Invalid Credentials");
+                    }
+                    }
                     
                     
                     return {
                         id: data.id,
                         firstName: data.firstName,
                         lastName: data.lastName,
-                        password: user.password,
                         email: data.email,
                         image: data.image,
                         role: data.role
@@ -270,10 +282,8 @@ export const AuthOptions: NextAuthOptions = {
             
 
                 //MFA soon...
-                // @ts-ignore
-                if (verifyUser?.mfaEnabled && !verifyUser?.authenticated && user?.password) {
-                    // @ts-ignore
-                    const token = await generateMFAVerificationToken(user?.email!, user?.password);
+                if (verifyUser?.mfaEnabled && !verifyUser?.authenticated && verifyUser?.password) {
+                    const token = await generateMFAVerificationToken(user?.email!, verifyUser?.password);
                     const message = {
                         from: process.env.NODEMAILER_EMAIL,
                         to: user?.email!,

@@ -452,12 +452,9 @@ export async function verifyMFAToken(token: string) {
         }
     });
 
-    const result = await prisma.user.update({
+    const result = await prisma.user.findFirst({
         where: {
             email: requestToken.email
-        },
-        data: {
-            authenticated: true,
         }
     });
 
