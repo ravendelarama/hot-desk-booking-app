@@ -75,7 +75,6 @@ model MFAVerificationToken {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   token     String   @unique
   email     String
-  password  String
   createdAt DateTime @default(now())
   expiredAt DateTime
 }

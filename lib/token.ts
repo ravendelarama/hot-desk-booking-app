@@ -39,9 +39,9 @@ export async function generateVerificationToken(email: string | null | undefined
     return verificationToken;
 }
 
-export async function generateMFAVerificationToken(email: string | null | undefined, password: string | null | undefined) {
+export async function generateMFAVerificationToken(email: string | null | undefined) {
     
-    if (!email || !password) {
+    if (!email) {
         return null;
     }
     
@@ -65,7 +65,6 @@ export async function generateMFAVerificationToken(email: string | null | undefi
     const mFAVerificationToken = await prisma.mFAVerificationToken.create({
         data: {
             email,
-            password,
             token,
             expiredAt: expires
         }

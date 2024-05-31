@@ -10,15 +10,7 @@ import { signIn } from "next-auth/react";
 import { Router } from "next/router";
 import { useRouter } from "next/navigation";
 
-function VerifyForm({
-  token,
-  email,
-  password,
-}: {
-  token: string;
-  email: string;
-  password: string;
-}) {
+function VerifyForm({ token }: { token: string }) {
   const router = useRouter();
   return (
     <div className="h-full">
@@ -46,18 +38,6 @@ function VerifyForm({
               className="w-200 h-10 text-sm bg-black"
               onClick={async () => {
                 const res = await verifyMFAToken(token! as string);
-
-                if (res.email) {
-                  const result = await signIn("credential-login", {
-                    redirect: false,
-                    email: res?.email!,
-                    password: res?.password!,
-                  });
-
-                  if (result?.ok!) {
-                    router.push("/");
-                  }
-                }
 
                 toast({
                   // @ts-ignore

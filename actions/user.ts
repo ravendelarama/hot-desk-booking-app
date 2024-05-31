@@ -452,15 +452,15 @@ export async function verifyMFAToken(token: string) {
         }
     });
 
-    const result = await prisma.user.findFirst({
+    await prisma.user.update({
         where: {
             email: requestToken.email
+        },
+        data: {
+            authenticated: true
         }
     });
 
     revalidatePath("/signin");
-    return {
-        email: result?.email,
-        password: result?.password
-    }
+    redirect("/signin");
 }

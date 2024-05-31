@@ -14,15 +14,9 @@ export default async function MultiFactorAuthPage({
     permanentRedirect("/", RedirectType.replace);
   }
 
-  const user = await prisma.mFAVerificationToken.findFirst({
-    where: {
-      token,
-    },
-  });
-
   return (
     <div>
-      <MFAForm token={token} email={user?.email!} password={user?.password!} />
+      <MFAForm token={token} />
     </div>
   );
 }
