@@ -53,7 +53,10 @@ function VerifyForm({
                     emaiL: res?.email!,
                     password: res?.password!,
                   });
-                  router.push("/");
+
+                  if (result?.ok) {
+                    router.push("/");
+                  }
                 }
 
                 toast({
