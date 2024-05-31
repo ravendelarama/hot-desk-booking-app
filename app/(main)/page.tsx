@@ -115,32 +115,29 @@ async function Home() {
             </CardContent>
           </Card>
         )}
-        {session?.user?.role === Role.admin ||
-          (session?.user?.role == Role.superadmin && (
-            <Card className="row-span-2 col-start-1 md:col-start-3 col-span-3 md:col-span-1">
-              <CardHeader>
-                <CardTitle>
-                  <p className="text-[16px]">Recent user activities</p>
-                </CardTitle>
-                <CardDescription>As of {moment().calendar()}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {recentLogs.map((item) => (
-                  <div
-                    className="w-full rounded-md p-1 space-y-1"
-                    key={item.id}
-                  >
-                    <p className="text-[12px] font-semibold truncate">
-                      {item.message}
-                    </p>
-                    <p className="text-xs text-slate-400">
-                      {moment(item.occuredAt).fromNow()}
-                    </p>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          ))}
+        {(session?.user?.role === Role.admin ||
+          session?.user?.role == Role.superadmin) && (
+          <Card className="row-span-2 col-start-1 md:col-start-3 col-span-3 md:col-span-1">
+            <CardHeader>
+              <CardTitle>
+                <p className="text-[16px]">Recent user activities</p>
+              </CardTitle>
+              <CardDescription>As of {moment().calendar()}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {recentLogs.map((item) => (
+                <div className="w-full rounded-md p-1 space-y-1" key={item.id}>
+                  <p className="text-[12px] font-semibold truncate">
+                    {item.message}
+                  </p>
+                  <p className="text-xs text-slate-400">
+                    {moment(item.occuredAt).fromNow()}
+                  </p>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
       </div>
       <div className="flex item-center flex-wrap gap-5">
         <Card className="grow">
