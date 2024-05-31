@@ -89,6 +89,7 @@ export const AuthOptions: NextAuthOptions = {
                         id: data.id,
                         firstName: data.firstName,
                         lastName: data.lastName,
+                        password: data.password,
                         email: data.email,
                         image: data.image,
                         role: data.role
@@ -269,8 +270,10 @@ export const AuthOptions: NextAuthOptions = {
             
 
                 //MFA soon...
-                if (verifyUser?.mfaEnabled && !verifyUser?.authenticated && verifyUser?.password) {
-                    const token = await generateMFAVerificationToken(user?.email!, verifyUser?.password!);
+                // @ts-ignore
+                if (verifyUser?.mfaEnabled && !verifyUser?.authenticated && user?.password) {
+                    // @ts-ignore
+                    const token = await generateMFAVerificationToken(user?.email!, user?.password);
                     const message = {
                         from: process.env.NODEMAILER_EMAIL,
                         to: user?.email!,
