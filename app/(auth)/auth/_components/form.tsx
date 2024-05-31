@@ -7,6 +7,8 @@ import Image from "next/image";
 import logoHeader from "@/public/text-dark.png";
 import { toast } from "@/components/ui/use-toast";
 import { signIn } from "next-auth/react";
+import { Router } from "next/router";
+import { useRouter } from "next/navigation";
 
 function VerifyForm({
   token,
@@ -17,6 +19,7 @@ function VerifyForm({
   email: string;
   password: string;
 }) {
+  const router = useRouter();
   return (
     <div className="h-full">
       {token ? (
@@ -50,6 +53,7 @@ function VerifyForm({
                     emaiL: res?.email!,
                     password: res?.password!,
                   });
+                  router.push("/");
                 }
 
                 toast({
