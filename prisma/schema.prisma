@@ -55,11 +55,12 @@ model User {
   updatedAt       DateTime  @updatedAt @db.Timestamp
   isBanned        Boolean   @default(false)
   notifyReminders Boolean   @default(true)
-
-  accounts Account[]
-  sessions Session[]
-  Booking  Booking[]
-  Log      Log[]
+  mfaEnabled      Boolean   @default(false)
+  authenticated   Boolean   @default(false)
+  accounts        Account[]
+  sessions        Session[]
+  Booking         Booking[]
+  Log             Log[]
 }
 
 model VerificationToken {
@@ -70,9 +71,9 @@ model VerificationToken {
   expiredAt DateTime
 }
 
-model MFAVerificationCode {
+model MFAVerificationToken {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  code      String   @unique
+  token     String   @unique
   email     String
   createdAt DateTime @default(now())
   expiredAt DateTime

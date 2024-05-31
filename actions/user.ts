@@ -10,6 +10,7 @@ import { redirect } from "next/navigation";
 import { generateResetPasswordToken } from "@/lib/token";
 import nodemailer from "nodemailer";
 import bcrypt from "bcrypt";
+import moment from "moment";
 
 export async function getOtherUsers() {
     const session = await getSession();
@@ -58,9 +59,11 @@ export async function loginUser(userId: string, firstName: string, lastName: str
 
     await prisma.user.update({
         where: {
-            id: userId
+            id: userId,
         },
         data: {
+            
+            authenticated: true,
             Log: {
                 create: {
                     activity: EventType.signed_in,
@@ -79,9 +82,11 @@ export async function logoutUser() {
     if (session?.user) {
         await prisma.user.update({
             where: {
-                id: session?.user?.id!
+                id: session?.user?.id!,
             },
             data: {
+                
+                authenticated: false,
                 Log: {
                     create: {
                         activity: EventType.signed_out,
@@ -420,4 +425,42 @@ export async function setReservationReminders(isEnabled: boolean) {
     });
 
     revalidatePath("/settings/notification");
+}
+
+export async function verifyMFAToken(token: string) {
+    const requestToken = await prisma.mFAVerificationToken.findFirst({
+        where: {
+            token
+        }
+    });
+
+    if (!requestToken || !requestToken.email) {
+        return {
+            message: "Invalid Token."
+        }
+    }
+
+    if (new Date() >= requestToken.expiredAt) {
+        return {
+            message: "Token expired."
+        }
+    }
+
+    await prisma.mFAVerificationToken.delete({
+        where: {
+            id: requestToken.id
+        }
+    });
+
+    await prisma.user.update({
+        where: {
+            email: requestToken.email
+        },
+        data: {
+            emailVerified: new Date()
+        }
+    });
+
+    revalidatePath("/signin");
+    redirect("/signin");
 }

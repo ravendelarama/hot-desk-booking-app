@@ -8,9 +8,10 @@ import { NextAuthOptions } from "next-auth";
 import bcrypt from "bcrypt";
 import { EventType } from "@prisma/client";
 import z from "zod";
-import { generateVerificationToken } from "./token";
+import { generateMFAVerificationToken, generateVerificationToken } from "./token";
 import { redirect } from "next/navigation";
 import { randomInt } from "crypto";
+import moment from "moment";
 
 
 
@@ -194,10 +195,11 @@ export const AuthOptions: NextAuthOptions = {
                 data: {
                     emailVerified: new Date()
                 }
-            })
+            });
         }
     },
     callbacks: {
+        // @ts-ignore
         async signIn({ account, profile, user }) {
             // return profile!.email!.endsWith("@student.laverdad.edu.ph");
             if (account?.provider === "google") {
@@ -212,9 +214,17 @@ export const AuthOptions: NextAuthOptions = {
                 }
                 
                 if (user) {
+                    await prisma.user.update({
+                        where: {
+                            id: user?.id
+                        },
+                        data: {
+                            authenticated: true
+                        }
+                    })
                     await prisma.log.create({
                         data: {
-                            userId: user?.id!, 
+                            userId: user?.id!,
                             activity: EventType.signed_in,
                             message: eventLogFormats.signed_in(`${user?.firstName} ${user?.lastName}`)
                         }
@@ -245,8 +255,6 @@ export const AuthOptions: NextAuthOptions = {
 
                 if (!verifyUser?.emailVerified) {
                     const token = await generateVerificationToken(user?.email!);
-
-                
                     const message = {
                         from: process.env.NODEMAILER_EMAIL,
                         to: user?.email!,
@@ -257,30 +265,34 @@ export const AuthOptions: NextAuthOptions = {
                     await transporter.sendMail(message);
                     return false;
                 }
+
             
 
                 //MFA soon...
-                const isMFAExist = await prisma.mFAVerificationCode.findFirst({
-                    where: {
-                        email: verifyUser?.email!
-                    }
-                });
-
-                if (isMFAExist) {
+                if (verifyUser?.mfaEnabled && !verifyUser?.authenticated) {
+                    const token = await generateMFAVerificationToken(user?.email!);
                     const message = {
                         from: process.env.NODEMAILER_EMAIL,
                         to: user?.email!,
-                        subject: "MFA Email",
-                        html: `<a href="https://spot-desk.vercel.app/auth">Here is your OTP ${randomInt(9999)}.</a>`
+                        subject: "Multi Factor Authentication Verification Email",
+                        html: `<a href="https://spot-desk.vercel.app/auth?token=${token?.token}">Click here to verify.</a>`
                     }
 
                     await transporter.sendMail(message);
                     return false;
                 }
 
+                await prisma.user.update({
+                    where: {
+                        id: verifyUser?.id
+                    },
+                    data: {
+                        authenticated: true
+                    }
+                });
+
                 return true;
             }
-            return false;
         },
         async jwt({ token, user }) {
             if (user) {
@@ -298,6 +310,7 @@ export const AuthOptions: NextAuthOptions = {
                     token.email = data.email;
                     token.role = data.role;
                     token.isBanned = data.isBanned;
+                    token.mfaEnabled = data.mfaEnabled;
                 }
             }
             return token;
@@ -313,7 +326,8 @@ export const AuthOptions: NextAuthOptions = {
                     lastName: token.lastName,
                     email: token.email,
                     role: token.role,
-                    isBanned: token.isBanned
+                    isBanned: token.isBanned,
+                    mfaEnabled: token.mfaEnabled
                 }
             }
             
