@@ -89,7 +89,7 @@ export const AuthOptions: NextAuthOptions = {
                         id: data.id,
                         firstName: data.firstName,
                         lastName: data.lastName,
-                        password: data.password,
+                        password: user.password,
                         email: data.email,
                         image: data.image,
                         role: data.role
