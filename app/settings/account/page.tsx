@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import MFASwitch from "../_components/mfa-switch";
 
 export default async function AccountSettingsPage() {
   return (
@@ -22,6 +23,7 @@ export default async function AccountSettingsPage() {
         <CardContent className="space-y-6">
           <AccountSettings />
           <ChangePassModal />
+          <MFASwitch />
         </CardContent>
       </Card>
     </div>

@@ -464,3 +464,44 @@ export async function verifyMFAToken(token: string) {
     revalidatePath("/signin");
     redirect("/signin");
 }
+
+export async function toggleMFA() {
+    const session = await getSession();
+
+    const user = await prisma.user.findFirst({
+        where: {
+            id: session?.user?.id
+        }
+    });
+
+    if (user?.mfaEnabled) {
+        await prisma.user.update({
+            where: {
+                id: user?.id
+            },
+            data: {
+                mfaEnabled: false
+            }
+        })
+
+        revalidatePath("/settings/account");
+
+        return {
+            message: "Successful."
+        }
+    }
+
+    await prisma.user.update({
+        where: {
+            id: user?.id
+        },
+        data: {
+            mfaEnabled: false
+        }
+    })
+
+    revalidatePath("/settings/account");
+    return {
+        message: "Successful."
+    }
+}
