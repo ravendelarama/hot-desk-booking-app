@@ -57,7 +57,7 @@ export default function ReminderNotification(user: User | null) {
                 <FormControl>
                   <Switch
                     type="submit"
-                    checked={field.value}
+                    checked={user?.notifyReminders!}
                     onCheckedChange={field.onChange}
                   />
                 </FormControl>

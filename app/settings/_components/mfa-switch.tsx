@@ -57,7 +57,7 @@ export default function MFASwitch(user: User | null) {
                 <FormControl>
                   <Switch
                     type="submit"
-                    checked={field.value}
+                    checked={user?.mfaEnabled!}
                     onCheckedChange={field.onChange}
                   />
                 </FormControl>
