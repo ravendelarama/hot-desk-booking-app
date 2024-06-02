@@ -24,8 +24,7 @@ export default async function AccountSettingsPage() {
           <CardTitle>General</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* @ts-ignore */}
-          <AccountSettings user={currentUser!} />
+          <AccountSettings />
           <ChangePassModal />
           {/* @ts-ignore */}
           <MFASwitch user={currentUser!} />
