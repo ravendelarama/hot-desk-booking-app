@@ -10,8 +10,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import MFASwitch from "../_components/mfa-switch";
+import { getCurrentUser } from "@/actions/user";
 
 export default async function AccountSettingsPage() {
+  const currentUser = await getCurrentUser();
+
   return (
     <div className="mt-16 space-y-6 w-fit">
       <h2>Account Settings</h2>
@@ -21,9 +24,11 @@ export default async function AccountSettingsPage() {
           <CardTitle>General</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <AccountSettings />
+          {/* @ts-ignore */}
+          <AccountSettings user={currentUser!} />
           <ChangePassModal />
-          <MFASwitch />
+          {/* @ts-ignore */}
+          <MFASwitch user={currentUser!} />
         </CardContent>
       </Card>
     </div>

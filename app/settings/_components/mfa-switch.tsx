@@ -15,22 +15,16 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { getCurrentUser, toggleMFA } from "@/actions/user";
+import { toggleMFA } from "@/actions/user";
 import { useQuery } from "@tanstack/react-query";
 import { Switch } from "@/components/ui/switch";
+import { User } from "@prisma/client";
 
 const formSchema = z.object({
   mfa: z.boolean(),
 });
 
-export default function MFASwitch() {
-  const { data: user } = useQuery({
-    queryKey: ["mfa"],
-    queryFn: async () => {
-      return await getCurrentUser();
-    },
-  });
-
+export default function MFASwitch(user: User | null) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {

@@ -15,22 +15,16 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { getCurrentUser, setReservationReminders } from "@/actions/user";
+import { setReservationReminders } from "@/actions/user";
 import { useQuery } from "@tanstack/react-query";
 import { Switch } from "@/components/ui/switch";
+import { User } from "@prisma/client";
 
 const formSchema = z.object({
   reminders: z.boolean(),
 });
 
-export default function ReminderNotification() {
-  const { data: user } = useQuery({
-    queryKey: ["reminders"],
-    queryFn: async () => {
-      return await getCurrentUser();
-    },
-  });
-
+export default function ReminderNotification(user: User | null) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
