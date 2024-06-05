@@ -13,8 +13,6 @@ function useFloors(query: string
     const { data: floors, fetchStatus, isFetching, isPaused, isStale } = useQuery({
         queryKey: ["floors"],
         queryFn: async () => await getFloors(query),
-        refetchInterval: 5 * 1000,
-        refetchIntervalInBackground: true
     });
 
     return {

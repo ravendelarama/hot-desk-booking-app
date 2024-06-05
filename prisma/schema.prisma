@@ -121,6 +121,7 @@ model Booking {
   bookedAt  DateTime @db.Timestamp
   updatedAt DateTime @updatedAt @db.Timestamp
   approved  Boolean  @default(false)
+  canceled  Boolean  @default(false)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   desk Desk @relation(fields: [deskId], references: [id], onDelete: Cascade)

@@ -21,18 +21,23 @@ export async function getBookings() {
             userId: session?.user.id!
         },
         include: {
-            user: true,
-            desk: true
+            desk: {
+                select: {
+                    name: true,
+                    Floor: true
+                }
+            }
         }
     });
 
     const bookings = data.reverse().map((item) => {
         return {
             id: item.id,
-            user: item.user,
             desk: item.desk,
             occuredAt: item.startedAt,
-            bookedAt: item.bookedAt
+            bookedAt: item.bookedAt,
+            approved: item.approved,
+            canceled: item.canceled
         }
     });
 
@@ -175,30 +180,31 @@ export async function addBooking(desk: Desk, date: Date) {
 }
 
 
-// export async function cancelBooking(bookId: string) {
-//     const session = await getSession();
+export async function cancelBooking(bookId: string) {
+    const session = await getSession();
 
-//     await prisma.booking.update({
-//         where: {
-//             userId: session?.user?.id,
-//             id: bookId
-//         },
-//         data: {
-//             user: {
-//                 update: {
-//                     Log: {
-//                         create: {
-//                             activity: EventType.canceled,
-//                             message: eventLogFormats.canceled(`${session?.user.firstName} ${session?.user?.lastName}`, bookId)
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//     });
+    await prisma.booking.update({
+        where: {
+            userId: session?.user?.id,
+            id: bookId
+        },
+        data: {
+            canceled: true,
+            user: {
+                update: {
+                    Log: {
+                        create: {
+                            activity: EventType.canceled,
+                            message: eventLogFormats.canceled(`${session?.user.firstName} ${session?.user?.lastName}`, bookId)
+                        }
+                    }
+                }
+            }
+        }
+    });
 
-//     revalidatePath("/bookings");
-// }
+    revalidatePath("/bookings");
+}
 
 
 export async function getMonthlyBookings() {
