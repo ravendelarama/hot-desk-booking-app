@@ -415,12 +415,18 @@ export async function getCurrentUser() {
 export async function setReservationReminders(isEnabled: boolean) {
     const session = await getSession();
 
+    const u = await prisma.user.findFirst({
+        where: {
+            id: session?.user?.id
+        }
+    });
+
     await prisma.user.update({
         where: {
             id: session?.user?.id!
         },
         data: {
-            notifyReminders: isEnabled!,
+            notifyReminders: u?.notifyReminders == true ? false: true,
         }
     });
 
@@ -474,34 +480,16 @@ export async function toggleMFA() {
         }
     });
 
-    if (user?.mfaEnabled) {
         await prisma.user.update({
             where: {
                 id: user?.id
             },
             data: {
-                mfaEnabled: false
+                mfaEnabled: user?.mfaEnabled == true ? false: true
             }
         })
-
-        revalidatePath("/settings/account");
 
         return {
             message: "Successful."
         }
-    }
-
-    await prisma.user.update({
-        where: {
-            id: user?.id
-        },
-        data: {
-            mfaEnabled: false
-        }
-    })
-
-    revalidatePath("/settings/account");
-    return {
-        message: "Successful."
-    }
 }
