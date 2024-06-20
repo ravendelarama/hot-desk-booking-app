@@ -44,6 +44,38 @@ export async function getBookings() {
     return bookings;
 }
 
+export async function getUserBookingReminders() {
+    const session = await getSession();
+
+    const data = await prisma.booking.findMany({
+        where: {
+            AND: {
+                userId: session?.user?.id,
+                approved: true
+            }
+        }
+    });
+
+    revalidatePath('/');
+    return data;
+}
+
+export async function getApprovedUserBookings() {
+    const session = await getSession();
+
+    const count = await prisma.booking.count({
+        where: {
+            AND: {
+                userId: session?.user?.id,
+                approved: true
+            }
+        }
+    });
+
+    revalidatePath('/')
+    return count
+}
+
 export async function getAllBookings() {
     const data = await prisma.booking.findMany({
         include: {

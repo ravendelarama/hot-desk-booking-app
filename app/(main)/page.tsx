@@ -2,11 +2,14 @@ import { getSession } from "@/lib/next-auth";
 import moment from "moment";
 import { RedirectType, redirect } from "next/navigation";
 import { Role } from "@prisma/client";
+import { GrSecure } from "react-icons/gr";
 
 import {
   getAllBookingCount,
+  getApprovedUserBookings,
   getMonthlyBookings,
   getUserBookingCount,
+  getUserBookingReminders,
 } from "@/actions/booking";
 import { getAllUserCount } from "@/actions/user";
 import { getAvailableDesksCount } from "@/actions/desk";
@@ -25,6 +28,8 @@ import { PiUsersThreeFill } from "react-icons/pi";
 import { GiDesk } from "react-icons/gi";
 import BookingGraph from "./_components/Graph";
 import UserDashboard from "./_components/user-dashboard";
+import Link from "next/link";
+import { MdOutlineNotificationsActive } from "react-icons/md";
 
 async function Home() {
   const totalEmployees = await getAllUserCount();
@@ -34,6 +39,8 @@ async function Home() {
   const recentLogs = await recentActivityLogs();
   const session = await getSession();
   const monthlyBookings = await getMonthlyBookings();
+  const approvedUserBookings = await getApprovedUserBookings();
+  const bookingReminders = await getUserBookingReminders();
 
   if (session?.user.isBanned) redirect("/signin", RedirectType.replace);
 
@@ -143,39 +150,100 @@ async function Home() {
       </div>
       {session?.user?.role == Role.user && (
         <div className="flex item-center flex-wrap gap-5">
-          <Card className="grow">
-            <CardHeader>
-              <CardTitle className="flex justify-between items-center w-full">
-                <p className="text-sm text-left">Your total bookings</p>
+          <div className="grow flex item-center justify-between flex-col">
+            <Card className="">
+              <CardHeader>
+                <CardTitle className="flex justify-between items-center w-full">
+                  <p className="text-sm text-left">Your total bookings</p>
 
-                <BsFillJournalBookmarkFill className="text-slate-600 h-5 w-5" />
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="pl-3 text-4xl font-bold">+{totalUserBookings}</p>
-            </CardContent>
-            <CardFooter>
-              <p className="text-xs text-slate-400">
-                Total amount of reservation you made as of today.
-              </p>
-            </CardFooter>
-          </Card>
-          <Card className="grow">
-            <CardHeader>
-              <CardTitle className="flex justify-between items-center w-full">
-                <p className="text-sm text-left">Pending Reservations</p>
+                  <BsFillJournalBookmarkFill className="text-slate-600 h-5 w-5" />
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="pl-3 text-4xl font-bold">+{totalUserBookings}</p>
+              </CardContent>
+              <CardFooter>
+                <p className="text-xs text-slate-400">
+                  Total amount of reservation you made as of today.
+                </p>
+              </CardFooter>
+            </Card>
+            <Card className="">
+              <CardHeader>
+                <CardTitle className="flex justify-between items-center w-full">
+                  <p className="text-sm text-left">Approved Reservations</p>
 
-                <BsFillJournalBookmarkFill className="text-slate-600 h-5 w-5" />
+                  <BsFillJournalBookmarkFill className="text-slate-600 h-5 w-5" />
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="pl-3 py-5 text-4xl font-bold">
+                  +{approvedUserBookings}
+                </p>
+              </CardContent>
+              <CardFooter>
+                <p className="text-xs text-slate-400">
+                  Total amount of approved desk reservations.
+                </p>
+              </CardFooter>
+            </Card>
+          </div>
+          <Card className="grow">
+            {/* <CardHeader>
+              <CardTitle>
+                <p className="text-[16px]"></p>
               </CardTitle>
-            </CardHeader>
+              <CardDescription>As of {moment().calendar()}</CardDescription>
+            </CardHeader> */}
             <CardContent>
-              <p className="pl-3 text-4xl font-bold">+{totalUserBookings}</p>
+              <Link
+                href={"/settings/account"}
+                className="w-full rounded-md py-2 flex gap-2 items-center"
+              >
+                <GrSecure className="h-5 w-5" />
+                <div className="flex flex-col gap-1 grow">
+                  <p className="text-[12px] font-semibold truncate">
+                    Multi-Factor Authentication
+                  </p>
+                  <p className="text-xs text-slate-400">
+                    Keep your SpotDesk account secure by enabling this feature.
+                  </p>
+                </div>
+              </Link>
+              <Link
+                href={"/settings/notification"}
+                className="w-full rounded-md py-2 flex gap-2 items-center"
+              >
+                <MdOutlineNotificationsActive className="h-5 w-5" />
+
+                <div className="flex flex-col gap-1 grow">
+                  <p className="text-[12px] font-semibold truncate">
+                    Email Notifications
+                  </p>
+                  <p className="text-xs text-slate-400">
+                    Keep updated with your reservations and other reminders by
+                    enabling this feature.
+                  </p>
+                </div>
+              </Link>
+              <div className="pt-5">
+                <p className="text-sm font-semibold">Booking Reminders</p>
+                {bookingReminders.length > 0 &&
+                  bookingReminders.map((item) => (
+                    <div
+                      className="w-full rounded-md p-1 space-y-1"
+                      key={item.id}
+                    >
+                      <p className="text-[12px] font-semibold truncate">
+                        {moment(item.bookedAt).date() == moment().date()
+                          ? "Today"
+                          : moment(item.bookedAt).format("MMMM DD").toString()}
+                      </p>
+                    </div>
+                  ))}
+                {bookingReminders.length == 0 && <div>No Reminders.</div>}
+              </div>
             </CardContent>
-            <CardFooter>
-              <p className="text-xs text-slate-400">
-                Total amount of pending reservation you made as of today.
-              </p>
-            </CardFooter>
           </Card>
         </div>
       )}
