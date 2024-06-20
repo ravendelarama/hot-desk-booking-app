@@ -39,6 +39,8 @@ function DeskInfo({
       email: string | null;
       image: string | null;
     };
+    approved: boolean;
+    canceled: boolean;
     startedAt: Date;
     bookedAt: Date;
   }[];
@@ -58,23 +60,32 @@ function DeskInfo({
               variant={
                 status == DeskStatus.available
                   ? booking.length > 0 &&
+                    !booking[0]?.canceled &&
                     booking[0].startedAt.getDate() == startedAt.getDate()
-                    ? "warning"
+                    ? booking[0]?.approved
+                      ? "warning"
+                      : "secondary"
                     : "success"
                   : "destructive"
               }
             >
               {status == DeskStatus.available
                 ? booking.length > 0 &&
+                  !booking[0]?.canceled &&
                   booking[0].startedAt.getDate() == startedAt.getDate()
-                  ? "occupied"
+                  ? booking[0]?.approved
+                    ? "occupied"
+                    : "pending"
                   : "available"
                 : DeskStatus.unavailable}
             </Badge>
           </CardTitle>
           <CardDescription>
             {booking?.length > 0 &&
-              booking[0].startedAt.getDate() == startedAt.getDate() && (
+              booking[0]?.approved &&
+              !booking[0]?.canceled &&
+              moment(booking[0].startedAt).date().toLocaleString() ==
+                moment(startedAt).date().toLocaleString() && (
                 <div className=" rounded-lg w-full flex justify-start items-center gap-2">
                   <Avatar>
                     <AvatarImage src={booking[0]?.user?.image!} />
@@ -113,6 +124,8 @@ function DeskInfo({
                 {area}
               </p>
               {booking?.length > 0 &&
+                booking[0]?.approved &&
+                !booking[0]?.canceled &&
                 moment(booking[0].startedAt).date().toLocaleString() ==
                   moment(startedAt).date().toLocaleString() && (
                   <>

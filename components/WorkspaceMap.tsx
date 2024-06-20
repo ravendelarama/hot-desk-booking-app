@@ -58,13 +58,16 @@ function WorkspaceMap({
         // });
 
         var flag = false;
+        var approved = false;
 
         for (var j = 0; j < i.Booking.length; j++) {
           if (
             moment(i.Booking[j].startedAt).date().toLocaleString() ==
-            moment(date).date().toLocaleString()
+              moment(date).date().toLocaleString() &&
+            !i.Booking[j].canceled
           ) {
             flag = true;
+            approved = i.Booking[j].approved;
           }
         }
 
@@ -75,7 +78,9 @@ function WorkspaceMap({
           preFillColor:
             i?.status! === "available"
               ? flag
-                ? "#ed6e07"
+                ? approved
+                  ? "#ed6e07"
+                  : "#C8C8C8"
                 : "#338c17"
               : "#c61d1d",
         });

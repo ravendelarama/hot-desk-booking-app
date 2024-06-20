@@ -46,6 +46,8 @@ function BookTabs() {
           };
           startedAt: Date;
           bookedAt: Date;
+          approved: boolean;
+          canceled: boolean;
         }[];
       })
     | null

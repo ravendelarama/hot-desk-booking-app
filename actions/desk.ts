@@ -37,7 +37,9 @@ export async function getDesks(value: z.infer<typeof FormSchema>) {
                     Booking: {
                         select: {
                             bookedAt: true,
-                            startedAt: true
+                            startedAt: true,
+                            approved: true,
+                            canceled: true
                         }
                     }
                 }
@@ -235,6 +237,8 @@ export async function getDeskById(id: string, date: Date) {
                 select: {
                     startedAt: true,
                     bookedAt: true,
+                    approved: true,
+                    canceled: true,
                     user: {
                         select: {
                             image: true,
