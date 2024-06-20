@@ -24,6 +24,7 @@ import { BsFillJournalBookmarkFill } from "react-icons/bs";
 import { PiUsersThreeFill } from "react-icons/pi";
 import { GiDesk } from "react-icons/gi";
 import BookingGraph from "./_components/Graph";
+import UserDashboard from "./_components/user-dashboard";
 
 async function Home() {
   const totalEmployees = await getAllUserCount();
@@ -60,9 +61,9 @@ async function Home() {
             </CardFooter>
           </Card>
         )}
-        {(session?.user?.role === Role.admin ||
-          session?.user?.role == Role.superadmin) && (
-          <Card className="grow">
+        {session?.user?.role === Role.admin ||
+          session?.user?.role == Role.superadmin && <UserDashboard />}
+        {/* <Card className="grow">
             <CardHeader>
               <CardTitle className="flex justify-between items-center w-full">
                 <p className="text-sm text-left">Total employees</p>
@@ -78,8 +79,8 @@ async function Home() {
                 total amount of people in the company.
               </p>
             </CardFooter>
-          </Card>
-        )}
+          </Card> */}
+
         {session?.user?.role != Role.user && (
           <Card className="grow">
             <CardHeader>
