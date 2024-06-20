@@ -64,6 +64,7 @@ function WorkspaceMap({
           if (
             moment(i.Booking[j].startedAt).date().toLocaleString() ==
               moment(date).date().toLocaleString() &&
+            i.Booking[j].startedAt.getMonth() == date.getMonth() &&
             !i.Booking[j].canceled
           ) {
             flag = true;

@@ -61,6 +61,7 @@ function DeskInfo({
                 status == DeskStatus.available
                   ? booking.length > 0 &&
                     !booking[0]?.canceled &&
+                    booking[0].startedAt.getMonth() == startedAt.getMonth() &&
                     booking[0].startedAt.getDate() == startedAt.getDate()
                     ? booking[0]?.approved
                       ? "warning"
@@ -72,7 +73,8 @@ function DeskInfo({
               {status == DeskStatus.available
                 ? booking.length > 0 &&
                   !booking[0]?.canceled &&
-                  booking[0].startedAt.getDate() == startedAt.getDate()
+                  booking[0].startedAt.getDate() == startedAt.getDate() &&
+                  booking[0].startedAt.getMonth() == startedAt.getMonth()
                   ? booking[0]?.approved
                     ? "occupied"
                     : "pending"
@@ -85,7 +87,8 @@ function DeskInfo({
               booking[0]?.approved &&
               !booking[0]?.canceled &&
               moment(booking[0].startedAt).date().toLocaleString() ==
-                moment(startedAt).date().toLocaleString() && (
+                moment(startedAt).date().toLocaleString() &&
+              booking[0].startedAt.getMonth() == startedAt.getMonth() && (
                 <div className=" rounded-lg w-full flex justify-start items-center gap-2">
                   <Avatar>
                     <AvatarImage src={booking[0]?.user?.image!} />
@@ -126,6 +129,7 @@ function DeskInfo({
               {booking?.length > 0 &&
                 booking[0]?.approved &&
                 !booking[0]?.canceled &&
+                booking[0].startedAt.getMonth() == startedAt.getMonth() &&
                 moment(booking[0].startedAt).date().toLocaleString() ==
                   moment(startedAt).date().toLocaleString() && (
                   <>
