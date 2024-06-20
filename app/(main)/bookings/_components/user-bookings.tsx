@@ -121,6 +121,16 @@ export default function UserBookings({
                                     your data from our servers.
                                   </DialogDescription>
                                 </DialogHeader>
+                                <DialogFooter>
+                                  <Button
+                                    onClick={async () => {
+                                      await cancelBooking(item.id!);
+                                    }}
+                                    variant={"destructive"}
+                                  >
+                                    Continue
+                                  </Button>
+                                </DialogFooter>
                               </DialogContent>
                             </Dialog>
                           </div>
@@ -151,6 +161,7 @@ export default function UserBookings({
                   return (
                     moment(item.occuredAt).date() > moment().date() &&
                     moment(item.occuredAt).month() >= moment().month() &&
+                    item?.approved &&
                     !item?.canceled && (
                       <tr>
                         <td className="border-b py-2">

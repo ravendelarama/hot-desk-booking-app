@@ -67,8 +67,8 @@ function AddDesk({
   const [selectedFloor, setSelectedFloor] = useState<string>("");
   const [amenities, setAmenities] = useState<string[]>(data.amenities!);
 
+  const [status, setStatus] = useState<DeskStatus>(DeskStatus.available);
   const [name, setName] = useState<string>("");
-  const [image, setImage] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setFiles(acceptedFiles);
@@ -76,7 +76,16 @@ function AddDesk({
   const { startUpload, permittedFileInfo } = useUploadThing("imageUploader", {
     onClientUploadComplete: async (res) => {
       const src = res[0].url.split("/");
-      setImage(src[src.length - 1]);
+
+      await mutateDesk(
+        data.id,
+        src[src.length - 1],
+        name,
+        amenities,
+        coordinates[0]!,
+        coordinates[1]!,
+        status
+      );
 
       // await add(name, src[src.length - 1]);
       alert("uploaded successfully!");
@@ -127,15 +136,10 @@ function AddDesk({
 
   async function onSubmit(values: z.infer<typeof NewDeskSchema>) {
     if (coordinates.length > 0) {
-      await mutateDesk(
-        data.id,
-        image,
-        values.name,
-        amenities,
-        coordinates[0]!,
-        coordinates[1]!,
-        values.status as DeskStatus
-      );
+      // @ts-ignore
+      setStatus(values?.status as DeskStatus);
+      setName(values.name);
+      startUpload(files);
     }
     toast({
       title: "Created Desk",
@@ -236,12 +240,7 @@ function AddDesk({
             />
             {files.length > 0 && files[0].name ? (
               <div className="w-full py-10 flex justify-center items-center">
-                <Button
-                  variant={"default"}
-                  onClick={() => {
-                    startUpload(files);
-                  }}
-                >
+                <Button variant={"default"} disabled onClick={() => {}}>
                   Upload {files[0].name}
                 </Button>
               </div>

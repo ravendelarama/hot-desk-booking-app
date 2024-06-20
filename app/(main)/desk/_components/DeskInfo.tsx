@@ -60,10 +60,9 @@ function DeskInfo({
               variant={
                 status == DeskStatus.available
                   ? booking.length > 0 &&
-                    !booking[0]?.canceled &&
-                    booking[0].startedAt.getMonth() == startedAt.getMonth() &&
+                    !booking[0].canceled &&
                     booking[0].startedAt.getDate() == startedAt.getDate()
-                    ? booking[0]?.approved
+                    ? booking[0].approved
                       ? "warning"
                       : "secondary"
                     : "success"
@@ -72,9 +71,8 @@ function DeskInfo({
             >
               {status == DeskStatus.available
                 ? booking.length > 0 &&
-                  !booking[0]?.canceled &&
-                  booking[0].startedAt.getDate() == startedAt.getDate() &&
-                  booking[0].startedAt.getMonth() == startedAt.getMonth()
+                  !booking[0].canceled &&
+                  booking[0].startedAt.getDate() == startedAt.getDate()
                   ? booking[0]?.approved
                     ? "occupied"
                     : "pending"
@@ -84,11 +82,9 @@ function DeskInfo({
           </CardTitle>
           <CardDescription>
             {booking?.length > 0 &&
-              booking[0]?.approved &&
               !booking[0]?.canceled &&
-              moment(booking[0].startedAt).date().toLocaleString() ==
-                moment(startedAt).date().toLocaleString() &&
-              booking[0].startedAt.getMonth() == startedAt.getMonth() && (
+              booking[0].startedAt.getDate() == startedAt.getDate() &&
+              booking[0]?.approved && (
                 <div className=" rounded-lg w-full flex justify-start items-center gap-2">
                   <Avatar>
                     <AvatarImage src={booking[0]?.user?.image!} />
@@ -111,10 +107,7 @@ function DeskInfo({
         </CardHeader>
         <CardContent className="space-y-4">
           <Image
-            src={
-              image ||
-              "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.pexels.com%2Fsearch%2Foffice%2520desk%2F&psig=AOvVaw38RzYrDt5v41RDtQWDrACB&ust=1716043040431000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCOjlh9L0lIYDFQAAAAAdAAAAABA-"
-            }
+            src={image}
             alt="Image"
             className="rounded-md object-cover"
             width={500}
@@ -128,10 +121,8 @@ function DeskInfo({
               </p>
               {booking?.length > 0 &&
                 booking[0]?.approved &&
-                !booking[0]?.canceled &&
-                booking[0].startedAt.getMonth() == startedAt.getMonth() &&
-                moment(booking[0].startedAt).date().toLocaleString() ==
-                  moment(startedAt).date().toLocaleString() && (
+                booking[0].startedAt.getDate() == startedAt.getDate() &&
+                !booking[0]?.canceled && (
                   <>
                     <p className="text-xs text-gray-400 flex items-center gap-1">
                       <BsFillJournalBookmarkFill className="h-4 w-4" />{" "}
