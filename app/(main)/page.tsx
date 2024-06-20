@@ -223,8 +223,11 @@ async function Home() {
                 </CardContent>
                 <CardFooter>
                   <p className="text-xs text-slate-400">
-                    There are {approvedBookingPercentage}% of approved
-                    reservations.
+                    There are{" "}
+                    <span className="font-semibold">
+                      {Number(approvedBookingPercentage).toFixed(2)}%
+                    </span>{" "}
+                    of approved reservations.
                   </p>
                 </CardFooter>
               </Card>
@@ -241,8 +244,11 @@ async function Home() {
                 </CardContent>
                 <CardFooter>
                   <p className="text-xs text-slate-400">
-                    There are {approvedBookingPercentage - 100}% pending
-                    reservations.
+                    There are{" "}
+                    <span className="font-semibold">
+                      {Number(100 - approvedBookingPercentage).toFixed(2)}%
+                    </span>{" "}
+                    of pending reservations.
                   </p>
                 </CardFooter>
               </Card>
@@ -268,9 +274,9 @@ async function Home() {
                         {item?.desk?.Floor.floor}
                       </p>
                       <p className="text-xs text-slate-400">
-                        {moment(item.bookedAt).date() == moment().date()
+                        {moment(item.startedAt).date() == moment().date()
                           ? "Today"
-                          : moment(item.bookedAt).format("MMMM D").toString()}
+                          : moment(item.startedAt).format("MMMM D").toString()}
                       </p>
                     </div>
                   ))}

@@ -17,6 +17,7 @@ import { PiOfficeChair } from "react-icons/pi";
 import { BsFillJournalBookmarkFill } from "react-icons/bs";
 import Image from "next/image";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import moment from "moment";
 
 function DeskInfo({
   name,
@@ -112,7 +113,8 @@ function DeskInfo({
                 {area}
               </p>
               {booking?.length > 0 &&
-                booking[0].startedAt.getDate() == startedAt.getDate() && (
+                moment(booking[0].startedAt).date().toLocaleString() ==
+                  moment(startedAt).date().toLocaleString() && (
                   <>
                     <p className="text-xs text-gray-400 flex items-center gap-1">
                       <BsFillJournalBookmarkFill className="h-4 w-4" />{" "}
