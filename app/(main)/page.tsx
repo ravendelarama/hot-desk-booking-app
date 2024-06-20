@@ -62,27 +62,28 @@ async function Home() {
           </Card>
         )}
         {session?.user?.role === Role.admin ||
-          session?.user?.role == Role.superadmin && <UserDashboard />}
-        {/* <Card className="grow">
-            <CardHeader>
-              <CardTitle className="flex justify-between items-center w-full">
-                <p className="text-sm text-left">Total employees</p>
-                <PiUsersThreeFill className="h-5 w-5 text-slate-600" />
-              </CardTitle>
-              <CardDescription></CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="pl-3 text-4xl font-bold">+{totalEmployees}</p>
-            </CardContent>
-            <CardFooter>
-              <p className="text-xs text-slate-400">
-                total amount of people in the company.
-              </p>
-            </CardFooter>
-          </Card> */}
+          (session?.user?.role == Role.superadmin && (
+            <Card className="grow">
+              <CardHeader>
+                <CardTitle className="flex justify-between items-center w-full">
+                  <p className="text-sm text-left">Total employees</p>
+                  <PiUsersThreeFill className="h-5 w-5 text-slate-600" />
+                </CardTitle>
+                <CardDescription></CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="pl-3 text-4xl font-bold">+{totalEmployees}</p>
+              </CardContent>
+              <CardFooter>
+                <p className="text-xs text-slate-400">
+                  total amount of people in the company.
+                </p>
+              </CardFooter>
+            </Card>
+          ))}
 
-        {session?.user?.role != Role.user && (
-          <Card className="grow">
+        {session?.user?.role != Role.user && <UserDashboard />}
+        {/* <Card className="grow">
             <CardHeader>
               <CardTitle className="flex justify-between items-center w-full">
                 <p className="text-sm text-left">Total available desks</p>
@@ -98,8 +99,7 @@ async function Home() {
                 total amount of available desks.
               </p>
             </CardFooter>
-          </Card>
-        )}
+          </Card> */}
       </div>
       <div className="w-full grid grid-cols-1 md:grid-cols-3 grid-flow-row md:grid-rows-2 gap-5 h-full">
         {session?.user?.role != Role.user && (
