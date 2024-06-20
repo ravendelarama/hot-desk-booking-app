@@ -82,8 +82,8 @@ async function Home() {
             </Card>
           ))}
 
-        {session?.user?.role != Role.user && <UserDashboard />}
-        {/* <Card className="grow">
+        {session?.user?.role != Role.user && (
+          <Card className="grow">
             <CardHeader>
               <CardTitle className="flex justify-between items-center w-full">
                 <p className="text-sm text-left">Total available desks</p>
@@ -99,7 +99,8 @@ async function Home() {
                 total amount of available desks.
               </p>
             </CardFooter>
-          </Card> */}
+          </Card>
+        )}
       </div>
       <div className="w-full grid grid-cols-1 md:grid-cols-3 grid-flow-row md:grid-rows-2 gap-5 h-full">
         {session?.user?.role != Role.user && (
@@ -156,6 +157,23 @@ async function Home() {
             <CardFooter>
               <p className="text-xs text-slate-400">
                 Total amount of reservation you made as of today.
+              </p>
+            </CardFooter>
+          </Card>
+          <Card className="grow">
+            <CardHeader>
+              <CardTitle className="flex justify-between items-center w-full">
+                <p className="text-sm text-left">Pending Reservations</p>
+
+                <BsFillJournalBookmarkFill className="text-slate-600 h-5 w-5" />
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="pl-3 text-4xl font-bold">+{totalUserBookings}</p>
+            </CardContent>
+            <CardFooter>
+              <p className="text-xs text-slate-400">
+                Total amount of pending reservation you made as of today.
               </p>
             </CardFooter>
           </Card>
