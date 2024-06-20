@@ -51,13 +51,32 @@ export async function getUserBookingReminders() {
         where: {
             AND: {
                 userId: session?.user?.id,
-                approved: true
+                approved: true,
+                canceled: false
             }
-        }
+        },
+        include: {
+            desk: {
+                select: {
+                    name: true,
+                    Floor: {
+                        select: {
+                            floor: true
+                        }
+                    }
+                }
+            }
+        },
+        take: 5,
+        orderBy: [
+            {
+                bookedAt: 'asc'
+            }
+        ]
     });
 
     revalidatePath('/');
-    return data;
+    return data.reverse();
 }
 
 export async function getApprovedUserBookings() {
@@ -67,7 +86,52 @@ export async function getApprovedUserBookings() {
         where: {
             AND: {
                 userId: session?.user?.id,
-                approved: true
+                approved: true,
+                canceled: false
+            }
+        }
+    });
+
+    revalidatePath('/')
+    return count
+}
+
+export async function getApprovedBookingAverage() {
+    const session = await getSession();
+
+    const bookingCount = await prisma.booking.count({
+        where: {
+            AND: {
+                userId: session?.user?.id,
+                canceled: false
+            }
+        }
+    });
+
+    const approvedCount = await prisma.booking.count({
+        where: {
+            AND: {
+                userId: session?.user?.id,
+                approved: true,
+                canceled: false
+            }
+        }
+    });
+
+    const average = approvedCount * 100 / bookingCount;
+
+    return average
+}
+
+export async function getPendingUserBookings() {
+    const session = await getSession();
+
+    const count = await prisma.booking.count({
+        where: {
+            AND: {
+                userId: session?.user?.id,
+                approved: false,
+                canceled: false
             }
         }
     });
@@ -215,6 +279,19 @@ export async function addBooking(desk: Desk, date: Date) {
 export async function cancelBooking(bookId: string) {
     const session = await getSession();
 
+    const deskName = await prisma.booking.findFirst({
+        where: {
+            id: bookId
+        },
+        select: {
+            desk: {
+                select: {
+                    name: true
+                }
+            }
+        }
+    })
+
     await prisma.booking.update({
         where: {
             userId: session?.user?.id,
@@ -227,7 +304,7 @@ export async function cancelBooking(bookId: string) {
                     Log: {
                         create: {
                             activity: EventType.canceled,
-                            message: eventLogFormats.canceled(`${session?.user.firstName} ${session?.user?.lastName}`, bookId)
+                            message: eventLogFormats.canceled(`${session?.user.firstName} ${session?.user?.lastName}`, deskName?.desk?.name!)
                         }
                     }
                 }
